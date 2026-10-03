@@ -11,6 +11,8 @@ class LLMCall(models.Model):
     request = models.JSONField()
     response = models.JSONField()
     server_version = models.CharField(max_length=50)
+    # Provenance that is not part of the request, e.g. which chronicle beats the context included.
+    metadata = models.JSONField(default=dict, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

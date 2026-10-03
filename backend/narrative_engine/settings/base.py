@@ -85,7 +85,7 @@ MATCHER_MAX_LIVE_PER_SCHEMA = 50  # beyond this, the lowest-weighted live hypoth
 
 # Implementations of the injected interfaces (narrative_engine/di.py).
 INJECTED = {
-    "ReaderModel": "reader.table.TableReader",
+    "ReaderModel": "reader.ollama.OllamaChoiceReader",
     "ContextBuilder": "reader.context.RecentAndSupportingBeats",
 }
 

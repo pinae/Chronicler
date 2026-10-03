@@ -27,4 +27,13 @@ WP-003, WP-023, WP-024.
 - Bayes factors (WP-044).
 
 ## Status
-open
+done (the integration test awaits a run against the deployed server)
+
+## Summary
+`reader.ollama.OllamaChoiceReader` prompts with the visible context, an optional assumption, the
+question and lettered options, and asks for the letter only: one token, temperature 0, no `format`.
+It reads the first token's `top_logprobs`, adds up spelling variants of a label (case-sensitive),
+renormalizes over the labels and reports the rest as `outside_mass`. Calls go through `CachedOllama`.
+`LLMCall.metadata` (new, not hashed) records the included beats, the question and the candidates.
+A response without logprobs raises an error pointing to the smoke check, and missing settings raise
+`ImproperlyConfigured`. Base settings now bind it as `ReaderModel`; Bayes factors wait for WP-044.

@@ -30,15 +30,20 @@ class CachedOllama:
         self.transport = transport
         self._server_version: str | None = None
 
-    def generate(self, request: Mapping[str, Any], draw: int | None = None) -> LLMCall:
+    def generate(
+        self, request: Mapping[str, Any], draw: int | None = None, metadata: Mapping[str, Any] | None = None
+    ) -> LLMCall:
+        """`metadata` is stored with a new call but is not part of the request or its hash."""
         key = request_hash(GENERATE, request, draw)
         logged = LLMCall.objects.filter(request_hash=key).first()
         if logged is not None:
             return logged
         response = self.transport.generate(request)
-        return self.log(key, request, response)
+        return self.log(key, request, response, metadata or {})
 
-    def log(self, key: str, request: Mapping[str, Any], response: dict[str, Any]) -> LLMCall:
+    def log(
+        self, key: str, request: Mapping[str, Any], response: dict[str, Any], metadata: Mapping[str, Any]
+    ) -> LLMCall:
         try:
             with transaction.atomic():
                 return LLMCall.objects.create(
@@ -48,6 +53,7 @@ class CachedOllama:
                     request=dict(request),
                     response=response,
                     server_version=self.server_version(),
+                    metadata=dict(metadata),
                 )
         except IntegrityError:  # logged by a concurrent identical request in the meantime
             return LLMCall.objects.get(request_hash=key)
