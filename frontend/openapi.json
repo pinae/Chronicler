@@ -173,6 +173,65 @@
         },
         "description": "The unfiltered lattice (\"all\", the GM's view) or one player's lattice at t (default: latest)."
       }
+    },
+    "/api/chronicles/{chronicle_id}/hypotheses/{hypothesis_id}/expectations": {
+      "get": {
+        "operationId": "gm_ui_lattice_api_list_expectations",
+        "summary": "List Expectations",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "chronicle_id",
+            "schema": {
+              "title": "Chronicle Id",
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "hypothesis_id",
+            "schema": {
+              "title": "Hypothesis Id",
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "t",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "T"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ExpectationOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "description": "Per open step, the latest readout at or before t (default: the latest) about this hypothesis."
+      }
     }
   },
   "components": {
@@ -430,6 +489,85 @@
         },
         "required": ["t", "hypotheses"],
         "title": "LatticeOut",
+        "type": "object"
+      },
+      "CandidateOut": {
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "p": {
+            "title": "P",
+            "type": "number"
+          },
+          "null": {
+            "default": false,
+            "title": "Null",
+            "type": "boolean"
+          },
+          "binding_delta": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "integer"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Binding Delta"
+          }
+        },
+        "required": ["label", "text", "p"],
+        "title": "CandidateOut",
+        "type": "object"
+      },
+      "ExpectationOut": {
+        "properties": {
+          "step_id": {
+            "title": "Step Id",
+            "type": "string"
+          },
+          "computed_at_t": {
+            "title": "Computed At T",
+            "type": "integer"
+          },
+          "question": {
+            "title": "Question",
+            "type": "string"
+          },
+          "candidates": {
+            "items": {
+              "$ref": "#/components/schemas/CandidateOut"
+            },
+            "title": "Candidates",
+            "type": "array"
+          },
+          "outside_mass": {
+            "title": "Outside Mass",
+            "type": "number"
+          },
+          "for_player": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "For Player"
+          }
+        },
+        "required": ["step_id", "computed_at_t", "question", "candidates", "outside_mass", "for_player"],
+        "title": "ExpectationOut",
         "type": "object"
       }
     }

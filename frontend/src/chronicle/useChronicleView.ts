@@ -20,9 +20,12 @@ export function useChronicleView(chronicle: ChronicleDetail) {
 
   return {
     audience,
+    chosenT,
     t: chosenT === null ? chronicle.last_t : Number(chosenT),
     query: query.toString(),
+    selectedHypothesis: searchParams.get("hypothesis"),
     chooseAudience: (value: string) => choose({ audience: value }),
     chooseT: (value: number) => choose({ t: String(value) }),
+    chooseHypothesis: (id: number) => choose({ hypothesis: String(id) }),
   };
 }

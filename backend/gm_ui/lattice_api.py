@@ -8,6 +8,7 @@ from ninja.errors import HttpError
 from chronicle.models import Chronicle
 from gm_ui.audiences import ALL, resolve_audience
 from matching.lattice import Lattice, LatticeHypothesis
+from matching.models import Hypothesis
 from schemas.definitions import SchemaDefinition
 from schemas.library import definition_of
 from schemas.models import Schema as SchemaRow
@@ -97,3 +98,52 @@ def hypothesis_out(
         refines=hypothesis.refines_id,
         voiced=hypothesis.voiced_by is not None,
     )
+
+
+class CandidateOut(Schema):
+    label: str
+    text: str
+    p: float
+    null: bool = False
+    binding_delta: dict[str, int] | None = None
+
+
+class ExpectationOut(Schema):
+    step_id: str
+    computed_at_t: int
+    question: str
+    candidates: list[CandidateOut]
+    outside_mass: float
+    for_player: int | None
+
+
+@router.get(
+    "/chronicles/{chronicle_id}/hypotheses/{hypothesis_id}/expectations",
+    response=list[ExpectationOut],
+    url_name="list_expectations",
+)
+def list_expectations(
+    request: HttpRequest, chronicle_id: int, hypothesis_id: int, t: int | None = None
+) -> list[ExpectationOut]:
+    """Per open step, the latest readout at or before t (default: the latest) about this hypothesis."""
+    hypothesis = get_object_or_404(Hypothesis, pk=hypothesis_id, chronicle_id=chronicle_id)
+    rows = list(hypothesis.expectations.select_related("step").order_by("step__order", "pk"))
+    if t is not None:
+        rows = [row for row in rows if row.computed_at_t <= t]
+    latest_t_per_step: dict[str, int] = {}
+    for row in rows:
+        latest_t_per_step[row.step.step_id] = max(
+            row.computed_at_t, latest_t_per_step.get(row.step.step_id, 0)
+        )
+    return [
+        ExpectationOut(
+            step_id=row.step.step_id,
+            computed_at_t=row.computed_at_t,
+            question=row.question,
+            candidates=[CandidateOut(**candidate) for candidate in row.candidates],
+            outside_mass=row.outside_mass,
+            for_player=row.for_player_id,
+        )
+        for row in rows
+        if row.computed_at_t == latest_t_per_step[row.step.step_id]
+    ]

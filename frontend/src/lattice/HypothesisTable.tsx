@@ -1,12 +1,14 @@
 import type { LatticeHypothesis } from "../api/types";
+import { bindingText } from "./bindingText";
 
 type Props = {
   schemaName: string;
   hypotheses: LatticeHypothesis[];
+  onShowExpectations: (hypothesisId: number) => void;
 };
 
 /** The hypotheses of one schema, strongest first. */
-export function HypothesisTable({ schemaName, hypotheses }: Props) {
+export function HypothesisTable({ schemaName, hypotheses, onShowExpectations }: Props) {
   const strongestFirst = [...hypotheses].sort((first, second) => second.weight - first.weight);
   return (
     <table aria-label={schemaName}>
@@ -17,6 +19,7 @@ export function HypothesisTable({ schemaName, hypotheses }: Props) {
           <th scope="col">Weight</th>
           <th scope="col">Filled steps</th>
           <th scope="col">Open steps</th>
+          <th scope="col">Expectations</th>
         </tr>
       </thead>
       <tbody>
@@ -30,15 +33,20 @@ export function HypothesisTable({ schemaName, hypotheses }: Props) {
             <td>{hypothesis.weight.toFixed(2)}</td>
             <td>{filledStepsText(hypothesis)}</td>
             <td>{hypothesis.open_steps.join(", ")}</td>
+            <td>
+              <button
+                type="button"
+                aria-label={`Expectations for ${bindingText(hypothesis)}`}
+                onClick={() => onShowExpectations(hypothesis.id)}
+              >
+                Expectations
+              </button>
+            </td>
           </tr>
         ))}
       </tbody>
     </table>
   );
-}
-
-function bindingText(hypothesis: LatticeHypothesis): string {
-  return hypothesis.binding.map((entry) => `${entry.role} = ${entry.entity_name ?? "?"}`).join(", ");
 }
 
 function filledStepsText(hypothesis: LatticeHypothesis): string {

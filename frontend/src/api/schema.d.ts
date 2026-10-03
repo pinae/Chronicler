@@ -78,6 +78,26 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/chronicles/{chronicle_id}/hypotheses/{hypothesis_id}/expectations": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List Expectations
+     * @description Per open step, the latest readout at or before t (default: the latest) about this hypothesis.
+     */
+    get: operations["gm_ui_lattice_api_list_expectations"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -176,6 +196,39 @@ export interface components {
       /** Hypotheses */
       hypotheses: components["schemas"]["LatticeHypothesisOut"][];
     };
+    /** CandidateOut */
+    CandidateOut: {
+      /** Label */
+      label: string;
+      /** Text */
+      text: string;
+      /** P */
+      p: number;
+      /**
+       * Null
+       * @default false
+       */
+      null: boolean;
+      /** Binding Delta */
+      binding_delta?: {
+        [key: string]: number;
+      } | null;
+    };
+    /** ExpectationOut */
+    ExpectationOut: {
+      /** Step Id */
+      step_id: string;
+      /** Computed At T */
+      computed_at_t: number;
+      /** Question */
+      question: string;
+      /** Candidates */
+      candidates: components["schemas"]["CandidateOut"][];
+      /** Outside Mass */
+      outside_mass: number;
+      /** For Player */
+      for_player: number | null;
+    };
   };
   responses: never;
   parameters: never;
@@ -273,6 +326,31 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["LatticeOut"];
+        };
+      };
+    };
+  };
+  gm_ui_lattice_api_list_expectations: {
+    parameters: {
+      query?: {
+        t?: number | null;
+      };
+      header?: never;
+      path: {
+        chronicle_id: number;
+        hypothesis_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ExpectationOut"][];
         };
       };
     };

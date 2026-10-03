@@ -146,3 +146,65 @@ describe("LatticePage", () => {
     );
   });
 });
+
+describe("LatticePage expectations", () => {
+  const QUESTION = {
+    step_id: "access",
+    computed_at_t: 20,
+    question: "Next: Aldric learns that Mira hides ___.",
+    candidates: [
+      { label: "A", text: "The family seal", p: 0.41, null: false, binding_delta: { S: 3 } },
+      { label: "B", text: "nothing like this yet", p: 0.59, null: true, binding_delta: null },
+    ],
+    outside_mass: 0.02,
+    for_player: null,
+  };
+
+  it("shows what the audience expects next for a chosen hypothesis", async () => {
+    fakeApi({
+      "/api/chronicles/2": STEWARD,
+      "/api/chronicles/2/lattice?audience=all": NOW,
+      "/api/chronicles/2/hypotheses/1/expectations": [QUESTION],
+    });
+    showLattice();
+
+    await userEvent.click(
+      await screen.findByRole("button", { name: "Expectations for T = Aldric, V = Mira, S = ?" }),
+    );
+
+    const panel = await screen.findByRole("region", { name: "Expectations for T = Aldric, V = Mira, S = ?" });
+    expect(within(panel).getByText("Next: Aldric learns that Mira hides ___.")).toBeInTheDocument();
+    expect(within(panel).getByText("asked at t = 20")).toBeInTheDocument();
+    expect(within(panel).getByText("The family seal: 41%")).toBeInTheDocument();
+    expect(within(panel).getByText("nothing like this yet: 59%")).toBeInTheDocument();
+  });
+
+  it("asks for the expectations held at the chosen beat", async () => {
+    fakeApi({
+      "/api/chronicles/2": STEWARD,
+      "/api/chronicles/2/lattice?audience=all&t=21": NOW,
+      "/api/chronicles/2/hypotheses/1/expectations?t=21": [{ ...QUESTION, computed_at_t: 21 }],
+    });
+
+    showLattice("/chronicles/2/lattice?t=21&hypothesis=1");
+
+    expect(await screen.findByText("asked at t = 21")).toBeInTheDocument();
+  });
+
+  it("says so when nobody was asked about the hypothesis yet", async () => {
+    fakeApi({
+      "/api/chronicles/2": STEWARD,
+      "/api/chronicles/2/lattice?audience=all": NOW,
+      "/api/chronicles/2/hypotheses/2/expectations": [],
+    });
+    showLattice();
+
+    await userEvent.click(
+      await screen.findByRole("button", {
+        name: "Expectations for T = Aldric, V = Mira, S = The family seal",
+      }),
+    );
+
+    expect(await screen.findByText("No expectations yet")).toBeInTheDocument();
+  });
+});

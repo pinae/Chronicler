@@ -38,7 +38,8 @@ test("See the lattice before the twist", async ({ page }) => {
   await expect(page.getByText("t = 21 of 24")).toBeVisible();
   const sealBetrayal = row(page, "T = Aldric, V = Mira, S = The family seal");
   await expect(sealBetrayal).toContainText("live");
-  await expect(sealBetrayal.getByRole("cell").last()).toContainText("reveal");
+  const openStepsColumn = 4;
+  await expect(sealBetrayal.getByRole("cell").nth(openStepsColumn)).toContainText("reveal");
 });
 
 test("See a player's lattice", async ({ page }) => {
