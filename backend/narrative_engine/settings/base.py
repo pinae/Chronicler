@@ -87,9 +87,13 @@ MATCHER_MAX_LIVE_PER_SCHEMA = 50  # beyond this, the lowest-weighted live hypoth
 INJECTED = {
     "ReaderModel": "reader.ollama.OllamaChoiceReader",
     "ContextBuilder": "reader.context.RecentAndSupportingBeats",
+    "Ingester": "chronicle.ingest.fixture.FixtureIngester",
 }
 
 # Reader model context (concept §9.3): recent beats plus beats supporting the strongest hypotheses.
 READER_CONTEXT_RECENT_BEATS = 30
 READER_CONTEXT_TOP_HYPOTHESES = 5
 READER_MAX_CANDIDATES = 20  # labels per readout question; the native API returns at most 20 top_logprobs
+
+# Hand-written stories for tests and replays (concept §9.1).
+FIXTURE_STORIES_DIR = BASE_DIR / "fixtures" / "stories"

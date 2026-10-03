@@ -22,4 +22,13 @@ WP-010, WP-022, WP-024.
 LLM-based ingest (WP-031).
 
 ## Status
-open
+done
+
+## Summary
+`chronicle/ingest/interfaces.py` defines the `Ingester` protocol: an utterance of a chronicle goes in;
+an `IngestResult` with beat drafts, voiced theories and first-mentioned entities comes out. Drafts
+use the compact `@slug` argument notation of fixture stories, so the fixture and LLM ingesters share
+the pipeline that creates entities and appends beats (WP-030). `FixtureIngester` takes no arguments:
+it finds its story through `chronicle.meta["fixture"]` in `settings.FIXTURE_STORIES_DIR` and returns
+that utterance's beats in order, for session, literature and media stories alike. Test and base
+settings bind it as `Ingester` until the Ollama ingester exists (WP-031).
