@@ -43,6 +43,7 @@ class IngestResult:
     beats: tuple[IngestedBeat, ...] = ()
     theories: tuple[IngestedTheory, ...] = ()
     new_entities: tuple[NewEntity, ...] = field(default_factory=tuple)
+    problems: tuple[str, ...] = ()  # drafts the ingester had to drop, and why
 
 
 class Ingester(Protocol):

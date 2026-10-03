@@ -7,7 +7,7 @@ data; `load_story` builds a chronicle from it by appending every beat, exactly l
 from collections.abc import Iterator, Mapping
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Protocol
 
 import yaml
 from django.conf import settings
@@ -274,11 +274,16 @@ def append_fixture_beat(
         raise StoryFixtureError(f"beats.yaml, {spec.location}: {error}") from error
 
 
-def expand_args(compact_args: Mapping[str, Any], entities: Mapping[str, Entity]) -> dict[str, Any]:
+class Identified(Protocol):
+    @property
+    def id(self) -> int: ...
+
+
+def expand_args(compact_args: Mapping[str, Any], entities: Mapping[str, Identified]) -> dict[str, Any]:
     return {role: expand_value(value, entities) for role, value in compact_args.items()}
 
 
-def expand_value(value: Any, entities: Mapping[str, Entity]) -> dict[str, Any]:
+def expand_value(value: Any, entities: Mapping[str, Identified]) -> dict[str, Any]:
     if isinstance(value, str) and value.startswith("@"):
         return {"entity": entities[value[1:]].id}
     if isinstance(value, str) and value.startswith("#") and value[1:].isdigit():

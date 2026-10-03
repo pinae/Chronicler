@@ -87,7 +87,7 @@ MATCHER_MAX_LIVE_PER_SCHEMA = 50  # beyond this, the lowest-weighted live hypoth
 INJECTED = {
     "ReaderModel": "reader.ollama.OllamaChoiceReader",
     "ContextBuilder": "reader.context.RecentAndSupportingBeats",
-    "Ingester": "chronicle.ingest.fixture.FixtureIngester",
+    "Ingester": "chronicle.ingest.ollama.OllamaIngester",
 }
 
 # Reader model context (concept §9.3): recent beats plus beats supporting the strongest hypotheses.

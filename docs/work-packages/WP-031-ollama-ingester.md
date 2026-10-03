@@ -28,4 +28,15 @@ WP-003, WP-023, WP-029.
 - Probably the largest package in M7. If entity resolution grows, split it off before starting.
 
 ## Status
-open
+done (the integration tests await a run against the deployed server)
+
+## Summary
+`chronicle.ingest.ollama.OllamaIngester` prompts with the vocabulary (roles and value kinds), the known
+entities with aliases, the recent beats, the speaker and the utterance. It asks for JSON matching
+`ANSWER_SCHEMA`, falling back to prompted JSON when the server rejects `format`. Proposed entities that
+match a known name or alias are resolved to the known entity; taken slugs get a suffix. Each draft is
+checked like a beat (entities, roles, value kinds, beat references), gets one repair round with the
+problems listed, and is otherwise dropped and reported in `IngestResult.problems`. Decision:
+predicates are not restricted to the vocabulary in the schema, so unknown verbs are quarantined on
+append and show up in coverage (RQ1) rather than being forced onto a poor fit. Calls are cached. Base
+settings bind it as `Ingester`; replays keep using the fixture ingester.
