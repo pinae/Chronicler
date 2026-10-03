@@ -24,4 +24,13 @@ WP-010, WP-016, WP-017, WP-018, WP-019.
 Expectations (WP-027), per-player lattices (WP-021).
 
 ## Status
-open
+done
+
+## Summary
+`Lattice.at(chronicle, t)` filters stored hypotheses by `created_at_t`, their fills by beat `t`, and
+their status by `status_changed_at_t`; weight is recomputed from the fills up to `t`. The 24-beat
+`steward` story exercises seeding, refinement, refutation by contradiction and by constraint,
+pruning (with at most four live betrayals) and completion at the reveal (t=22). The replay test
+compares the lattice at t=20 after the whole story with a fresh chronicle run only to beat 20, in
+id-independent terms; it passes. `load_story` gained `until_t`. Known limitation: `voiced_by` is
+not time-indexed (a hypothesis voiced later shows as voiced at earlier `t`).

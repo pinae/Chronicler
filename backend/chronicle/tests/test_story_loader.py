@@ -230,3 +230,9 @@ def test_entity_slugs_are_unique_within_a_chronicle(chronicle):
             slug="aldric",
             introduced_at_t=1,
         )
+
+
+def test_story_can_be_loaded_up_to_a_given_t():
+    chronicle = load_story("minimal", until_t=3)
+
+    assert [beat.t for beat in chronicle.beats.all()] == [1, 2, 3]

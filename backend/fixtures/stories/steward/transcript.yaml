@@ -1,0 +1,57 @@
+title: The Steward of Wend
+kind: session
+players: [Anna, Ben]
+utterances:
+  - order: 1
+    speaker: gm
+    text: >-
+      Lady Mira holds court in the great hall of Wend. She trusts her steward Aldric and her
+      captain Ronan with everything.
+  - order: 2
+    speaker: gm
+    text: Edda the maid helps Mira dress for the feast.
+  - order: 3
+    speaker: Anna
+    text: I bet the steward is up to something.
+  - order: 4
+    speaker: gm
+    text: (GM note) Mira hides the family seal and the ledger in the cellar.
+  - order: 5
+    speaker: gm
+    text: (To Ben, privately) You see Aldric watching Mira as she leaves the cellar.
+  - order: 6
+    speaker: gm
+    text: Aldric helps Mira with the accounts; she thanks him warmly.
+  - order: 7
+    speaker: gm
+    text: A raider breaches the gate. Captain Ronan falls defending it.
+  - order: 8
+    speaker: gm
+    text: (GM note) Edda overhears where the ledger is kept.
+  - order: 9
+    speaker: gm
+    text: Aldric tells Mira he trusts her judgement in these dark days.
+  - order: 10
+    speaker: gm
+    text: (GM note) At night Aldric goes down to the cellar and takes the seal.
+  - order: 11
+    speaker: gm
+    text: Edda, angry at her lady, slaps Mira in front of everyone.
+  - order: 12
+    speaker: gm
+    text: A stranger presses a purse of gold into Aldric's hand.
+  - order: 13
+    speaker: Ben
+    text: Aldric looks nervous to me.
+  - order: 14
+    speaker: gm
+    text: Mira asks Aldric to come with her to the cellar.
+  - order: 15
+    speaker: gm
+    text: Edda pulls Mira away from a falling beam. Mira is worried, then suspicious.
+  - order: 16
+    speaker: gm
+    text: Edda tells Mira that she saw Aldric take the seal.
+  - order: 17
+    speaker: gm
+    text: Mira no longer trusts Aldric. The raider returns and kills him.

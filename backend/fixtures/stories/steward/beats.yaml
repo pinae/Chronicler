@@ -1,0 +1,66 @@
+- utterance: 1
+  beats:
+    - {t: 1, pred: is_at, args: {who: "@mira", where: "@hall"}, present: [mira, aldric, ronan, edda], text: Mira holds court in the great hall.}
+    - {t: 2, pred: trusts, args: {who: "@mira", whom: "@aldric"}, present: [mira, aldric], text: Mira trusts Aldric.}
+    - {t: 3, pred: trusts, args: {who: "@mira", whom: "@ronan"}, present: [mira, ronan], text: Mira trusts Ronan.}
+- utterance: 2
+  beats:
+    - {t: 4, pred: helps, args: {who: "@edda", whom: "@mira"}, present: [edda, mira], text: Edda helps Mira dress.}
+- utterance: 4
+  beats:
+    - {t: 5, pred: hides, args: {who: "@mira", what: "@seal"}, present: [mira], players: [], text: Mira hides the seal in the cellar.}
+    - {t: 6, pred: hides, args: {who: "@mira", what: "@ledger"}, present: [mira], players: [], text: Mira hides the ledger in the cellar.}
+- utterance: 5
+  beats:
+    - t: 7
+      pred: learns
+      args: {who: "@aldric", what: {pred: hides, args: {who: "@mira", what: "@seal"}}}
+      present: [aldric]
+      players: [Ben]
+      text: Aldric learns where Mira hides the seal.
+- utterance: 6
+  beats:
+    - {t: 8, pred: helps, args: {who: "@aldric", whom: "@mira"}, present: [aldric, mira], text: Aldric helps Mira with the accounts.}
+- utterance: 7
+  beats:
+    - {t: 9, pred: kills, kind: action, args: {who: "@raider", whom: "@ronan"}, present: [raider, ronan, edda], text: The raider kills Ronan at the gate.}
+- utterance: 8
+  beats:
+    - t: 10
+      pred: learns
+      args: {who: "@edda", what: {pred: hides, args: {who: "@mira", what: "@ledger"}}}
+      present: [edda]
+      players: []
+      text: Edda learns where the ledger is hidden.
+- utterance: 9
+  beats:
+    - {t: 11, pred: trusts, args: {who: "@aldric", whom: "@mira"}, present: [aldric, mira], text: Aldric trusts Mira.}
+- utterance: 10
+  beats:
+    - {t: 12, pred: is_at, args: {who: "@aldric", where: "@cellar"}, present: [aldric], players: [], text: Aldric goes down to the cellar.}
+    - {t: 13, pred: steals, kind: action, args: {who: "@aldric", what: "@seal", from: "@mira"}, present: [aldric], players: [], text: Aldric steals the seal from Mira.}
+- utterance: 11
+  beats:
+    - {t: 14, pred: harms, kind: action, args: {who: "@edda", whom: "@mira"}, present: [edda, mira], text: Edda slaps Mira.}
+- utterance: 12
+  beats:
+    - {t: 15, pred: gives, kind: action, args: {who: "@raider", what: a purse of gold, to: "@aldric"}, present: [raider, aldric], text: The raider gives Aldric a purse of gold.}
+- utterance: 13
+  beats:
+    - {t: 16, pred: is, args: {who: "@aldric", trait: nervous}, players: [Ben], text: Aldric is nervous (Ben noticed).}
+- utterance: 14
+  beats:
+    - {t: 17, pred: trusts, args: {who: "@mira", whom: "@aldric"}, present: [mira, aldric], text: Mira trusts Aldric to come along.}
+    - {t: 18, pred: is_at, args: {who: "@mira", where: "@cellar"}, present: [mira, aldric], text: Mira goes to the cellar.}
+- utterance: 15
+  beats:
+    - {t: 19, pred: protects, kind: action, args: {who: "@edda", whom: "@mira"}, present: [edda, mira], text: Edda protects Mira from a falling beam.}
+    - {t: 20, pred: is, args: {who: "@mira", trait: worried}, present: [mira], text: Mira is worried.}
+    - {t: 21, pred: is, args: {who: "@mira", trait: suspicious}, present: [mira], text: Mira is suspicious.}
+- utterance: 16
+  beats:
+    - {t: 22, pred: learns, args: {who: "@mira", what: "#13", from: "@edda"}, present: [mira, edda], text: Mira learns that Aldric stole the seal.}
+- utterance: 17
+  beats:
+    - {t: 23, pred: distrusts, args: {who: "@mira", whom: "@aldric"}, present: [mira], text: Mira no longer trusts Aldric.}
+    - {t: 24, pred: kills, kind: action, args: {who: "@raider", whom: "@aldric"}, present: [raider, aldric], text: The raider kills Aldric.}

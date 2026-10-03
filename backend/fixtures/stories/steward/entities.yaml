@@ -1,0 +1,9 @@
+mira: {kind: character, name: Mira, aliases: [Lady Mira]}
+aldric: {kind: character, name: Aldric, aliases: [the steward]}
+ronan: {kind: character, name: Ronan, aliases: [the captain]}
+edda: {kind: character, name: Edda, aliases: [the maid]}
+raider: {kind: character, name: The raider}
+seal: {kind: secret, name: The family seal}
+ledger: {kind: secret, name: The hidden ledger}
+hall: {kind: place, name: The great hall}
+cellar: {kind: place, name: The cellar}

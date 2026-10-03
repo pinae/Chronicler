@@ -156,11 +156,12 @@ def check_entity_mentions(story: StoryFixture) -> None:
         )
 
 
-def load_story(slug: str, stories_dir: Path = STORIES_DIR) -> Chronicle:
-    return build_chronicle(read_story(slug, stories_dir))
+def load_story(slug: str, stories_dir: Path = STORIES_DIR, until_t: int | None = None) -> Chronicle:
+    """Build a chronicle from a fixture story; with `until_t`, only the beats up to that t."""
+    return build_chronicle(read_story(slug, stories_dir), until_t)
 
 
-def build_chronicle(story: StoryFixture) -> Chronicle:
+def build_chronicle(story: StoryFixture, until_t: int | None = None) -> Chronicle:
     with transaction.atomic():
         chronicle = Chronicle.objects.create(kind=story.kind, title=story.title, meta={"fixture": story.slug})
         players = {name: Player.objects.create(chronicle=chronicle, name=name) for name in story.players}
@@ -168,7 +169,7 @@ def build_chronicle(story: StoryFixture) -> Chronicle:
         utterances = {
             spec.order: create_utterance(chronicle, spec, players, entities) for spec in story.utterances
         }
-        for t, spec in enumerate(story.beats, start=1):
+        for t, spec in enumerate(story.beats[:until_t], start=1):
             append_fixture_beat(chronicle, t, spec, utterances, players, entities)
         return chronicle
 
