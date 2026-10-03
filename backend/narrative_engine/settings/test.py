@@ -8,3 +8,9 @@ DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3", "NAME": ":memor
 
 # Hashing speed is irrelevant to what the tests check, so use the cheapest hasher.
 PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
+
+# Tests never talk to a language model, even when the developer's shell points to one.
+# Integration tests marked `llm` read the server from the environment themselves.
+OLLAMA_BASE_URL = None
+OLLAMA_READER_MODEL = None
+OLLAMA_INGEST_MODEL = None

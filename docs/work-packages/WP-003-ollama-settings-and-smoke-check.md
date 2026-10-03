@@ -35,4 +35,13 @@ WP-001.
   choice → ADR.
 
 ## Status
-open
+done (except the last criterion, which needs the deployed server: see Summary)
+
+## Summary
+Ollama settings come from the environment in `settings/base.py`, while test settings force server
+and models to `None`. pytest-socket blocks network access in every default test run;
+`llm/pytest_plugin.py` adds the `--llm` opt-in, which also lifts the block and skips when
+`OLLAMA_BASE_URL` is unset. `llm/transport.py` is the only module that talks to Ollama (official
+client, dict in/dict out), and `python -m llm.smoke` reports version, logprobs, `top_logprobs`
+maximum, JSON-schema output and prompt logprobs per model (ADR-004).
+`docs/llm-smoke.md` still awaits a run against the real server, which this environment cannot reach.

@@ -68,3 +68,12 @@ USE_TZ = True
 STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# The external Ollama server (concept §8.1). Server and models have no defaults:
+# without them, nothing may call a language model.
+OLLAMA_BASE_URL = env.str("OLLAMA_BASE_URL", default=None)
+OLLAMA_READER_MODEL = env.str("OLLAMA_READER_MODEL", default=None)
+OLLAMA_INGEST_MODEL = env.str("OLLAMA_INGEST_MODEL", default=None)
+OLLAMA_NUM_CTX = env.int("OLLAMA_NUM_CTX", default=16384)
+OLLAMA_KEEP_ALIVE = env.str("OLLAMA_KEEP_ALIVE", default="30m")
+OLLAMA_TIMEOUT_S = env.int("OLLAMA_TIMEOUT_S", default=120)

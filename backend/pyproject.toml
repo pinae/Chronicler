@@ -6,6 +6,8 @@ requires-python = ">=3.12"
 dependencies = [
     "django>=5.2,<5.3",
     "django-environ>=0.14",
+    "httpx>=0.28",
+    "ollama==0.6.3",
     "psycopg[binary]>=3.3",
 ]
 
@@ -15,6 +17,7 @@ dev = [
     "pre-commit>=4.6",
     "pytest>=9",
     "pytest-django>=4.14",
+    "pytest-socket>=0.8.1",
     "ruff>=0.16",
 ]
 
@@ -22,6 +25,8 @@ dev = [
 DJANGO_SETTINGS_MODULE = "narrative_engine.settings.test"
 python_files = ["test_*.py"]
 testpaths = ["chronicle", "schemas", "matching", "reader", "llm", "evaluation", "gm_ui"]
+# Unix sockets stay allowed because asyncio uses a socket pair internally.
+addopts = "--strict-markers --disable-socket --allow-unix-socket"
 
 [tool.ruff]
 target-version = "py312"
