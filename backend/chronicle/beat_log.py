@@ -8,6 +8,7 @@ from django.db import transaction
 from django.db.models import Max
 
 from chronicle.beat_args import referenced_beat_ts, referenced_entity_ids
+from chronicle.entity_view import update_entity_attributes
 from chronicle.models import (
     QUARANTINE_TAG,
     UNKNOWN_PREDICATE,
@@ -63,7 +64,7 @@ def append_beat(chronicle: Chronicle, draft: BeatDraft, t: int | None = None) ->
             raise AppendError(f"unknown source kind '{draft.source_kind}'")
         canonical = canonical_predicate(draft)
         check_references(chronicle, draft, next_t)
-        return Beat.objects.create(
+        beat = Beat.objects.create(
             chronicle=chronicle,
             t=next_t,
             pred=canonical.pred,
@@ -75,6 +76,8 @@ def append_beat(chronicle: Chronicle, draft: BeatDraft, t: int | None = None) ->
             confidence=draft.confidence,
             original_pred=canonical.original_pred,
         )
+        update_entity_attributes(beat)
+        return beat
 
 
 def next_free_t(chronicle: Chronicle) -> int:

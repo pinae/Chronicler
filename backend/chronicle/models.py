@@ -180,3 +180,15 @@ class Beat(models.Model):
     @property
     def is_quarantined(self) -> bool:
         return QUARANTINE_TAG in self.tags
+
+
+class EntityAttribute(models.Model):
+    """Derived view of entity state (`is`, `has`, `is_at`), rebuilt from beats. Keeps provenance."""
+
+    entity = models.ForeignKey(Entity, related_name="attributes", on_delete=models.CASCADE)
+    key = models.CharField(max_length=100)
+    value = models.JSONField()
+    source_beat = models.ForeignKey(Beat, related_name="+", on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return f"{self.key} = {self.value}"

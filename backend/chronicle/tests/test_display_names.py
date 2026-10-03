@@ -2,7 +2,7 @@
 
 import pytest
 
-from chronicle.models import Beat, Chronicle, Entity, Player, Utterance
+from chronicle.models import Beat, Chronicle, Entity, EntityAttribute, Player, Utterance
 
 pytestmark = pytest.mark.django_db
 
@@ -31,3 +31,7 @@ def test_short_utterance_reads_in_full():
 
 def test_beat_reads_as_t_predicate_and_text():
     assert str(Beat(t=3, pred="trusts", text="Mira trusts Aldric.")) == "t=3 trusts: Mira trusts Aldric."
+
+
+def test_entity_attribute_reads_as_key_and_value():
+    assert str(EntityAttribute(key="is", value={"literal": "nervous"})) == "is = {'literal': 'nervous'}"
