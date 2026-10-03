@@ -26,4 +26,15 @@ Asking the question and storing answers (WP-027).
   lowest `order`. Decide here.
 
 ## Status
-open
+done
+
+## Summary
+`reader/questions.py` builds deterministic questions. `next_open_step` takes the first unfilled
+required step, then the first unfilled optional one. The question phrases that step's first pattern
+with the per-predicate templates in `reader/templates.py` (every vocabulary predicate has one),
+showing the first unbound role as a blank and step references as the text of their beat. Candidates
+are the entities of the open role's kind introduced by `t`, ordered by introduction and id and
+labelled A, B, … plus "nothing like this yet". When every role of the step is bound, the question is
+whether it happens next. Lists longer than `max_candidates` are paged, each page with its own
+"nothing yet". `entities_in_view(chronicle, player, t)` lists the entities mentioned in the beats an
+audience saw.
