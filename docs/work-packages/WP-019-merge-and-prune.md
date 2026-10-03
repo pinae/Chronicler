@@ -30,4 +30,13 @@ Merging voiced hypotheses (WP-022); revisiting the pruning policy (§13).
   would break the replay guarantee.
 
 ## Status
-open
+done
+
+## Summary
+Maintain now refutes, completes, merges and prunes, in that order. Live hypotheses with the same
+identity (schema, binding and fills) merge into the oldest: the others get `status = merged`,
+`merged_into` and `status_changed_at_t`, and the survivor inherits `voiced_by` / `voiced_in`. Pruning
+removes live hypotheses below `MATCHER_WEIGHT_FLOOR` (default −6) and, per schema, the lowest-weighted
+beyond `MATCHER_MAX_LIVE_PER_SCHEMA` (default 50), newest first on ties. Decision: voiced hypotheses
+are never pruned, since they record what the table believes. No row is ever deleted; the stored
+matcher creates new rows before linking `refines` and `merged_into`.

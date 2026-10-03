@@ -1,5 +1,7 @@
 """Running the matcher against a stored chronicle: load hypotheses, step a beat, save the changes."""
 
+from collections.abc import Sequence
+
 from django.conf import settings
 from django.db import transaction
 
@@ -12,6 +14,14 @@ from schemas.library import definition_of
 from schemas.models import Schema
 
 
+def matcher_config_from_settings() -> MatcherConfig:
+    return MatcherConfig(
+        repeatable_fill_cap=settings.MATCHER_REPEATABLE_FILL_CAP,
+        weight_floor=settings.MATCHER_WEIGHT_FLOOR,
+        max_live_per_schema=settings.MATCHER_MAX_LIVE_PER_SCHEMA,
+    )
+
+
 class StoredMatcher:
     def __init__(self, chronicle: Chronicle) -> None:
         self.chronicle = chronicle
@@ -21,35 +31,10 @@ class StoredMatcher:
             list(self.definitions.values()), self.load_hypotheses(), config=matcher_config_from_settings()
         )
 
-    def load_hypotheses(self) -> list[HypothesisState]:
-        rows = (
-            Hypothesis.objects.filter(chronicle=self.chronicle)
-            .select_related("schema", "refuted_by")
-            .order_by("pk")
-        )
-        fills = StepFill.objects.filter(hypothesis__chronicle=self.chronicle).select_related("step", "beat")
-        fills_by_hypothesis: dict[int, list[Fill]] = {}
-        for fill in fills.order_by("beat__t", "pk"):
-            fills_by_hypothesis.setdefault(fill.hypothesis_id, []).append(
-                Fill(fill.step.step_id, fill.beat.t)
-            )
-        states = {
-            row.pk: HypothesisState(
-                schema=self.definitions[row.schema.slug],
-                binding=dict(row.binding),
-                created_at_t=row.created_at_t,
-                fills=fills_by_hypothesis.get(row.pk, []),
-                status=row.status,
-                status_changed_at_t=row.status_changed_at_t,
-                refuted_by_t=row.refuted_by.t if row.refuted_by else None,
-                record_id=row.pk,
-            )
-            for row in rows
-        }
-        for row in rows:
-            if row.refines_id is not None:
-                states[row.pk].refines = states[row.refines_id]
-        return list(states.values())
+    def step(self, beat: Beat) -> StepResult:
+        result = self.engine.step(PlainBeat.from_model(beat), self.world())
+        self.save([*result.new, *result.changed])
+        return result
 
     def world(self) -> World:
         return World(
@@ -58,26 +43,55 @@ class StoredMatcher:
             facts=StoredChronicleFacts(self.chronicle),
         )
 
-    def step(self, beat: Beat) -> StepResult:
-        result = self.engine.step(PlainBeat.from_model(beat), self.world())
-        with transaction.atomic():
-            for state in [*result.new, *result.changed]:
-                self.save(state)
-        return result
+    # Loading
 
-    def save(self, state: HypothesisState) -> None:
-        if state.record_id is None:
-            state.record_id = self.create_row(state)
-        Hypothesis.objects.filter(pk=state.record_id).update(
-            binding=state.binding,
-            weight=self.engine.weight(state),
-            status=state.status,
-            status_changed_at_t=state.status_changed_at_t,
-            refuted_by=self.chronicle.beats.filter(t=state.refuted_by_t).first()
-            if state.refuted_by_t
-            else None,
+    def load_hypotheses(self) -> list[HypothesisState]:
+        rows = list(
+            Hypothesis.objects.filter(chronicle=self.chronicle)
+            .select_related("schema", "refuted_by")
+            .order_by("pk")
         )
-        self.save_new_fills(state.record_id, state)
+        fills = self.load_fills()
+        states = {row.pk: self.state_from_row(row, fills.get(row.pk, [])) for row in rows}
+        for row in rows:
+            states[row.pk].refines = states.get(row.refines_id) if row.refines_id else None
+            states[row.pk].merged_into = states.get(row.merged_into_id) if row.merged_into_id else None
+        return list(states.values())
+
+    def load_fills(self) -> dict[int, list[Fill]]:
+        fills = StepFill.objects.filter(hypothesis__chronicle=self.chronicle).select_related("step", "beat")
+        fills_by_hypothesis: dict[int, list[Fill]] = {}
+        for fill in fills.order_by("beat__t", "pk"):
+            fills_by_hypothesis.setdefault(fill.hypothesis_id, []).append(
+                Fill(fill.step.step_id, fill.beat.t)
+            )
+        return fills_by_hypothesis
+
+    def state_from_row(self, row: Hypothesis, fills: list[Fill]) -> HypothesisState:
+        return HypothesisState(
+            schema=self.definitions[row.schema.slug],
+            binding=dict(row.binding),
+            created_at_t=row.created_at_t,
+            fills=fills,
+            status=row.status,
+            status_changed_at_t=row.status_changed_at_t,
+            refuted_by_t=row.refuted_by.t if row.refuted_by else None,
+            voiced_by=row.voiced_by_id,
+            voiced_in=row.voiced_in_id,
+            record_id=row.pk,
+        )
+
+    # Saving
+
+    def save(self, states: Sequence[HypothesisState]) -> None:
+        """Create rows first, so references between hypotheses saved together can be resolved."""
+        with transaction.atomic():
+            for state in states:
+                if state.record_id is None:
+                    state.record_id = self.create_row(state)
+            for state in states:
+                self.update_row(state)
+                self.save_new_fills(stored_id(state), state)
 
     def create_row(self, state: HypothesisState) -> int:
         row = Hypothesis.objects.create(
@@ -86,9 +100,22 @@ class StoredMatcher:
             binding=state.binding,
             weight=self.engine.weight(state),
             created_at_t=state.created_at_t,
-            refines_id=state.refines.record_id if state.refines else None,
         )
         return row.pk
+
+    def update_row(self, state: HypothesisState) -> None:
+        refuted_by = self.chronicle.beats.filter(t=state.refuted_by_t).first() if state.refuted_by_t else None
+        Hypothesis.objects.filter(pk=stored_id(state)).update(
+            binding=state.binding,
+            weight=self.engine.weight(state),
+            status=state.status,
+            status_changed_at_t=state.status_changed_at_t,
+            refuted_by=refuted_by,
+            refines_id=state.refines.record_id if state.refines else None,
+            merged_into_id=state.merged_into.record_id if state.merged_into else None,
+            voiced_by_id=state.voiced_by,
+            voiced_in_id=state.voiced_in,
+        )
 
     def save_new_fills(self, record_id: int, state: HypothesisState) -> None:
         stored = set(StepFill.objects.filter(hypothesis_id=record_id).values_list("step__step_id", "beat__t"))
@@ -103,5 +130,7 @@ class StoredMatcher:
         )
 
 
-def matcher_config_from_settings() -> MatcherConfig:
-    return MatcherConfig(repeatable_fill_cap=settings.MATCHER_REPEATABLE_FILL_CAP)
+def stored_id(state: HypothesisState) -> int:
+    if state.record_id is None:
+        raise ValueError("the hypothesis has not been stored yet")
+    return state.record_id

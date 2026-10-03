@@ -9,6 +9,7 @@ class HypothesisStatus(models.TextChoices):
     COMPLETE = "complete"
     REFUTED = "refuted"
     PRUNED = "pruned"
+    MERGED = "merged"
 
 
 class Hypothesis(models.Model):
@@ -29,6 +30,10 @@ class Hypothesis(models.Model):
     )
     refines = models.ForeignKey(
         "self", null=True, blank=True, related_name="refinements", on_delete=models.SET_NULL
+    )
+    # Merging never deletes: the merged hypothesis points to the one that absorbed it.
+    merged_into = models.ForeignKey(
+        "self", null=True, blank=True, related_name="absorbed", on_delete=models.SET_NULL
     )
 
     class Meta:

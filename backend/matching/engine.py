@@ -13,6 +13,8 @@ from schemas.definitions import SchemaDefinition, StepDefinition
 LIVE = "live"
 COMPLETE = "complete"
 REFUTED = "refuted"
+MERGED = "merged"
+PRUNED = "pruned"
 
 
 @dataclass(frozen=True)
@@ -33,6 +35,9 @@ class HypothesisState:
     status_changed_at_t: int | None = None
     refuted_by_t: int | None = None
     refines: "HypothesisState | None" = None  # the less specific hypothesis this one was refined from
+    merged_into: "HypothesisState | None" = None
+    voiced_by: int | None = None  # player id
+    voiced_in: int | None = None  # utterance id
     record_id: int | None = None  # primary key once stored
 
     @property
@@ -54,10 +59,17 @@ class HypothesisState:
     def change_status(self, status: str, t: int) -> None:
         self.status, self.status_changed_at_t = status, t
 
+    def identity(self) -> tuple[object, ...]:
+        """Hypotheses with the same identity say the same thing and are merged."""
+        fills = sorted((fill.step_id, fill.beat_t) for fill in self.fills)
+        return (self.schema.slug, tuple(sorted(self.binding.items())), tuple(fills))
+
 
 @dataclass(frozen=True)
 class MatcherConfig:
     repeatable_fill_cap: int = 3  # fills of a repeatable step that add weight
+    weight_floor: float = -6.0  # live hypotheses below this weight are pruned
+    max_live_per_schema: int = 50  # beyond this, the lowest-weighted live hypotheses are pruned
 
 
 def weight_of(schema: SchemaDefinition, fills: Iterable[Fill], repeat_cap: int) -> float:
@@ -129,10 +141,14 @@ class IncrementalMatcher:
         self.hypotheses += refined
         seeded = self.seed(beat, world)
         self.hypotheses += seeded
+        new = refined + seeded
         refuted = self.refute(beat, world)
-        self.complete(beat, [*filled, *refined, *seeded])
-        changed = [*filled, *(hypothesis for hypothesis in refuted if hypothesis not in filled)]
-        return StepResult(new=refined + seeded, changed=changed)
+        self.complete(beat, [*filled, *new])
+        merged = self.merge(beat)
+        pruned = self.prune(beat)
+        status_changed = [*refuted, *merged, *pruned]
+        changed = list(dict.fromkeys([*filled, *(h for h in status_changed if h not in new)]))
+        return StepResult(new=new, changed=changed)
 
     def refute(self, beat: PlainBeat, world: World) -> list[HypothesisState]:
         """Maintain: refute live hypotheses the beat contradicts or whose constraints no longer hold."""
@@ -163,6 +179,36 @@ class IncrementalMatcher:
         return not all(
             constraint.check(hypothesis, world.facts, t) for constraint in hypothesis.schema.constraints
         )
+
+    def merge(self, beat: PlainBeat) -> list[HypothesisState]:
+        """Maintain: a live hypothesis identical to an older one is merged into it."""
+        survivors: dict[tuple[object, ...], HypothesisState] = {}
+        merged = []
+        for hypothesis in sorted(self.live(), key=lambda hypothesis: hypothesis.created_at_t):
+            survivor = survivors.setdefault(hypothesis.identity(), hypothesis)
+            if survivor is hypothesis:
+                continue
+            survivor.voiced_by = survivor.voiced_by or hypothesis.voiced_by
+            survivor.voiced_in = survivor.voiced_in or hypothesis.voiced_in
+            hypothesis.change_status(MERGED, beat.t)
+            hypothesis.merged_into = survivor
+            merged.append(hypothesis)
+        return merged
+
+    def prune(self, beat: PlainBeat) -> list[HypothesisState]:
+        """Maintain: prune hypotheses below the weight floor, then the weakest beyond the maximum per
+        schema (ties: newest first). Voiced hypotheses record what the table believes and are kept."""
+        prunable = [hypothesis for hypothesis in self.live() if hypothesis.voiced_by is None]
+        pruned = [hypothesis for hypothesis in prunable if self.weight(hypothesis) < self.config.weight_floor]
+        for schema in self.schemas:
+            ranked = sorted(
+                (h for h in prunable if h.schema.slug == schema.slug and h not in pruned),
+                key=lambda hypothesis: (-self.weight(hypothesis), hypothesis.created_at_t),
+            )
+            pruned += ranked[self.config.max_live_per_schema :]
+        for hypothesis in pruned:
+            hypothesis.change_status(PRUNED, beat.t)
+        return pruned
 
     def complete(self, beat: PlainBeat, touched: Sequence[HypothesisState]) -> None:
         for hypothesis in touched:
