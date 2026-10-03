@@ -15,8 +15,9 @@ existing ones.
 - A second identical `trusts` beat creates no duplicate; it adds a second fill to the
   repeatable `trust` step.
 - Beats that match only non-trigger steps never seed.
-- `steals(Aldric, S, from=Mira)` fills `harm` of the hypothesis bound to `T=Aldric, V=Mira`,
-  and not of one bound to `T=Ronan, V=Mira`.
+- `harms(Aldric, Mira)` fills `harm` of the hypothesis bound to `T=Aldric, V=Mira`, and not of one
+  bound to `T=Ronan, V=Mira`. (The concept's `steals(Aldric, S, from=Mira)` binds the open role `S`,
+  which per §7 creates a refinement; it is tested in WP-016.)
 - A beat fills at most one step per hypothesis.
 
 ## Dependencies
@@ -31,4 +32,12 @@ pruning (WP-019), Seed-phase readouts (WP-027).
   that. v1 keeps the default of one step per beat per hypothesis until a schema needs more.
 
 ## Status
-open
+done
+
+## Summary
+`matching/engine.py` holds the pure incremental matcher. Live hypotheses are plain `HypothesisState`s;
+a beat fills the first open step whose pattern matches under the unchanged binding, then seeds new
+hypotheses from trigger steps unless a live hypothesis of the schema already holds the beat under a
+compatible binding. `matching/store.py` (`StoredMatcher`) loads the stored lattice, steps one beat
+and saves new hypotheses, field changes and new `StepFill`s, so a fresh matcher continues where the
+last one stopped. Matches that would extend the binding are left to refinement (WP-016).
