@@ -17,4 +17,5 @@ OLLAMA_INGEST_MODEL = None
 
 INJECTED = {
     "ReaderModel": "reader.table.TableReader",
+    "ContextBuilder": "reader.context.RecentAndSupportingBeats",
 }

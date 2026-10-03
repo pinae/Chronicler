@@ -86,4 +86,9 @@ MATCHER_MAX_LIVE_PER_SCHEMA = 50  # beyond this, the lowest-weighted live hypoth
 # Implementations of the injected interfaces (narrative_engine/di.py).
 INJECTED = {
     "ReaderModel": "reader.table.TableReader",
+    "ContextBuilder": "reader.context.RecentAndSupportingBeats",
 }
+
+# Reader model context (concept §9.3): recent beats plus beats supporting the strongest hypotheses.
+READER_CONTEXT_RECENT_BEATS = 30
+READER_CONTEXT_TOP_HYPOTHESES = 5

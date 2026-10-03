@@ -21,4 +21,13 @@ WP-020, WP-024.
 Prose vs. canonical context experiments (§13).
 
 ## Status
-open
+done
+
+## Summary
+`reader.context.bounded_context` takes the last `READER_CONTEXT_RECENT_BEATS` (30) visible beats plus the
+visible beats that filled the `READER_CONTEXT_TOP_HYPOTHESES` (5) strongest hypotheses. It returns them
+in `t` order without duplicates, as a `ReaderContext` that reports `included_beat_ts`.
+`RecentAndSupportingBeats` (bound as `ContextBuilder` in `settings.INJECTED`) feeds it only
+`visible_to(player, t)`. Beats without a written note are phrased from their predicate template with
+entity names. Supporting hypotheses are passed as plain `(weight, beat_ts)`, so the builder does not
+depend on the matcher.
