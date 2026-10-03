@@ -1,6 +1,7 @@
 """The incremental matcher (concept §7): new beat × open steps of live hypotheses, plus new beat ×
 trigger steps. Works on plain data; matching/store.py loads and saves the hypotheses."""
 
+from collections import Counter
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
 
@@ -9,6 +10,7 @@ from matching.match import MatchContext, match
 from schemas.definitions import SchemaDefinition, StepDefinition
 
 LIVE = "live"
+COMPLETE = "complete"
 
 
 @dataclass(frozen=True)
@@ -34,10 +36,6 @@ class HypothesisState:
     def is_live(self) -> bool:
         return self.status == LIVE
 
-    @property
-    def weight(self) -> float:
-        return self.schema.prior + sum(self.schema.step(fill.step_id).weight for fill in self.fills)
-
     def fill_ts(self, step_id: str) -> list[int]:
         return [fill.beat_t for fill in self.fills if fill.step_id == step_id]
 
@@ -49,6 +47,24 @@ class HypothesisState:
 
     def has_fill(self, beat_t: int) -> bool:
         return any(fill.beat_t == beat_t for fill in self.fills)
+
+
+@dataclass(frozen=True)
+class MatcherConfig:
+    repeatable_fill_cap: int = 3  # fills of a repeatable step that add weight
+
+
+def weight_of(schema: SchemaDefinition, fills: Iterable[Fill], repeat_cap: int) -> float:
+    """Prior log-odds plus the weight of each filled step; repeatable steps count up to the cap."""
+    fill_counts = Counter(fill.step_id for fill in fills)
+    return schema.prior + sum(
+        step.weight * min(fill_counts[step.step_id], repeat_cap if step.repeatable else 1)
+        for step in schema.steps
+    )
+
+
+def is_complete(hypothesis: "HypothesisState") -> bool:
+    return all(hypothesis.fill_ts(step.step_id) for step in hypothesis.schema.steps if step.required)
 
 
 @dataclass(frozen=True)
@@ -81,10 +97,17 @@ def compatible(first: Mapping[str, int | None], second: Mapping[str, int | None]
 
 class IncrementalMatcher:
     def __init__(
-        self, schemas: Sequence[SchemaDefinition], hypotheses: Iterable[HypothesisState] = ()
+        self,
+        schemas: Sequence[SchemaDefinition],
+        hypotheses: Iterable[HypothesisState] = (),
+        config: MatcherConfig | None = None,
     ) -> None:
         self.schemas = list(schemas)
         self.hypotheses = list(hypotheses)
+        self.config = config or MatcherConfig()
+
+    def weight(self, hypothesis: HypothesisState) -> float:
+        return weight_of(hypothesis.schema, hypothesis.fills, self.config.repeatable_fill_cap)
 
     def live(self) -> list[HypothesisState]:
         return [hypothesis for hypothesis in self.hypotheses if hypothesis.is_live]
@@ -98,7 +121,13 @@ class IncrementalMatcher:
         self.hypotheses += refined
         seeded = self.seed(beat, world)
         self.hypotheses += seeded
+        self.maintain(beat, [*filled, *refined, *seeded])
         return StepResult(new=refined + seeded, changed=filled)
+
+    def maintain(self, beat: PlainBeat, touched: Sequence[HypothesisState]) -> None:
+        for hypothesis in touched:
+            if hypothesis.is_live and is_complete(hypothesis):
+                hypothesis.status, hypothesis.status_changed_at_t = COMPLETE, beat.t
 
     def fill(self, beat: PlainBeat, world: World) -> list[HypothesisState]:
         filled = []

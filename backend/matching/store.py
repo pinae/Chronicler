@@ -1,10 +1,11 @@
 """Running the matcher against a stored chronicle: load hypotheses, step a beat, save the changes."""
 
+from django.conf import settings
 from django.db import transaction
 
 from chronicle.models import Beat, Chronicle
 from matching.beats import PlainBeat
-from matching.engine import Fill, HypothesisState, IncrementalMatcher, StepResult, World
+from matching.engine import Fill, HypothesisState, IncrementalMatcher, MatcherConfig, StepResult, World
 from matching.models import Hypothesis, StepFill
 from schemas.library import definition_of
 from schemas.models import Schema
@@ -15,7 +16,9 @@ class StoredMatcher:
         self.chronicle = chronicle
         self.schema_rows = {schema.slug: schema for schema in Schema.objects.all()}
         self.definitions = {slug: definition_of(schema) for slug, schema in self.schema_rows.items()}
-        self.engine = IncrementalMatcher(list(self.definitions.values()), self.load_hypotheses())
+        self.engine = IncrementalMatcher(
+            list(self.definitions.values()), self.load_hypotheses(), config=matcher_config_from_settings()
+        )
 
     def load_hypotheses(self) -> list[HypothesisState]:
         rows = Hypothesis.objects.filter(chronicle=self.chronicle).select_related("schema").order_by("pk")
@@ -60,7 +63,7 @@ class StoredMatcher:
             state.record_id = self.create_row(state)
         Hypothesis.objects.filter(pk=state.record_id).update(
             binding=state.binding,
-            weight=state.weight,
+            weight=self.engine.weight(state),
             status=state.status,
             status_changed_at_t=state.status_changed_at_t,
         )
@@ -71,7 +74,7 @@ class StoredMatcher:
             chronicle=self.chronicle,
             schema=self.schema_rows[state.schema.slug],
             binding=state.binding,
-            weight=state.weight,
+            weight=self.engine.weight(state),
             created_at_t=state.created_at_t,
             refines_id=state.refines.record_id if state.refines else None,
         )
@@ -88,3 +91,7 @@ class StoredMatcher:
             for fill in state.fills
             if (fill.step_id, fill.beat_t) not in stored
         )
+
+
+def matcher_config_from_settings() -> MatcherConfig:
+    return MatcherConfig(repeatable_fill_cap=settings.MATCHER_REPEATABLE_FILL_CAP)

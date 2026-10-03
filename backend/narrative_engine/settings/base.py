@@ -77,3 +77,6 @@ OLLAMA_INGEST_MODEL = env.str("OLLAMA_INGEST_MODEL", default=None)
 OLLAMA_NUM_CTX = env.int("OLLAMA_NUM_CTX", default=16384)
 OLLAMA_KEEP_ALIVE = env.str("OLLAMA_KEEP_ALIVE", default="30m")
 OLLAMA_TIMEOUT_S = env.int("OLLAMA_TIMEOUT_S", default=120)
+
+# Matcher (concept §7).
+MATCHER_REPEATABLE_FILL_CAP = 3  # fills of a repeatable step that add weight

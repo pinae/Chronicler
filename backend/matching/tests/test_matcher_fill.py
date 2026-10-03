@@ -20,7 +20,7 @@ def test_trust_seeds_a_betrayal_with_trust_filled():
     assert seeded.binding == bound(ALDRIC, MIRA)
     assert seeded.fill_ts("trust") == [4]
     assert seeded.created_at_t == 4
-    assert seeded.weight == -2.0 + 0.5
+    assert matcher.weight(seeded) == -2.0 + 0.5
     assert matcher.live() == [seeded]
 
 

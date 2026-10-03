@@ -25,4 +25,12 @@ Weight calibration (deferred, §13).
   Proposed: yes for repeatable steps, within the cap. Confirm.
 
 ## Status
-open
+done
+
+## Summary
+`weight_of(schema, fills, repeat_cap)` adds the schema prior to each filled step's weight, counting a
+repeatable step once per fill up to `MATCHER_REPEATABLE_FILL_CAP` (default 3). The matcher and the
+store use it via `MatcherConfig`. A new Maintain step marks a hypothesis `complete`, with
+`status_changed_at_t` at the completing beat, once all required steps are filled; optional steps add
+weight but are not needed. Decision on the open question: a complete hypothesis is no longer live and
+takes no further fills, since its arc has finished. That reverses the earlier proposal.
