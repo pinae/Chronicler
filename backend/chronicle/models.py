@@ -62,6 +62,18 @@ class Chronicle(models.Model):
         if audience_name:
             self.players.create(name=audience_name, implicit=True)
 
+    def visible_to(self, player: "Player | None", t: int) -> "models.QuerySet[Beat]":
+        """The beats an audience knew at time t: one player's view, or with `None` the table view
+        (common knowledge: beats every player of the chronicle knew)."""
+        known_by_then = Q(grants__t__lte=t)
+        if player is not None:
+            return self.beats.filter(known_by_then, grants__player=player).distinct().order_by("t")
+        player_count = self.players.count()
+        if player_count == 0:
+            return self.beats.none()
+        knowing_players = models.Count("grants__player", filter=known_by_then, distinct=True)
+        return self.beats.annotate(knowing_players=knowing_players).filter(knowing_players=player_count)
+
     def append(self, draft: "BeatDraft", t: int | None = None) -> "Beat":
         """Append a beat at the next `t`; an explicit `t` must be exactly that next value."""
         # Imported here because the beat log builds on the models defined in this module.

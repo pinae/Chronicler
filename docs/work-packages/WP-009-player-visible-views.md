@@ -26,4 +26,10 @@ Per-player lattices (WP-021), the chronicle screen (WP-035).
   i.e. beats granted to every player. Confirm before implementing.
 
 ## Status
-open
+done
+
+## Summary
+`Chronicle.visible_to(player, t)` returns the beats a player had a grant for at or before `t`,
+ordered by `t`. `visible_to(None, t)` is the table view, defined as common knowledge: beats granted
+to every player of the chronicle by `t`. A table without players sees nothing. In literature and
+media the implicit player sees every beat up to `t`, and every view at `t = 0` is empty.
