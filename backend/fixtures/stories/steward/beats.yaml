@@ -6,6 +6,9 @@
 - utterance: 2
   beats:
     - {t: 4, pred: helps, args: {who: "@edda", whom: "@mira"}, present: [edda, mira], text: Edda helps Mira dress.}
+- utterance: 3
+  theories:
+    - {schema: betrayal, binding: {T: aldric}}
 - utterance: 4
   beats:
     - {t: 5, pred: hides, args: {who: "@mira", what: "@seal"}, present: [mira], players: [], text: Mira hides the seal in the cellar.}

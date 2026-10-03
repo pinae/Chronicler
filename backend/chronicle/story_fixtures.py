@@ -56,6 +56,16 @@ class BeatSpec:
 
 
 @dataclass(frozen=True)
+class TheorySpec:
+    """A theory a player voices ("I bet the steward is the traitor"), at the t of the last beat before it."""
+
+    utterance_order: int
+    schema: str
+    binding: dict[str, str]  # role -> entity slug
+    voiced_at_t: int
+
+
+@dataclass(frozen=True)
 class StoryFixture:
     slug: str
     title: str
@@ -64,11 +74,13 @@ class StoryFixture:
     utterances: list[UtteranceSpec]
     entities: list[EntitySpec]
     beats: list[BeatSpec]
+    theories: list[TheorySpec]
 
 
 def read_story(slug: str, stories_dir: Path = STORIES_DIR) -> StoryFixture:
     directory = stories_dir / slug
     transcript = read_yaml(directory / "transcript.yaml")
+    beat_entries = read_yaml(directory / "beats.yaml") or []
     story = StoryFixture(
         slug=slug,
         title=transcript["title"],
@@ -76,9 +88,11 @@ def read_story(slug: str, stories_dir: Path = STORIES_DIR) -> StoryFixture:
         players=list(transcript.get("players", [])),
         utterances=[read_utterance(entry) for entry in transcript["utterances"]],
         entities=[read_entity(slug, entry) for slug, entry in read_yaml(directory / "entities.yaml").items()],
-        beats=list(read_beats(read_yaml(directory / "beats.yaml"))),
+        beats=list(read_beats(beat_entries)),
+        theories=list(read_theories(beat_entries)),
     )
     check_entity_mentions(story)
+    check_theories(story)
     return story
 
 
@@ -122,6 +136,31 @@ def read_beats(utterance_entries: list[Mapping[str, Any]]) -> Iterator[BeatSpec]
                 confidence=entry.get("confidence", 1.0),
                 declared_t=entry.get("t"),
             )
+
+
+def read_theories(utterance_entries: list[Mapping[str, Any]]) -> Iterator[TheorySpec]:
+    beats_so_far = 0
+    for utterance_entry in utterance_entries:
+        for entry in utterance_entry.get("theories", []):
+            yield TheorySpec(
+                utterance_order=utterance_entry["utterance"],
+                schema=entry["schema"],
+                binding=dict(entry["binding"]),
+                voiced_at_t=beats_so_far,
+            )
+        beats_so_far += len(utterance_entry.get("beats", []))
+
+
+def check_theories(story: StoryFixture) -> None:
+    speakers = {utterance.order: utterance.speaker for utterance in story.utterances}
+    declared = {entity.slug for entity in story.entities}
+    for theory in story.theories:
+        location = f"beats.yaml, utterance {theory.utterance_order}"
+        if speakers.get(theory.utterance_order) not in story.players:
+            raise StoryFixtureError(f"{location}: a theory must be voiced by a player")
+        unknown = sorted(set(theory.binding.values()) - declared)
+        if unknown:
+            raise StoryFixtureError(f"{location}: theory names unknown entity '{unknown[0]}'")
 
 
 def mentioned_slugs(compact_args: Mapping[str, Any]) -> Iterator[str]:

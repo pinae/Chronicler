@@ -134,6 +134,31 @@ class IncrementalMatcher:
     def weight(self, hypothesis: HypothesisState) -> float:
         return weight_of(hypothesis.schema, hypothesis.fills, self.config.repeatable_fill_cap)
 
+    def voice(
+        self, schema_slug: str, binding: Mapping[str, int], voiced_by: int, voiced_in: int, t: int
+    ) -> HypothesisState:
+        """A theory a player voiced. It marks the live hypothesis with exactly that binding as
+        voiced, or else becomes a hypothesis of its own, bound as stated."""
+        schema = self.schema(schema_slug)
+        unknown_roles = sorted(binding.keys() - schema.roles.keys())
+        if unknown_roles:
+            raise ValueError(f"{schema.slug} has no role '{unknown_roles[0]}'")
+        full_binding = {role: binding.get(role) for role in schema.roles}
+        existing = next(
+            (h for h in self.live() if h.schema.slug == schema.slug and h.binding == full_binding), None
+        )
+        voiced = existing or HypothesisState(schema=schema, binding=full_binding, created_at_t=t)
+        voiced.voiced_by, voiced.voiced_in = voiced_by, voiced_in
+        if existing is None:
+            self.hypotheses.append(voiced)
+        return voiced
+
+    def schema(self, slug: str) -> SchemaDefinition:
+        try:
+            return next(schema for schema in self.schemas if schema.slug == slug)
+        except StopIteration:
+            raise ValueError(f"unknown schema '{slug}'") from None
+
     def live(self) -> list[HypothesisState]:
         return [hypothesis for hypothesis in self.hypotheses if hypothesis.is_live]
 

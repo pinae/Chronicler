@@ -29,4 +29,14 @@ WP-010, WP-019.
   exempt from pruning?
 
 ## Status
-open
+done
+
+## Summary
+`IncrementalMatcher.voice` (and `StoredMatcher.voice`) turns a player's theory into a hypothesis
+bound as stated, with `voiced_by` / `voiced_in`. If a live hypothesis of the schema has exactly that
+binding, it is marked as voiced instead of being duplicated. Voiced hypotheses fill, refine and get
+refuted like any other, and are never pruned (WP-019). Fixture utterances carry `theories` entries;
+a theory is voiced at the `t` of the last beat before its utterance and must be spoken by a player.
+Decisions on the open questions: "matches" means an identical binding, since a less specific theory
+is a reading of its own; the voicing `t` is the last beat before the utterance. In `steward`, Anna's
+theory becomes Betrayal(T=Aldric) at t=4.

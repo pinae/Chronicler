@@ -15,9 +15,10 @@ Matcher events the story is built to exercise (with `MATCHER_MAX_LIVE_PER_SCHEMA
 | t | event |
 |---|---|
 | 2, 3, 4, 11 | seeding: betrayals by Aldric, Ronan, Edda, and of Aldric by Mira |
+| 4 | voiced: Anna's theory "I bet the steward is up to something" (utterance 3) |
 | 7, 10 | refinement: Aldric's and Edda's betrayals gain the secret (seal, ledger) |
 | 9 | refutation by contradiction: Ronan is killed before any harm |
 | 11 | pruning: five live betrayals, the newest weakest is pruned |
 | 14 | refutation by constraint: Mira witnesses Edda's harm before any reveal |
 | 22 | completion: Mira learns of the theft at the reveal |
-| 24 | refutation by contradiction: Aldric is killed (the hypothesis without the seal) |
+| 24 | refutation by contradiction: Aldric is killed (the hypotheses without the seal) |

@@ -66,3 +66,16 @@ Argument values use a compact notation:
 
 Beats are appended in file order, so `t` counts up from 1 across all utterances. Utterances
 without beats can be listed with `beats: []` or left out.
+
+### Theories
+
+A player utterance can carry the theories the player voiced:
+
+```yaml
+- utterance: 3          # spoken by a player
+  theories:
+    - {schema: betrayal, binding: {T: aldric}}   # role -> entity slug; other roles stay open
+```
+
+A theory is voiced at the `t` of the last beat before its utterance. It marks the live hypothesis
+with exactly that binding as voiced, or becomes a hypothesis of its own (WP-022).

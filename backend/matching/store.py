@@ -1,12 +1,12 @@
 """Running the matcher against a stored chronicle: load hypotheses, step a beat, save the changes."""
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 
 from django.conf import settings
 from django.db import transaction
 
 from chronicle.facts import StoredChronicleFacts
-from chronicle.models import Beat, Chronicle, Player
+from chronicle.models import Beat, Chronicle, Player, Utterance
 from matching.beats import PlainBeat
 from matching.engine import Fill, HypothesisState, IncrementalMatcher, MatcherConfig, StepResult, World
 from matching.models import Hypothesis, StepFill
@@ -42,6 +42,12 @@ class StoredMatcher:
         result = self.engine.step(plain_beat, self.world())
         self.save([*result.new, *result.changed])
         return result
+
+    def voice(
+        self, schema_slug: str, binding: Mapping[str, int], player: Player, utterance: Utterance, t: int
+    ) -> None:
+        voiced = self.engine.voice(schema_slug, binding, voiced_by=player.pk, voiced_in=utterance.pk, t=t)
+        self.save([voiced])
 
     def world(self) -> World:
         return World(

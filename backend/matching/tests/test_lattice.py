@@ -109,6 +109,7 @@ def test_steward_exercises_every_kind_of_lattice_change():
         ("aldric", "mira", "seal"): ("complete", 22),
         ("edda", "mira", "ledger"): ("refuted", 14),
         ("mira", "aldric", None): ("pruned", 11),
+        ("aldric", None, None): ("refuted", 24),  # Anna's theory, voiced at t=4
     }
     refined = find(lattice, chronicle, T="aldric", V="mira", S="seal")
     assert refined.refines_id == find(lattice, chronicle, T="aldric", V="mira", S=None).id
@@ -129,4 +130,4 @@ def test_live_hypotheses_are_those_live_at_t():
 
     live = Lattice.at(chronicle, 20).live()
 
-    assert sorted(hypothesis.created_at_t for hypothesis in live) == [2, 7]
+    assert sorted(hypothesis.created_at_t for hypothesis in live) == [2, 4, 7]
