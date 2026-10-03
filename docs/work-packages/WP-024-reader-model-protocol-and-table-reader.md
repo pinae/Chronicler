@@ -25,4 +25,13 @@ Question construction (WP-025), context building (WP-026), Ollama implementation
 (WP-028, WP-044).
 
 ## Status
-open
+done
+
+## Summary
+`reader/interfaces.py` defines the plain data the reader works with (`ReaderContext` with an optional
+assumption, `Question`, `Candidate`, `Readout`) and the `ReaderModel` protocol: a choice readout plus
+`beat_log_likelihood`. `TableReader` answers from tables keyed by `(t, question)` and
+`(beat t, assumption)` and raises `UnanticipatedQuestion` with both named. `reader.bayes.bayes_factor`
+scores the identical beat under two assumptions and subtracts the log-likelihoods.
+`narrative_engine/di.py` builds the implementation named in `settings.INJECTED`; tests bind
+`TableReader`. Base settings also point to it until the Ollama reader exists (WP-028).
