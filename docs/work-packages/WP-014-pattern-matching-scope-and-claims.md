@@ -25,4 +25,12 @@ Negation (the "Lie" schema's ¬P); per-player lattices (WP-021).
 - The last criterion is an interpretation that protects the RQ4 boundary from §1. Confirm it.
 
 ## Status
-open
+done
+
+## Summary
+`PlainBeat` now carries the players granted the beat by its own `t`, and `MatchContext` carries the
+chronicle's players and an optional `for_player`. A `players_know` pattern matches only beats every
+player knew (table view; no players means no match) or that the given player knew. A `claimed_by`
+pattern matches the proposition inside a `says` beat and binds the source to its speaker. Any other
+pattern never looks inside a claim, so claims never count as facts; this keeps the RQ4 boundary
+that the engine measures narratives and does not judge truth.

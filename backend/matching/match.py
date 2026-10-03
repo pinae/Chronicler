@@ -19,16 +19,47 @@ class MatchContext:
     role_kinds: Mapping[str, str]  # schema role -> entity kind
     entity_kinds: Mapping[int, str]  # entity id -> entity kind
     fills: Mapping[str, Sequence[int]] = field(default_factory=dict)  # step id -> t of the beats filling it
+    players: frozenset[int] = frozenset()  # every player of the chronicle
+    for_player: int | None = None  # match for one player's view instead of the table's
 
 
 def match(
     pattern: BeatPattern, beat: PlainBeat, binding: Binding, context: MatchContext
 ) -> dict[str, int | None] | None:
-    if beat.is_quarantined or beat.pred != pattern.pred:
+    if beat.is_quarantined or not tags_fit(pattern, beat.tags):
         return None
-    if not tags_fit(pattern, beat.tags):
+    if pattern.players_know and not audience_knows(beat, context):
+        return None
+    if pattern.claimed_by is not None:
+        return match_claim(pattern, pattern.claimed_by, beat, dict(binding), context)
+    if beat.pred != pattern.pred:
         return None
     return match_args(pattern.args, beat.args, dict(binding), context)
+
+
+def audience_knows(beat: PlainBeat, context: MatchContext) -> bool:
+    if context.for_player is not None:
+        return context.for_player in beat.known_by_players
+    return bool(context.players) and context.players <= beat.known_by_players
+
+
+def match_claim(
+    pattern: BeatPattern,
+    source: RoleVariable,
+    beat: PlainBeat,
+    binding: dict[str, int | None],
+    context: MatchContext,
+) -> dict[str, int | None] | None:
+    """Match the proposition inside a `says` beat and bind the claim's source to its speaker."""
+    if beat.pred != "says":
+        return None
+    claim = beat.args["what"].get("prop")
+    if claim is None or claim["pred"] != pattern.pred:
+        return None
+    with_source = match_value(source, beat.args["who"], binding, context)
+    if with_source is None:
+        return None
+    return match_args(pattern.args, claim["args"], with_source, context)
 
 
 def tags_fit(pattern: BeatPattern, tags: Sequence[str]) -> bool:
