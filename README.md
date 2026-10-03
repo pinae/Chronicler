@@ -26,6 +26,14 @@ uv run ruff format --check . # formatting
 uv run mypy .                # type check
 ```
 
+Git hooks run the same checks before each commit:
+
+```bash
+uv run pre-commit install    # once per clone
+```
+
+CI (`.github/workflows/ci.yml`) runs these checks on every push and pull request.
+
 Running the development server needs PostgreSQL and two environment variables:
 
 ```bash
