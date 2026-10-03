@@ -218,3 +218,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Replay run files (backend/evaluation/runs/); small reference runs used by tests live elsewhere.
+backend/evaluation/runs/

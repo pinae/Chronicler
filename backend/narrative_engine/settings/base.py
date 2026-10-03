@@ -97,3 +97,4 @@ READER_MAX_CANDIDATES = 20  # labels per readout question; the native API return
 
 # Hand-written stories for tests and replays (concept §9.1).
 FIXTURE_STORIES_DIR = BASE_DIR / "fixtures" / "stories"
+EVALUATION_RUNS_DIR = BASE_DIR / "evaluation" / "runs"

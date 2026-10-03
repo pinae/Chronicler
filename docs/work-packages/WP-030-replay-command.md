@@ -29,4 +29,16 @@ Metrics (WP-040 onwards).
   reference runs used by tests.
 
 ## Status
-open
+done
+
+## Summary
+`narrative_engine/pipeline.py` processes one utterance: ingest, create first-mentioned entities,
+voice theories, then for every beat append, match in every audience's lattice and (with a reader)
+seed expectations. `evaluation.replay.replay_story` builds a fresh chronicle from a fixture
+transcript utterance by utterance (media outlets are created when they first speak), and reaches the
+same lattice as matching the loaded story. `build_run` writes the versioned run file
+(`docs/run-file-format.md`) with the lattice per audience and the expectations at every `t`, built
+afterwards with `Lattice.at`, plus the `LLMCall` ids. A second run is served entirely from the call
+log. `manage.py replay <story> [--reader configured|uniform|none] [--until T]` writes to
+`evaluation/runs/` (git-ignored). Decisions: whole-story tests use the new `UniformReader`
+(a know-nothing baseline) or no readouts, since `TableReader` would need an entry for every question.
