@@ -25,8 +25,8 @@ class StoredMatcher:
             fills_by_hypothesis.setdefault(fill.hypothesis_id, []).append(
                 Fill(fill.step.step_id, fill.beat.t)
             )
-        return [
-            HypothesisState(
+        states = {
+            row.pk: HypothesisState(
                 schema=self.definitions[row.schema.slug],
                 binding=dict(row.binding),
                 created_at_t=row.created_at_t,
@@ -36,7 +36,11 @@ class StoredMatcher:
                 record_id=row.pk,
             )
             for row in rows
-        ]
+        }
+        for row in rows:
+            if row.refines_id is not None:
+                states[row.pk].refines = states[row.refines_id]
+        return list(states.values())
 
     def world(self) -> World:
         return World(
@@ -69,6 +73,7 @@ class StoredMatcher:
             binding=state.binding,
             weight=state.weight,
             created_at_t=state.created_at_t,
+            refines_id=state.refines.record_id if state.refines else None,
         )
         return row.pk
 

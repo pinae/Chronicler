@@ -27,6 +27,7 @@ class HypothesisState:
     fills: list[Fill] = field(default_factory=list)
     status: str = LIVE
     status_changed_at_t: int | None = None
+    refines: "HypothesisState | None" = None  # the less specific hypothesis this one was refined from
     record_id: int | None = None  # primary key once stored
 
     @property
@@ -89,32 +90,66 @@ class IncrementalMatcher:
         return [hypothesis for hypothesis in self.hypotheses if hypothesis.is_live]
 
     def step(self, beat: PlainBeat, world: World) -> StepResult:
-        result = StepResult(changed=self.fill(beat, world))
-        result.new = self.seed(beat, world)
-        self.hypotheses += result.new
-        return result
+        """Fill: the beat goes to every live hypothesis that can take it under its binding. Hypotheses
+        whose binding it would extend get a refined child instead, and trigger steps seed new
+        hypotheses; both only when no live hypothesis of the schema already holds the beat."""
+        filled = self.fill(beat, world)
+        refined = self.refine(beat, world, filled)
+        self.hypotheses += refined
+        seeded = self.seed(beat, world)
+        self.hypotheses += seeded
+        return StepResult(new=refined + seeded, changed=filled)
 
     def fill(self, beat: PlainBeat, world: World) -> list[HypothesisState]:
         filled = []
         for hypothesis in self.live():
-            step = self.fillable_step(hypothesis, beat, world)
+            step = next(
+                (
+                    step
+                    for step, binding in self.matches(hypothesis, beat, world)
+                    if binding == hypothesis.binding
+                ),
+                None,
+            )
             if step is not None:
                 hypothesis.fills.append(Fill(step.step_id, beat.t))
                 filled.append(hypothesis)
         return filled
 
-    def fillable_step(
+    def refine(
+        self, beat: PlainBeat, world: World, filled: Sequence[HypothesisState]
+    ) -> list[HypothesisState]:
+        children: list[HypothesisState] = []
+        for parent in self.live():
+            if parent in filled:
+                continue
+            for step, binding in self.matches(parent, beat, world):
+                if binding == parent.binding or self.already_covered(parent.schema, beat, binding, children):
+                    continue
+                children.append(
+                    HypothesisState(
+                        schema=parent.schema,
+                        binding=binding,
+                        created_at_t=beat.t,
+                        fills=[*parent.fills, Fill(step.step_id, beat.t)],
+                        refines=parent,
+                    )
+                )
+                break
+        return children
+
+    def matches(
         self, hypothesis: HypothesisState, beat: PlainBeat, world: World
-    ) -> StepDefinition | None:
-        """The first open step the beat fills under the hypothesis' binding, unchanged."""
+    ) -> Iterable[tuple[StepDefinition, dict[str, int | None]]]:
+        """(step, binding) for every open step pattern the beat matches, in step order."""
         context = world.context_for(hypothesis.schema, hypothesis.fills_by_step())
         for step in hypothesis.schema.steps:
             if not hypothesis.accepts_fill(step):
                 continue
             for pattern in step.patterns:
-                if match(pattern, beat, hypothesis.binding, context) == hypothesis.binding:
-                    return step
-        return None
+                binding = match(pattern, beat, hypothesis.binding, context)
+                if binding is not None:
+                    yield step, binding
 
     def seed(self, beat: PlainBeat, world: World) -> list[HypothesisState]:
         seeded: list[HypothesisState] = []

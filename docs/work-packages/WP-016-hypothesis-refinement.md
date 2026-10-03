@@ -21,4 +21,13 @@ WP-015.
 Deduplicating identical children (WP-019).
 
 ## Status
-open
+done
+
+## Summary
+`IncrementalMatcher.step` now works in three passes. First, every live hypothesis that can take the
+beat under its unchanged binding gets the fill. Next, every other live hypothesis whose binding the
+beat would extend gets a refined child, which carries the parent's fills plus the new one. Last,
+trigger steps seed. A child or seed is only created when no live hypothesis of the schema already
+holds the beat under a compatible binding, so a repeated beat goes to the existing child instead of
+spawning duplicates. Parents stay live and unchanged; `refines` is stored and reloaded. The concept's
+`steals(Aldric, S, from=Mira)` example creates `Betrayal(T=Aldric, V=Mira, S=key)` as a child.
