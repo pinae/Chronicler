@@ -23,4 +23,12 @@ WP-003.
 Specific estimators and ingesters (WP-028, WP-031, WP-044).
 
 ## Status
-open
+done
+
+## Summary
+`LLMCall` stores every request with its response and server version. `CachedOllama(transport)`
+hashes the endpoint and the canonical JSON of the request (model included, key order irrelevant;
+SHA-256). It answers an identical request from the table without touching the server and returns
+the `LLMCall` row, so callers keep provenance. A sampling draw index is hashed but not sent; failed
+requests are not logged, and the server version is asked once per client. A test fails if any
+module outside `llm` imports `ollama`.
