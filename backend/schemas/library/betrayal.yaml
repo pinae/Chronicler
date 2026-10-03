@@ -1,0 +1,46 @@
+# Betrayal (concept §6). The comment "# until reveal" of the concept example is the explicit
+# `until: reveal` window: V must not know about the harm before the reveal step is filled.
+slug: betrayal
+name: Betrayal
+roles: {T: character, V: character, S: secret}
+prior: -2.0
+payoff_steps: [reveal]
+constraints:
+  - {type: distinct, roles: [T, V]}
+  - {type: before, steps: [trust, harm]}
+  - {type: knows, role: T, step: harm}
+  - {type: not_knows, role: V, step: harm, until: reveal}
+steps:
+  - step_id: trust
+    phase: setup
+    trigger: true
+    patterns:
+      - {pred: trusts, args: {who: $V, whom: $T}}
+      - {pred: helps, args: {who: $T, whom: $V}}
+    repeatable: true
+    weight: 0.5
+  - step_id: access
+    phase: development
+    patterns:
+      - {pred: learns, args: {who: $T, what: {pred: hides, args: {who: $V, what: $S}}}}
+      - {pred: has, args: {who: $T, what: $S}}
+    weight: 1.0
+  - step_id: harm
+    phase: development
+    patterns:
+      - {pred: harms, args: {who: $T, whom: $V}}
+      - {pred: steals, args: {who: $T, what: $S, from: $V}}
+    weight: 1.5
+    contradicts:
+      - {pred: kills, args: {who: "*", whom: $T}}
+  - step_id: benefit
+    phase: development
+    required: false
+    patterns:
+      - {pred: gives, args: {to: $T, what: "*"}}
+    weight: 0.5
+  - step_id: reveal
+    phase: payoff
+    patterns:
+      - {pred: learns, args: {who: $V, what: $harm}}
+    weight: 3.0

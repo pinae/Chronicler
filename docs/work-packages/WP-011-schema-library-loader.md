@@ -29,4 +29,12 @@ Constraints (WP-012), matching (WP-013).
   then against step ids, and reject a name that is both. Confirm.
 
 ## Status
-open
+done
+
+## Summary
+`schemas/patterns.py` parses the full §6.1 grammar into typed objects, and `schemas/definitions.py`
+validates whole schemas. Errors name the file, step and pattern; besides the required rejections the
+loader also checks pattern roles and value kinds against the vocabulary. `betrayal.yaml` round-trips
+to an equal document and reads back from the database as an equal definition.
+`manage.py load_schemas` parses every file before touching the database and updates schemas in
+place. Decision: a `$name` resolves to a role first, then to a step; a name that is both is rejected.
