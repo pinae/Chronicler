@@ -7,3 +7,5 @@ export type BeatSummary = components["schemas"]["BeatSummary"];
 export type Lattice = components["schemas"]["LatticeOut"];
 export type LatticeHypothesis = components["schemas"]["LatticeHypothesisOut"];
 export type Expectation = components["schemas"]["ExpectationOut"];
+export type KnownBeat = components["schemas"]["KnownBeat"];
+export type EntitySummary = components["schemas"]["EntityOut"];

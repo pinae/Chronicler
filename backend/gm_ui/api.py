@@ -84,6 +84,8 @@ def list_beats(
 
 
 # Registered last so its import of this module's api object is complete.
+from gm_ui.knowledge_api import router as knowledge_router  # noqa: E402
 from gm_ui.lattice_api import router as lattice_router  # noqa: E402
 
 api.add_router("", lattice_router)
+api.add_router("", knowledge_router)

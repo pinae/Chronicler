@@ -98,6 +98,43 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/chronicles/{chronicle_id}/knowledge": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get Knowledge
+     * @description The beats one character (in the story) or one player (at the table) knew at t (default: latest).
+     */
+    get: operations["gm_ui_knowledge_api_get_knowledge"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/chronicles/{chronicle_id}/entities": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Entities */
+    get: operations["gm_ui_knowledge_api_list_entities"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -229,6 +266,30 @@ export interface components {
       /** For Player */
       for_player: number | null;
     };
+    /** KnownBeat */
+    KnownBeat: {
+      /** T */
+      t: number;
+      /** Pred */
+      pred: string;
+      /** Text */
+      text: string;
+      /** Known Since T */
+      known_since_t: number;
+      /** Learned Via T */
+      learned_via_t: number | null;
+    };
+    /** EntityOut */
+    EntityOut: {
+      /** Id */
+      id: number;
+      /** Name */
+      name: string;
+      /** Kind */
+      kind: string;
+      /** Introduced At T */
+      introduced_at_t: number;
+    };
   };
   responses: never;
   parameters: never;
@@ -351,6 +412,56 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["ExpectationOut"][];
+        };
+      };
+    };
+  };
+  gm_ui_knowledge_api_get_knowledge: {
+    parameters: {
+      query?: {
+        character?: number | null;
+        player?: number | null;
+        t?: number | null;
+      };
+      header?: never;
+      path: {
+        chronicle_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["KnownBeat"][];
+        };
+      };
+    };
+  };
+  gm_ui_knowledge_api_list_entities: {
+    parameters: {
+      query?: {
+        kind?: string | null;
+      };
+      header?: never;
+      path: {
+        chronicle_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["EntityOut"][];
         };
       };
     };

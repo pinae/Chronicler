@@ -18,4 +18,19 @@ WP-008, WP-035.
 Changing scope from the UI; scope changes are beats.
 
 ## Status
-open
+done
+
+## Summary
+- `GET /api/chronicles/{id}/knowledge?character=…|player=…[&t=…]` returns every beat the knower
+  knew at `t` (default: the last beat) with `known_since_t` and `learned_via_t` (the `learns` beat,
+  or `null` when they were present / were shown it). Exactly one knower is required (400 otherwise);
+  a knower of another chronicle is 404. When a beat was granted more than once, the earliest grant
+  wins.
+- `GET /api/chronicles/{id}/entities[?kind=…]` lists entities in order of introduction, so the screen
+  can offer the characters.
+- The knowledge screen (`/chronicles/{id}/knowledge`, linked as **Who knows what**) has a **Who**
+  choice (characters and players), the shared **Up to beat** slider and a **Known beats** table whose
+  column **How** says "present", "saw it" (players) or "learned at t = N". The choices live in the URL
+  like the other screens.
+- Usage events come from the API middleware; a test pins that the knowledge endpoint records one.
+- Usage doc `docs/usage/knowledge.md`; four e2e scenarios in `e2e/tests/knowledge.spec.ts`.

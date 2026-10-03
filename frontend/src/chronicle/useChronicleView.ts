@@ -27,5 +27,7 @@ export function useChronicleView(chronicle: ChronicleDetail) {
     chooseAudience: (value: string) => choose({ audience: value }),
     chooseT: (value: number) => choose({ t: String(value) }),
     chooseHypothesis: (id: number) => choose({ hypothesis: String(id) }),
+    param: (name: string) => searchParams.get(name),
+    choose,
   };
 }
