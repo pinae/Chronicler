@@ -33,7 +33,7 @@ def save_schema(definition: SchemaDefinition) -> Schema:
             defaults={
                 "name": definition.name,
                 "roles": dict(definition.roles),
-                "constraints": [dict(constraint) for constraint in definition.constraints],
+                "constraints": [constraint.to_document() for constraint in definition.constraints],
                 "payoff_steps": list(definition.payoff_steps),
                 "prior": definition.prior,
                 "origin": definition.origin,

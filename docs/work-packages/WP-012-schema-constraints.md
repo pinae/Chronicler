@@ -8,8 +8,10 @@ Schema constraints become typed objects that can check a partial hypothesis agai
 ## Acceptance criteria
 - Constraint entries deserialize into typed classes for `distinct`, `before`, `after`, `knows`,
   `not_knows` and `same_place`; an unknown type is rejected by the loader.
-- Each class has `check(hypothesis, chronicle, t) -> bool`, evaluated as of time `t`, and is
-  tested with a satisfying and a violating case per type.
+- Each class has `check(hypothesis, facts, t) -> bool`, evaluated as of time `t`, and is
+  tested with a satisfying and a violating case per type. `facts` answers the two questions
+  constraints ask of the chronicle (when a character first knew a beat; where an entity was),
+  backed by the database in `chronicle/facts.py` and by plain data in tests.
 - `before` / `after` compare the `t` of the beats that filled the referenced steps.
 - `knows` / `not_knows` use the scope grants of the character bound to the role, and are
   time-scoped: knowledge changes while a story is narrated, so a schema states *when* knowledge
@@ -37,4 +39,14 @@ Refuting hypotheses on violation (WP-018).
 - §6.2 does not give the arguments of `same_place`; define them here.
 
 ## Status
-open
+done
+
+## Summary
+`schemas/constraints.py` parses the six constraint types into typed classes, rejecting unknown
+types, unknown roles or steps and malformed fields with their position. Each class has
+`check(hypothesis, facts, t)`. Checks work on plain data (a binding plus fill `t`s per step) and
+ignore fills after `t`, so a past `t` gets the answer it had then. Knowledge constraints are
+time-scoped as decided: `not_knows … until: reveal` is satisfied when the victim learns of the harm
+at the reveal and violated when they learn earlier. `before` uses the earliest fill of each step.
+`same_place` compares `is_at` locations at the step's fill (or at `t`) and ignores unknown
+locations. `StoredChronicleFacts` answers the knowledge and location questions from the database.

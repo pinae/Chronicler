@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from chronicle.models import EntityKind
+from schemas.constraints import Constraint, parse_constraint
 from schemas.patterns import BeatPattern, PatternParser, SchemaDefinitionError
 from schemas.vocabulary import Vocabulary, default_vocabulary
 
@@ -50,7 +51,7 @@ class SchemaDefinition:
     steps: tuple[StepDefinition, ...]
     prior: float = 0.0
     payoff_steps: tuple[str, ...] = ()
-    constraints: tuple[Mapping[str, Any], ...] = ()
+    constraints: tuple[Constraint, ...] = ()
     origin: str = "library"
 
     def step(self, step_id: str) -> StepDefinition:
@@ -63,7 +64,7 @@ class SchemaDefinition:
             "roles": dict(self.roles),
             "prior": self.prior,
             "payoff_steps": list(self.payoff_steps),
-            "constraints": [dict(constraint) for constraint in self.constraints],
+            "constraints": [constraint.to_document() for constraint in self.constraints],
             "steps": [step.to_document() for step in self.steps],
         }
         if self.origin != "library":
@@ -103,7 +104,7 @@ class SchemaParser:
             steps=steps,
             prior=float(self.document.get("prior", 0.0)),
             payoff_steps=self.parse_payoff_steps(step_ids),
-            constraints=tuple(self.document.get("constraints") or ()),
+            constraints=self.parse_constraints(roles, step_ids),
             origin=self.document.get("origin", "library"),
         )
 
@@ -148,6 +149,12 @@ class SchemaParser:
                 for number, pattern in enumerate(document.get("contradicts") or [], start=1)
             ),
             trigger=bool(document.get("trigger", False)),
+        )
+
+    def parse_constraints(self, roles: Mapping[str, str], step_ids: list[str]) -> tuple[Constraint, ...]:
+        return tuple(
+            parse_constraint(document, roles.keys(), step_ids, location=f"constraint {number}")
+            for number, document in enumerate(self.document.get("constraints") or [], start=1)
         )
 
     def parse_payoff_steps(self, step_ids: list[str]) -> tuple[str, ...]:

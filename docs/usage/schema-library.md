@@ -45,6 +45,23 @@ Run `uv run python manage.py load_schemas`.
 
 **Result:** `Loaded 2 schemas: betrayal, rivalry`.
 
+## Constraints
+A schema may list constraints that every match must satisfy; a hypothesis that violates one is
+refuted:
+
+```yaml
+constraints:
+  - {type: distinct, roles: [T, V]}                     # different entities
+  - {type: before, steps: [trust, harm]}                # first trust fill before first harm fill
+  - {type: after, steps: [harm, trust]}                 # the mirror of before
+  - {type: knows, role: T, step: harm}                  # T knew the harm beat when it happened
+  - {type: not_knows, role: V, step: harm, until: reveal}  # V must not know it before the reveal
+  - {type: same_place, roles: [T, V], step: harm}       # both at the same place at the harm
+```
+
+Knowledge changes while a story is told, so `not_knows` takes an `until` step: from that step's
+fill on, the character may know. Without `until`, the character may never know.
+
 ## A broken schema
 1. In `rivalry.yaml`, change `payoff_steps: [showdown]` to `payoff_steps: [finale]`.
 2. Run `uv run python manage.py load_schemas`.
