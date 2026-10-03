@@ -23,13 +23,19 @@ class Command(BaseCommand):
             "none: no readouts (lattice only)",
         )
         parser.add_argument("--until", type=int, default=None, help="stop after this t")
+        parser.add_argument(
+            "--per-player", action="store_true", help="also build a lattice (and readouts) for every player"
+        )
         parser.add_argument("--output-dir", default=str(settings.EVALUATION_RUNS_DIR))
 
     def handle(self, *args: Any, **options: Any) -> None:
         reader = choose_reader(options["reader"])
-        chronicle = replay_story(options["story"], reader=reader, until_t=options["until"])
+        chronicle = replay_story(
+            options["story"], reader=reader, until_t=options["until"], per_player=options["per_player"]
+        )
         reader_name = type(reader).__name__ if reader is not None else None
-        run = build_run(chronicle, options["story"], reader=reader_name)
+        audiences = [None, *chronicle.players.filter(implicit=False)] if options["per_player"] else [None]
+        run = build_run(chronicle, options["story"], audiences=audiences, reader=reader_name)
         path = write_run(run, Path(options["output_dir"]))
         self.stdout.write(f"Replayed {chronicle.beats.count()} beats of {options['story']}; run file: {path}")
 

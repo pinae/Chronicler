@@ -130,3 +130,25 @@ def test_replay_command_can_skip_readouts(tmp_path):
     run = json.loads(run_file.read_text())
     assert run["reader"] is None
     assert all(moment["expectations"] == [] for moment in run["timeline"])
+
+
+def test_replay_can_build_a_lattice_for_every_player(tmp_path):
+    output = StringIO()
+
+    call_command(
+        "replay",
+        "steward",
+        "--reader",
+        "none",
+        "--per-player",
+        "--until",
+        "8",
+        "--output-dir",
+        str(tmp_path),
+        stdout=output,
+    )
+
+    [run_file] = (tmp_path / "steward").glob("*.json")
+    lattices = json.loads(run_file.read_text())["timeline"][8]["lattice"]
+    assert set(lattices) == {"all", "Anna", "Ben"}
+    assert len(lattices["Ben"]) > len(lattices["Anna"])  # Ben saw how Aldric learned of the seal

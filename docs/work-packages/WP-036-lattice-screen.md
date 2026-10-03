@@ -20,4 +20,13 @@ WP-021, WP-035.
 Expectations (WP-037).
 
 ## Status
-open
+done
+
+## Summary
+`GET /api/chronicles/{id}/lattice?audience=all|<player id>&t=` returns `Lattice.at(t)` for the GM's
+view or one player's: schema, binding with entity names, status, weight, filled steps with their beat
+`t`s, open steps, `refines` and whether the hypothesis was voiced. The table has no lattice of its
+own and gets a 400 that says so. `/chronicles/:id/lattice` groups hypotheses by schema, strongest
+first, and shares the **Seen by** / **Up to beat** controls (now `useChronicleView`) with the
+chronicle page. Replay and `seed_e2e` gained `--per-player`, so player lattices exist to show.
+`docs/usage/lattice.md` has four scenarios, each with a browser test.

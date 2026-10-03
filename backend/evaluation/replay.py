@@ -35,14 +35,18 @@ def replay_story(
     context_builder: ContextBuilder | None = None,
     until_t: int | None = None,
     stories_dir: Path | None = None,
+    per_player: bool = False,
 ) -> Chronicle:
-    """Run a fixture story through the pipeline, one utterance at a time, into a fresh chronicle."""
+    """Run a fixture story through the pipeline, one utterance at a time, into a fresh chronicle.
+    With `per_player`, every player of a session also gets a lattice (and readouts) of their own."""
     load_library()
     story = read_story(slug, stories_dir or settings.FIXTURE_STORIES_DIR)
     chronicle = Chronicle.objects.create(kind=story.kind, title=story.title, meta={"fixture": slug})
-    for name in story.players:
-        Player.objects.create(chronicle=chronicle, name=name)
-    pipeline = Pipeline(chronicle, FixtureIngester(), reader, context_builder or RecentAndSupportingBeats())
+    players = [Player.objects.create(chronicle=chronicle, name=name) for name in story.players]
+    audiences: list[Player | None] = [None, *(players if per_player else [])]
+    pipeline = Pipeline(
+        chronicle, FixtureIngester(), reader, context_builder or RecentAndSupportingBeats(), audiences
+    )
     for spec in story.utterances:
         if until_t is not None and chronicle.beats.count() >= until_t:
             break

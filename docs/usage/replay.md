@@ -30,3 +30,10 @@ candidates (`"reader": "UniformReader"`).
 1. Run `uv run python manage.py replay steward --reader none --until 10`.
 
 **Result:** `Replayed 10 beats of steward; …`.
+
+## Replay with a lattice per player
+1. Run `uv run python manage.py replay steward --reader none --per-player`.
+
+**Result:** the same message; besides the game master's lattice (`"all"`), the run file's timeline
+holds a lattice for **Anna** and one for **Ben**, built only from the beats each of them saw. The
+lattice screen (`docs/usage/lattice.md`) offers them under **Seen by**.

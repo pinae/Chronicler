@@ -1,10 +1,11 @@
-import { Link, useParams, useSearchParams } from "react-router";
+import { Link, useParams } from "react-router";
 
 import type { BeatSummary, ChronicleDetail } from "../api/types";
 import { useApi } from "../api/useApi";
-import { ALL_BEATS, AudienceSelect } from "./AudienceSelect";
+import { AudienceSelect } from "./AudienceSelect";
 import { BeatTable } from "./BeatTable";
 import { TimeSlider } from "./TimeSlider";
+import { useChronicleView } from "./useChronicleView";
 
 export function ChroniclePage() {
   const { chronicleId } = useParams();
@@ -20,20 +21,8 @@ export function ChroniclePage() {
 }
 
 function ChronicleView({ chronicle }: { chronicle: ChronicleDetail }) {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const audience = searchParams.get("audience") ?? ALL_BEATS;
-  const chosenT = searchParams.get("t");
-  const t = chosenT === null ? chronicle.last_t : Number(chosenT);
-
-  const query = new URLSearchParams({ audience });
-  if (chosenT !== null) {
-    query.set("t", chosenT);
-  }
-  const beats = useApi<BeatSummary[]>(`/api/chronicles/${chronicle.id}/beats?${query}`);
-
-  function choose(changes: Record<string, string>) {
-    setSearchParams({ ...Object.fromEntries(searchParams), ...changes });
-  }
+  const view = useChronicleView(chronicle);
+  const beats = useApi<BeatSummary[]>(`/api/chronicles/${chronicle.id}/beats?${view.query}`);
 
   return (
     <main>
@@ -42,12 +31,11 @@ function ChronicleView({ chronicle }: { chronicle: ChronicleDetail }) {
       </p>
       <h1>{chronicle.title}</h1>
       <p>{chronicle.kind}</p>
-      <AudienceSelect
-        players={chronicle.players}
-        value={audience}
-        onChange={(value) => choose({ audience: value })}
-      />
-      <TimeSlider t={t} lastT={chronicle.last_t} onChange={(value) => choose({ t: String(value) })} />
+      <p>
+        <Link to={`/chronicles/${chronicle.id}/lattice`}>Lattice</Link>
+      </p>
+      <AudienceSelect players={chronicle.players} value={view.audience} onChange={view.chooseAudience} />
+      <TimeSlider t={view.t} lastT={chronicle.last_t} onChange={view.chooseT} />
       {beats.status === "loading" && <p>Loading…</p>}
       {beats.status === "error" && <p role="alert">Could not load the beats.</p>}
       {beats.status === "ready" && <BeatTable beats={beats.data} />}

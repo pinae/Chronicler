@@ -19,5 +19,5 @@ class Command(BaseCommand):
             raise CommandError("seed_e2e wipes the database; it only runs with the e2e settings")
         call_command("flush", interactive=False, verbosity=0)
         for story in options["stories"]:
-            replay_story(story, reader=UniformReader())
+            replay_story(story, reader=UniformReader(), per_player=True)
         self.stdout.write(f"Seeded: {', '.join(options['stories']) or 'nothing'}")

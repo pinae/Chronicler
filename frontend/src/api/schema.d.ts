@@ -58,6 +58,26 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/chronicles/{chronicle_id}/lattice": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get Lattice
+     * @description The unfiltered lattice ("all", the GM's view) or one player's lattice at t (default: latest).
+     */
+    get: operations["gm_ui_lattice_api_get_lattice"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -105,6 +125,56 @@ export interface components {
       source_kind: string;
       /** Quarantined */
       quarantined: boolean;
+    };
+    /** BindingEntry */
+    BindingEntry: {
+      /** Role */
+      role: string;
+      /** Entity Id */
+      entity_id: number | null;
+      /** Entity Name */
+      entity_name: string | null;
+    };
+    /** FilledStep */
+    FilledStep: {
+      /** Step Id */
+      step_id: string;
+      /** Beat Ts */
+      beat_ts: number[];
+    };
+    /** LatticeHypothesisOut */
+    LatticeHypothesisOut: {
+      /** Id */
+      id: number;
+      /** Schema Slug */
+      schema_slug: string;
+      /** Schema Name */
+      schema_name: string;
+      /** Binding */
+      binding: components["schemas"]["BindingEntry"][];
+      /** Status */
+      status: string;
+      /** Weight */
+      weight: number;
+      /** Created At T */
+      created_at_t: number;
+      /** Status Changed At T */
+      status_changed_at_t: number | null;
+      /** Filled Steps */
+      filled_steps: components["schemas"]["FilledStep"][];
+      /** Open Steps */
+      open_steps: string[];
+      /** Refines */
+      refines: number | null;
+      /** Voiced */
+      voiced: boolean;
+    };
+    /** LatticeOut */
+    LatticeOut: {
+      /** T */
+      t: number;
+      /** Hypotheses */
+      hypotheses: components["schemas"]["LatticeHypothesisOut"][];
     };
   };
   responses: never;
@@ -178,6 +248,31 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["BeatSummary"][];
+        };
+      };
+    };
+  };
+  gm_ui_lattice_api_get_lattice: {
+    parameters: {
+      query?: {
+        audience?: string;
+        t?: number | null;
+      };
+      header?: never;
+      path: {
+        chronicle_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["LatticeOut"];
         };
       };
     };

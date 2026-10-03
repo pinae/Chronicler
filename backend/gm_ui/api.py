@@ -81,3 +81,9 @@ def list_beats(
         )
         for beat in beats.order_by("t")
     ]
+
+
+# Registered last so its import of this module's api object is complete.
+from gm_ui.lattice_api import router as lattice_router  # noqa: E402
+
+api.add_router("", lattice_router)
