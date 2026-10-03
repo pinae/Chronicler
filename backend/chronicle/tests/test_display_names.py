@@ -2,7 +2,7 @@
 
 import pytest
 
-from chronicle.models import Beat, Chronicle, Entity, EntityAttribute, Player, Utterance
+from chronicle.models import Beat, Chronicle, Entity, EntityAttribute, Player, ScopeGrant, Utterance
 
 pytestmark = pytest.mark.django_db
 
@@ -35,3 +35,10 @@ def test_beat_reads_as_t_predicate_and_text():
 
 def test_entity_attribute_reads_as_key_and_value():
     assert str(EntityAttribute(key="is", value={"literal": "nervous"})) == "is = {'literal': 'nervous'}"
+
+
+def test_scope_grant_reads_as_who_knows_which_beat_since_when():
+    aldric = Entity(kind="character", canonical_name="Aldric")
+    grant = ScopeGrant(beat=Beat(t=4), character=aldric, t=9)
+
+    assert str(grant) == "Aldric (character) knows t=4 since t=9"

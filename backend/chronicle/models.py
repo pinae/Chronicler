@@ -181,6 +181,12 @@ class Beat(models.Model):
     def is_quarantined(self) -> bool:
         return QUARANTINE_TAG in self.tags
 
+    def known_by_chars_at(self, t: int) -> "models.QuerySet[Entity]":
+        return Entity.objects.filter(knowledge__beat=self, knowledge__t__lte=t).distinct()
+
+    def known_by_players_at(self, t: int) -> "models.QuerySet[Player]":
+        return Player.objects.filter(knowledge__beat=self, knowledge__t__lte=t).distinct()
+
 
 class EntityAttribute(models.Model):
     """Derived view of entity state (`is`, `has`, `is_at`), rebuilt from beats. Keeps provenance."""
@@ -192,3 +198,40 @@ class EntityAttribute(models.Model):
 
     def __str__(self) -> str:
         return f"{self.key} = {self.value}"
+
+
+class ImmutableGrant(Exception):
+    """Scope grants are append-only: knowledge is gained, never edited."""
+
+
+class ScopeGrant(models.Model):
+    """Append-only: 'subject knows beat since t'. Scope at t = the grants with grant.t <= t."""
+
+    beat = models.ForeignKey(Beat, related_name="grants", on_delete=models.CASCADE)
+    character = models.ForeignKey(
+        Entity, null=True, blank=True, related_name="knowledge", on_delete=models.CASCADE
+    )
+    player = models.ForeignKey(
+        Player, null=True, blank=True, related_name="knowledge", on_delete=models.CASCADE
+    )
+    t = models.PositiveIntegerField()
+    # The `learns` beat through which the knowledge was gained, if any.
+    via_beat = models.ForeignKey(Beat, null=True, blank=True, related_name="+", on_delete=models.SET_NULL)
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                condition=Q(character__isnull=True, player__isnull=False)
+                | Q(character__isnull=False, player__isnull=True),
+                name="scope_grant_names_exactly_one_subject",
+            ),
+        ]
+
+    def __str__(self) -> str:
+        subject = self.character or self.player
+        return f"{subject} knows t={self.beat.t} since t={self.t}"
+
+    def save(self, *args: Any, **kwargs: Any) -> None:
+        if not self._state.adding:
+            raise ImmutableGrant("scope grants cannot change once stored")
+        super().save(*args, **kwargs)

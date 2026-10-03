@@ -1,11 +1,11 @@
 """Appending beats to a chronicle: the only way beats come into existence."""
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any
 
 from django.db import transaction
-from django.db.models import Max
+from django.db.models import Max, QuerySet
 
 from chronicle.beat_args import referenced_beat_ts, referenced_entity_ids
 from chronicle.entity_view import update_entity_attributes
@@ -14,10 +14,10 @@ from chronicle.models import (
     UNKNOWN_PREDICATE,
     Beat,
     Chronicle,
-    Entity,
     SourceKind,
     Utterance,
 )
+from chronicle.scope import grant_initial_scope, grant_learned_beat
 from schemas.vocabulary import UnknownPredicate, default_vocabulary
 
 
@@ -32,6 +32,9 @@ class BeatDraft:
     text: str = ""
     tags: Sequence[str] = ()
     confidence: float = 1.0
+    # Initial scope: ids of the characters and players who witness the beat.
+    characters_present: Sequence[int] = ()
+    players_present: Sequence[int] = ()
 
 
 class AppendError(ValueError):
@@ -77,6 +80,8 @@ def append_beat(chronicle: Chronicle, draft: BeatDraft, t: int | None = None) ->
             original_pred=canonical.original_pred,
         )
         update_entity_attributes(beat)
+        grant_initial_scope(beat, draft.characters_present, draft.players_present)
+        grant_learned_beat(beat)
         return beat
 
 
@@ -99,13 +104,17 @@ def check_references(chronicle: Chronicle, draft: BeatDraft, beat_t: int) -> Non
         raise InvalidReference(
             f"source utterance #{draft.source_utterance.order} belongs to another chronicle"
         )
-    entity_ids = referenced_entity_ids(draft.args)
-    known_ids = set(
-        Entity.objects.filter(chronicle=chronicle, pk__in=entity_ids).values_list("pk", flat=True)
-    )
-    foreign_ids = sorted(entity_ids - known_ids)
-    if foreign_ids:
-        raise InvalidReference(f"entity {foreign_ids[0]} is not part of this chronicle")
+    reject_foreign("entity", referenced_entity_ids(draft.args), chronicle.entities.all())
+    reject_foreign("present character", draft.characters_present, chronicle.entities.all())
+    reject_foreign("present player", draft.players_present, chronicle.players.all())
     later_ts = sorted(t for t in referenced_beat_ts(draft.args) if not 1 <= t < beat_t)
     if later_ts:
         raise InvalidReference(f"beat t={later_ts[0]} does not precede the new beat t={beat_t}")
+
+
+def reject_foreign(label: str, ids: Iterable[int], own_records: QuerySet[Any]) -> None:
+    wanted = set(ids)
+    found = set(own_records.filter(pk__in=wanted).values_list("pk", flat=True))
+    foreign = sorted(wanted - found)
+    if foreign:
+        raise InvalidReference(f"{label} {foreign[0]} is not part of this chronicle")

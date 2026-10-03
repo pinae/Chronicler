@@ -23,4 +23,12 @@ WP-006.
 Player-visible chronicle views (WP-009).
 
 ## Status
-open
+done
+
+## Summary
+`ScopeGrant` records "subject knows beat since t" for exactly one character or player and cannot
+change once stored. `BeatDraft` carries the ids of present characters and players; appending creates
+their grants at the beat's `t`, plus a grant for the implicit audience of literature and media. A
+`learns(who, what={beat: n})` beat grants beat `n` to `who` with `via_beat` set; learning a
+proposition grants nothing. `known_by_chars_at(t)` / `known_by_players_at(t)` ignore later grants,
+and presence ids from other chronicles are rejected.
