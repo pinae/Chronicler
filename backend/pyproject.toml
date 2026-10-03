@@ -1,0 +1,58 @@
+[project]
+name = "narrative-engine"
+version = "0.1.0"
+description = "Narrative interpretation engine: chronicle, schema matching and reader-model expectations"
+requires-python = ">=3.12"
+dependencies = [
+    "django>=5.2,<5.3",
+    "django-environ>=0.14",
+    "psycopg[binary]>=3.3",
+]
+
+[dependency-groups]
+dev = [
+    "django-stubs[compatible-mypy]>=5.2.9,<5.3",
+    "pytest>=9",
+    "pytest-django>=4.14",
+    "ruff>=0.16",
+]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "narrative_engine.settings.test"
+python_files = ["test_*.py"]
+testpaths = ["chronicle", "schemas", "matching", "reader", "llm", "evaluation", "gm_ui"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 110
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "B", "UP", "SIM", "DJ", "PT"]
+
+[tool.ruff.lint.per-file-ignores]
+"*/migrations/*" = ["E501"]
+
+[tool.mypy]
+python_version = "3.12"
+plugins = ["mypy_django_plugin.main"]
+disallow_untyped_defs = true
+check_untyped_defs = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+no_implicit_optional = true
+exclude = ["\\.venv/"]
+
+[[tool.mypy.overrides]]
+module = ["*.migrations.*"]
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = ["*.tests.*", "conftest"]
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = ["environ"]
+ignore_missing_imports = true
+
+[tool.django-stubs]
+django_settings_module = "narrative_engine.settings.test"

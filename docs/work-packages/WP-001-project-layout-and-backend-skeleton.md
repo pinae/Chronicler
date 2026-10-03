@@ -7,8 +7,8 @@ Create the repository layout from `CLAUDE.md` and a runnable, empty Django backe
 so every later package has a place to land and a green test suite to start from.
 
 ## Acceptance criteria
-- `backend/` is a `uv` project with `requires-python = ">=3.12"`, the runtime and dev
-  dependencies from concept §10, and a committed `uv.lock`.
+- `backend/` is a `uv` project with `requires-python = ">=3.12"`, the dependencies the skeleton
+  needs (later packages add theirs with `uv add`) and a committed `uv.lock`.
 - The Django project `narrative_engine` has settings split into `base`, `dev` and `test`;
   `test` uses in-memory SQLite, `dev` reads PostgreSQL connection settings from the environment.
 - The apps `chronicle`, `schemas`, `matching`, `reader`, `llm`, `evaluation` and `gm_ui`
@@ -42,4 +42,12 @@ None.
   serves as the product description.
 
 ## Status
-open
+done
+
+## Summary
+`backend/` is a uv project (Python 3.12, Django 5.2 LTS) with settings split into `base`, `dev`
+and `test`, the seven apps from the concept, and `GET /healthz` tested first. ruff, ruff format and
+mypy with django-stubs are configured and pass. ADR-001 places everything from the concept under
+`backend/` and leaves `frontend/` and `e2e/` to WP-034; ADR-002 records the toolchain and versions.
+Dependencies the concept lists for later packages (ollama, PyYAML, factory-boy) are added by the
+packages that first use them.
