@@ -9,6 +9,8 @@ audience currently expects. See [`docs/narrative-engine-concept.md`](docs/narrat
 | Path | Contents |
 |---|---|
 | `backend/` | Django project (`uv`): apps, tests, fixtures |
+| `frontend/` | React app (Vite, TypeScript): the GM/writer screens |
+| `e2e/` | browser tests (Playwright), one per scenario in `docs/usage/` |
 | `docs/work-packages/` | the planned work, one file per package |
 | `docs/decisions/` | architecture decision records |
 | `docs/usage/` | user documentation, one file per feature |
@@ -40,4 +42,27 @@ Running the development server needs PostgreSQL and two environment variables:
 cp .env.example .env         # then edit DJANGO_SECRET_KEY and DATABASE_URL
 uv run python manage.py migrate
 uv run python manage.py runserver
+```
+
+## Frontend
+
+Requirements: Node 22.13 or newer.
+
+```bash
+cd frontend
+npm ci
+npm run dev                  # http://localhost:5173, forwards /api to Django on port 8000
+npm test                     # component tests
+npm run lint && npm run format:check && npm run typecheck
+npm run build                # frontend/dist, served by Django under / (ADR-007)
+npm run generate:api-types   # after changing the API
+```
+
+## Browser tests
+
+```bash
+cd e2e
+npm ci
+npx playwright install chromium   # skip if the browser is pre-installed
+npx playwright test               # builds the frontend and starts Django with the e2e settings
 ```

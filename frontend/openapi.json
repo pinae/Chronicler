@@ -1,0 +1,61 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Chronicler",
+    "version": "1.0.0",
+    "description": ""
+  },
+  "paths": {
+    "/api/chronicles/": {
+      "get": {
+        "operationId": "gm_ui_api_list_chronicles",
+        "summary": "List Chronicles",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ChronicleSummary"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ChronicleSummary": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "beat_count": {
+            "title": "Beat Count",
+            "type": "integer"
+          }
+        },
+        "required": ["id", "title", "kind", "beat_count"],
+        "title": "ChronicleSummary",
+        "type": "object"
+      }
+    }
+  },
+  "servers": []
+}

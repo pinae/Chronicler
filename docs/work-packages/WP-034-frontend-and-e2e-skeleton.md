@@ -22,4 +22,14 @@ WP-002, WP-032.
 Any other screen.
 
 ## Status
-open
+done
+
+## Summary
+ADR-007 records the choices: Vite 8, React 19, React Router 8 and strict TypeScript 5.9. Tests use
+Vitest with Testing Library; linting uses ESLint (typescript-eslint, react-hooks) and Prettier. API
+types are generated from the OpenAPI schema, and Playwright 1.56.1 runs in `e2e/`. Development uses
+Vite's proxy; production and browser tests use Django serving the build through WhiteNoise, with a
+catch-all for client routes and a 503 hint when the build is missing. The start page lists chronicles
+with kind and beat count and shows **No chronicles yet** when empty; component tests cover list, empty
+and error states. `docs/usage/browse-chronicles.md` has a browser test per runnable scenario, against
+a throwaway database seeded by `manage.py seed_e2e`. CI has frontend and e2e jobs.

@@ -221,3 +221,13 @@ __marimo__/
 
 # Replay run files (backend/evaluation/runs/); small reference runs used by tests live elsewhere.
 backend/evaluation/runs/
+
+# Backend artefacts of the e2e tests and collectstatic
+backend/.e2e.sqlite3
+backend/staticfiles/
+
+# Frontend and browser tests
+node_modules/
+frontend/dist/
+e2e/test-results/
+e2e/playwright-report/

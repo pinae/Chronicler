@@ -20,3 +20,6 @@ INJECTED = {
     "ContextBuilder": "reader.context.RecentAndSupportingBeats",
     "Ingester": "chronicle.ingest.fixture.FixtureIngester",
 }
+
+# Tests never run collectstatic; without a root WhiteNoise has nothing to scan.
+STATIC_ROOT = None

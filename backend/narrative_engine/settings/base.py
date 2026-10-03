@@ -15,6 +15,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "ninja",
     "chronicle",
     "schemas",
     "matching",
@@ -26,6 +27,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -67,6 +69,15 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = "static/"
+STATIC_ROOT: Path | None = BASE_DIR / "staticfiles"
+
+# The built frontend (ADR-007): Django serves its index.html for client routes and its assets as
+# static files, so production and the e2e tests use a single origin.
+FRONTEND_DIST_DIR = BASE_DIR.parent / "frontend" / "dist"
+STATICFILES_DIRS = [FRONTEND_DIST_DIR] if FRONTEND_DIST_DIR.exists() else []
+
+# Only the e2e settings may let `manage.py seed_e2e` wipe the database.
+E2E_SEEDING_ALLOWED = False
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
