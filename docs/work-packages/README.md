@@ -2,8 +2,9 @@
 
 One file per package (`WP-NNN-short-name.md`), in the format of the `work-package` skill:
 Goal, Acceptance criteria, Dependencies, Out of scope, Status, and a Summary once done.
-Some packages have a **Notes** section for open questions; settle those with the user before
-starting that package.
+Some packages have a **Notes** section for open questions. Since 2026-10-03 the user has asked
+Claude to work through the packages on its own: open questions are resolved by best judgement
+and each decision is recorded in that package's Summary.
 
 Packages are numbered in dependency order: each one depends only on lower-numbered packages,
 so working through them in order never blocks. "Depends on" lists direct dependencies only.
