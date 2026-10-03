@@ -16,6 +16,8 @@ afterwards: the foundation of replayability.
   tag `quarantined`, and the original predicate name can be read from the stored beat.
 - Every beat references its source utterance and has a `source_kind` of `narration`, `action`
   or `claim`.
+- References are checked on append (ADR-005): the source utterance and every referenced entity
+  belong to the same chronicle, and `{"beat": n}` points to an earlier beat by its `t`.
 
 ## Dependencies
 WP-004, WP-005.
@@ -28,4 +30,12 @@ Scope grants (WP-008), entity attributes (WP-007).
 - Bulk queryset updates and deletes bypass model methods; the codebase does not use them on beats.
 
 ## Status
-open
+done
+
+## Summary
+`Beat` stores the §4 fields plus `original_pred`, which keeps the ingested predicate of a
+quarantined beat. `Chronicle.append(draft, t=None)` assigns consecutive `t` from 1 under a row lock,
+validates arguments against the vocabulary, quarantines unknown predicates (also inside claims) and
+rejects references to other chronicles or to later beats. `save()` on a stored beat and `delete()`
+raise `ImmutableBeat`. ADR-005 fixes the meaning of identifiers in arguments: beats by `t`,
+entities by key, both within the chronicle.

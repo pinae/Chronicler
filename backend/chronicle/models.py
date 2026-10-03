@@ -1,7 +1,10 @@
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from django.db import models, transaction
 from django.db.models import Q
+
+if TYPE_CHECKING:
+    from chronicle.beat_log import BeatDraft
 
 
 def shorten(text: str, max_length: int = 50) -> str:
@@ -58,6 +61,13 @@ class Chronicle(models.Model):
         audience_name = IMPLICIT_AUDIENCE.get(ChronicleKind(self.kind))
         if audience_name:
             self.players.create(name=audience_name, implicit=True)
+
+    def append(self, draft: "BeatDraft", t: int | None = None) -> "Beat":
+        """Append a beat at the next `t`; an explicit `t` must be exactly that next value."""
+        # Imported here because the beat log builds on the models defined in this module.
+        from chronicle.beat_log import append_beat
+
+        return append_beat(self, draft, t)
 
 
 class Player(models.Model):
@@ -116,3 +126,57 @@ class Utterance(models.Model):
 
     def __str__(self) -> str:
         return f"#{self.order} {shorten(self.text)}"
+
+
+class SourceKind(models.TextChoices):
+    NARRATION = "narration"
+    ACTION = "action"
+    CLAIM = "claim"
+
+
+UNKNOWN_PREDICATE = "unknown"
+QUARANTINE_TAG = "quarantined"
+
+
+class ImmutableBeat(Exception):
+    """Beats are append-only: a correction is a new beat, never an edit."""
+
+
+class Beat(models.Model):
+    """One formal fact about the narrated world. `t` is its position in the chronicle, from 1."""
+
+    chronicle = models.ForeignKey(Chronicle, related_name="beats", on_delete=models.CASCADE)
+    t = models.PositiveIntegerField()
+    pred = models.CharField(max_length=50)
+    args = models.JSONField()
+    tags = models.JSONField(default=list, blank=True)
+    source_utterance = models.ForeignKey(Utterance, related_name="beats", on_delete=models.PROTECT)
+    source_kind = models.CharField(max_length=20, choices=SourceKind)
+    text = models.TextField(blank=True)
+    confidence = models.FloatField(default=1.0)
+    # The predicate as ingested, kept when it was not in the vocabulary and the beat was quarantined.
+    original_pred = models.CharField(max_length=50, blank=True)
+
+    class Meta:
+        ordering = ["t"]
+        constraints = [
+            models.UniqueConstraint(fields=["chronicle", "t"], name="beat_t_unique_per_chronicle"),
+            models.CheckConstraint(
+                condition=Q(source_kind__in=SourceKind.values), name="beat_source_kind_is_known"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"t={self.t} {self.pred}: {shorten(self.text)}"
+
+    def save(self, *args: Any, **kwargs: Any) -> None:
+        if not self._state.adding:
+            raise ImmutableBeat(f"beat t={self.t} is already stored and cannot change")
+        super().save(*args, **kwargs)
+
+    def delete(self, *args: Any, **kwargs: Any) -> tuple[int, dict[str, int]]:
+        raise ImmutableBeat(f"beat t={self.t} cannot be deleted")
+
+    @property
+    def is_quarantined(self) -> bool:
+        return QUARANTINE_TAG in self.tags

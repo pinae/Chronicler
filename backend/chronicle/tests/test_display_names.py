@@ -2,7 +2,7 @@
 
 import pytest
 
-from chronicle.models import Chronicle, Entity, Player, Utterance
+from chronicle.models import Beat, Chronicle, Entity, Player, Utterance
 
 pytestmark = pytest.mark.django_db
 
@@ -27,3 +27,7 @@ def test_utterance_reads_as_order_and_shortened_text():
 
 def test_short_utterance_reads_in_full():
     assert str(Utterance(order=1, text="You enter the hall.")) == "#1 You enter the hall."
+
+
+def test_beat_reads_as_t_predicate_and_text():
+    assert str(Beat(t=3, pred="trusts", text="Mira trusts Aldric.")) == "t=3 trusts: Mira trusts Aldric."
