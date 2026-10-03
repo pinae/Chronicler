@@ -30,3 +30,21 @@ def trusts(t, who, whom):
 
 def harms(t, who, whom):
     return beat(t, "harms", who=entity(who), whom=entity(whom))
+
+
+class KnownFacts:
+    """Chronicle facts as plain data: when characters first knew beats, where entities were."""
+
+    def __init__(self, first_known=None, locations=None):
+        self.first_known = first_known or {}  # (character, beat t) -> t
+        self.locations = locations or {}  # (entity, t) -> place argument
+
+    def first_known_at(self, character_id, beat_t):
+        return self.first_known.get((character_id, beat_t))
+
+    def location_at(self, entity_id, t):
+        return self.locations.get((entity_id, t))
+
+
+def world_with_facts(**knowledge):
+    return World(entity_kinds=ENTITY_KINDS, facts=KnownFacts(**knowledge))

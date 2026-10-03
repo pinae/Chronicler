@@ -3,6 +3,7 @@
 from django.conf import settings
 from django.db import transaction
 
+from chronicle.facts import StoredChronicleFacts
 from chronicle.models import Beat, Chronicle
 from matching.beats import PlainBeat
 from matching.engine import Fill, HypothesisState, IncrementalMatcher, MatcherConfig, StepResult, World
@@ -21,7 +22,11 @@ class StoredMatcher:
         )
 
     def load_hypotheses(self) -> list[HypothesisState]:
-        rows = Hypothesis.objects.filter(chronicle=self.chronicle).select_related("schema").order_by("pk")
+        rows = (
+            Hypothesis.objects.filter(chronicle=self.chronicle)
+            .select_related("schema", "refuted_by")
+            .order_by("pk")
+        )
         fills = StepFill.objects.filter(hypothesis__chronicle=self.chronicle).select_related("step", "beat")
         fills_by_hypothesis: dict[int, list[Fill]] = {}
         for fill in fills.order_by("beat__t", "pk"):
@@ -36,6 +41,7 @@ class StoredMatcher:
                 fills=fills_by_hypothesis.get(row.pk, []),
                 status=row.status,
                 status_changed_at_t=row.status_changed_at_t,
+                refuted_by_t=row.refuted_by.t if row.refuted_by else None,
                 record_id=row.pk,
             )
             for row in rows
@@ -49,6 +55,7 @@ class StoredMatcher:
         return World(
             entity_kinds=dict(self.chronicle.entities.values_list("pk", "kind")),
             players=frozenset(self.chronicle.players.values_list("pk", flat=True)),
+            facts=StoredChronicleFacts(self.chronicle),
         )
 
     def step(self, beat: Beat) -> StepResult:
@@ -66,6 +73,9 @@ class StoredMatcher:
             weight=self.engine.weight(state),
             status=state.status,
             status_changed_at_t=state.status_changed_at_t,
+            refuted_by=self.chronicle.beats.filter(t=state.refuted_by_t).first()
+            if state.refuted_by_t
+            else None,
         )
         self.save_new_fills(state.record_id, state)
 

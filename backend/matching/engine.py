@@ -7,10 +7,12 @@ from dataclasses import dataclass, field
 
 from matching.beats import PlainBeat
 from matching.match import MatchContext, match
+from schemas.constraints import ChronicleFacts
 from schemas.definitions import SchemaDefinition, StepDefinition
 
 LIVE = "live"
 COMPLETE = "complete"
+REFUTED = "refuted"
 
 
 @dataclass(frozen=True)
@@ -29,6 +31,7 @@ class HypothesisState:
     fills: list[Fill] = field(default_factory=list)
     status: str = LIVE
     status_changed_at_t: int | None = None
+    refuted_by_t: int | None = None
     refines: "HypothesisState | None" = None  # the less specific hypothesis this one was refined from
     record_id: int | None = None  # primary key once stored
 
@@ -47,6 +50,9 @@ class HypothesisState:
 
     def has_fill(self, beat_t: int) -> bool:
         return any(fill.beat_t == beat_t for fill in self.fills)
+
+    def change_status(self, status: str, t: int) -> None:
+        self.status, self.status_changed_at_t = status, t
 
 
 @dataclass(frozen=True)
@@ -73,6 +79,8 @@ class World:
 
     entity_kinds: Mapping[int, str]
     players: frozenset[int] = frozenset()
+    # Without facts constraints are not checked, which lets tests exercise matching in isolation.
+    facts: ChronicleFacts | None = None
 
     def context_for(self, schema: SchemaDefinition, fills: Mapping[str, Sequence[int]]) -> MatchContext:
         return MatchContext(
@@ -121,13 +129,45 @@ class IncrementalMatcher:
         self.hypotheses += refined
         seeded = self.seed(beat, world)
         self.hypotheses += seeded
-        self.maintain(beat, [*filled, *refined, *seeded])
-        return StepResult(new=refined + seeded, changed=filled)
+        refuted = self.refute(beat, world)
+        self.complete(beat, [*filled, *refined, *seeded])
+        changed = [*filled, *(hypothesis for hypothesis in refuted if hypothesis not in filled)]
+        return StepResult(new=refined + seeded, changed=changed)
 
-    def maintain(self, beat: PlainBeat, touched: Sequence[HypothesisState]) -> None:
+    def refute(self, beat: PlainBeat, world: World) -> list[HypothesisState]:
+        """Maintain: refute live hypotheses the beat contradicts or whose constraints no longer hold."""
+        refuted = [
+            hypothesis
+            for hypothesis in self.live()
+            if self.contradicted(hypothesis, beat, world)
+            or self.violates_constraints(hypothesis, world, beat.t)
+        ]
+        for hypothesis in refuted:
+            hypothesis.change_status(REFUTED, beat.t)
+            hypothesis.refuted_by_t = beat.t
+        return refuted
+
+    def contradicted(self, hypothesis: HypothesisState, beat: PlainBeat, world: World) -> bool:
+        """The beat matches a `contradicts` pattern of a step not yet filled, without new bindings."""
+        context = world.context_for(hypothesis.schema, hypothesis.fills_by_step())
+        return any(
+            match(pattern, beat, hypothesis.binding, context) == hypothesis.binding
+            for step in hypothesis.schema.steps
+            if not hypothesis.fill_ts(step.step_id)
+            for pattern in step.contradicts
+        )
+
+    def violates_constraints(self, hypothesis: HypothesisState, world: World, t: int) -> bool:
+        if world.facts is None:
+            return False
+        return not all(
+            constraint.check(hypothesis, world.facts, t) for constraint in hypothesis.schema.constraints
+        )
+
+    def complete(self, beat: PlainBeat, touched: Sequence[HypothesisState]) -> None:
         for hypothesis in touched:
             if hypothesis.is_live and is_complete(hypothesis):
-                hypothesis.status, hypothesis.status_changed_at_t = COMPLETE, beat.t
+                hypothesis.change_status(COMPLETE, beat.t)
 
     def fill(self, beat: PlainBeat, world: World) -> list[HypothesisState]:
         filled = []
