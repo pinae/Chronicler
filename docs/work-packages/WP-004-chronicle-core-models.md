@@ -25,4 +25,11 @@ WP-001.
 Beats, entity attributes, scope grants, fact labels.
 
 ## Status
-open
+done
+
+## Summary
+`Chronicle`, `Player`, `Entity` and `Utterance` exist with the §4 fields. Kinds are `TextChoices`
+backed by database check constraints, so an unknown kind fails validation and cannot be stored.
+Saving a new literature or media chronicle creates its implicit `reader` / `public` player in the
+same transaction. Utterances have a unique order per chronicle and at most one speaker (player or
+entity; neither means GM or narrator). Every model has a readable `__str__`.
