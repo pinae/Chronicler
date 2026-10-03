@@ -7,7 +7,8 @@ An exact, pure function decides whether a beat matches a step pattern under a bi
 returns the (possibly extended) binding: the core of the matcher (§7).
 
 ## Acceptance criteria
-`match(pattern, beat, binding, fills) -> binding | None`, with one test per case:
+`match(pattern, beat, binding, context) -> binding | None` (the context carries role kinds, entity
+kinds and the hypothesis' fills), with one test per case:
 - A different predicate does not match.
 - `"*"` and omitted roles match anything.
 - A literal matches only an equal literal.
@@ -29,4 +30,12 @@ WP-011.
 The `scope` and `claimed_by` options (WP-014); creating hypotheses (WP-015).
 
 ## Status
-open
+done
+
+## Summary
+`matching/match.py` matches a `PlainBeat` against a typed `BeatPattern` under a binding, exactly and
+without side effects. It returns an extended copy of the binding or None. A `MatchContext` carries the
+schema's role kinds, the chronicle's entity kinds and the hypothesis' fills. `$step` compares beat
+`t`s (ADR-005), nested patterns recurse into propositions, and role variables only bind entities of
+the role's kind. A wildcard also matches an omitted optional role; a concrete pattern value for a
+role the beat lacks does not match.
