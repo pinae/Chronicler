@@ -149,6 +149,10 @@ def test_replay_can_build_a_lattice_for_every_player(tmp_path):
     )
 
     [run_file] = (tmp_path / "steward").glob("*.json")
-    lattices = json.loads(run_file.read_text())["timeline"][8]["lattice"]
+    run = json.loads(run_file.read_text())
+    lattices = run["timeline"][8]["lattice"]
+    seal = next(int(pk) for pk, entity in run["entities"].items() if entity["slug"] == "seal")
     assert set(lattices) == {"all", "Anna", "Ben"}
-    assert len(lattices["Ben"]) > len(lattices["Anna"])  # Ben saw how Aldric learned of the seal
+    # Only Ben saw how Aldric learned where the seal is hidden.
+    assert any(hypothesis["binding"]["S"] == seal for hypothesis in lattices["Ben"])
+    assert not any(hypothesis["binding"]["S"] == seal for hypothesis in lattices["Anna"])
