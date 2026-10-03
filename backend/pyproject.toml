@@ -6,6 +6,7 @@ requires-python = ">=3.12"
 dependencies = [
     "django>=5.2,<5.3",
     "django-environ>=0.14",
+    "django-ninja>=1.7,<2",
     "httpx>=0.28",
     "ollama==0.6.3",
     "psycopg[binary]>=3.3",

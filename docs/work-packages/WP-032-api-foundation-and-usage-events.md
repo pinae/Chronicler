@@ -21,4 +21,11 @@ Authentication: v1 assumes a single trusted local user. If deployment needs more
 and its own package.
 
 ## Status
-open
+done
+
+## Summary
+ADR-006 chooses django-ninja: one `NinjaAPI` in `gm_ui/api.py` at `/api/` with an OpenAPI schema for the
+frontend. `GET /api/chronicles/` lists chronicles (id, title, kind, beat count), newest first.
+`gm_ui.middleware.UsageEventMiddleware` records every `/api/` request as a `UsageEvent` with view name,
+chronicle, `t` and parameters, so endpoints need no logging code; schema and docs requests are not
+recorded.

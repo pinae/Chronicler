@@ -32,6 +32,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "gm_ui.middleware.UsageEventMiddleware",
 ]
 
 ROOT_URLCONF = "narrative_engine.urls"
