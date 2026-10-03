@@ -23,7 +23,8 @@ followed by **session · 5 beats**. The newest chronicle comes first.
 **Result:** under the heading **Chronicles** the page says **No chronicles yet**.
 
 ## The backend cannot be reached
-1. Stop the backend while the development server (`npm run dev`) keeps running.
+1. Stop the backend while the development server (`npm run dev`) keeps running (the browser test
+   simulates this by failing the request to `/api/chronicles/`).
 2. Go to **/**.
 
 **Result:** the page says **Could not load the chronicles.**

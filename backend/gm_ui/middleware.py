@@ -2,6 +2,7 @@ from collections.abc import Callable
 
 from django.http import HttpRequest, HttpResponse
 
+from chronicle.models import Chronicle
 from gm_ui.models import UsageEvent
 
 API_PREFIX = "/api/"
@@ -25,12 +26,11 @@ def record_usage(request: HttpRequest) -> None:
     match = request.resolver_match
     kwargs = match.kwargs if match else {}
     t = request.GET.get("t")
+    requested_chronicle = kwargs.get("chronicle_id")
     UsageEvent.objects.create(
         view=(match.url_name if match and match.url_name else request.path),
-        chronicle_id=kwargs.get("chronicle_id"),
+        # A request for a chronicle that does not exist is still recorded, without the link.
+        chronicle=Chronicle.objects.filter(pk=requested_chronicle).first() if requested_chronicle else None,
         t=int(t) if t and t.isdigit() else None,
-        params={
-            **request.GET.dict(),
-            **{key: value for key, value in kwargs.items() if key != "chronicle_id"},
-        },
+        params={**request.GET.dict(), **kwargs},
     )

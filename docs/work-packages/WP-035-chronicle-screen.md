@@ -19,4 +19,14 @@ WP-009, WP-034.
 Adding or ingesting utterances from the UI.
 
 ## Status
-open
+done
+
+## Summary
+`GET /api/chronicles/{id}` returns title, kind, latest `t` and the (non-implicit) players.
+`GET /api/chronicles/{id}/beats?audience=all|table|<player id>&t=` lists the beats that audience had
+seen up to `t`, resolved by `gm_ui.audiences`, which the later screens reuse. The page
+`/chronicles/:id` has a **Seen by** selector and an **Up to beat** slider; both are kept in the
+address, so a view can be linked and the back button works. Quarantined beats are marked, and an
+unknown chronicle shows **Chronicle not found**. While testing, the usage middleware was fixed to
+record requests for missing chronicles without a broken link. `docs/usage/chronicle.md` has five
+scenarios, each with a browser test.

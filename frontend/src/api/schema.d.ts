@@ -21,6 +21,43 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/chronicles/{chronicle_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get Chronicle */
+    get: operations["gm_ui_api_get_chronicle"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/chronicles/{chronicle_id}/beats": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List Beats
+     * @description The beats `audience` ("all", "table" or a player id) had seen up to t (default: the latest).
+     */
+    get: operations["gm_ui_api_list_beats"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -35,6 +72,39 @@ export interface components {
       kind: string;
       /** Beat Count */
       beat_count: number;
+    };
+    /** ChronicleDetail */
+    ChronicleDetail: {
+      /** Id */
+      id: number;
+      /** Title */
+      title: string;
+      /** Kind */
+      kind: string;
+      /** Last T */
+      last_t: number;
+      /** Players */
+      players: components["schemas"]["PlayerSummary"][];
+    };
+    /** PlayerSummary */
+    PlayerSummary: {
+      /** Id */
+      id: number;
+      /** Name */
+      name: string;
+    };
+    /** BeatSummary */
+    BeatSummary: {
+      /** T */
+      t: number;
+      /** Pred */
+      pred: string;
+      /** Text */
+      text: string;
+      /** Source Kind */
+      source_kind: string;
+      /** Quarantined */
+      quarantined: boolean;
     };
   };
   responses: never;
@@ -61,6 +131,53 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["ChronicleSummary"][];
+        };
+      };
+    };
+  };
+  gm_ui_api_get_chronicle: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        chronicle_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ChronicleDetail"];
+        };
+      };
+    };
+  };
+  gm_ui_api_list_beats: {
+    parameters: {
+      query?: {
+        audience?: string;
+        t?: number | null;
+      };
+      header?: never;
+      path: {
+        chronicle_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BeatSummary"][];
         };
       };
     };

@@ -23,3 +23,11 @@ test("No chronicles yet", async ({ page }) => {
 
   await expect(page.getByText("No chronicles yet")).toBeVisible();
 });
+
+test("The backend cannot be reached", async ({ page }) => {
+  await page.route("**/api/chronicles/", (route) => route.abort());
+
+  await page.goto("/");
+
+  await expect(page.getByText("Could not load the chronicles.")).toBeVisible();
+});

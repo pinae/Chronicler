@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 
-import { getJson } from "./client";
+import { ApiError, getJson } from "./client";
 
-export type ApiState<T> = { status: "loading" } | { status: "error" } | { status: "ready"; data: T };
+export type ApiState<T> =
+  { status: "loading" } | { status: "error"; notFound: boolean } | { status: "ready"; data: T };
 
 /** Loads JSON from the backend; a new path starts a new load. */
 export function useApi<T>(path: string): ApiState<T> {
@@ -12,7 +13,12 @@ export function useApi<T>(path: string): ApiState<T> {
     let cancelled = false;
     getJson<T>(path).then(
       (data) => !cancelled && setResult({ path, state: { status: "ready", data } }),
-      () => !cancelled && setResult({ path, state: { status: "error" } }),
+      (error: unknown) =>
+        !cancelled &&
+        setResult({
+          path,
+          state: { status: "error", notFound: error instanceof ApiError && error.status === 404 },
+        }),
     );
     return () => {
       cancelled = true;

@@ -50,3 +50,10 @@ def test_the_api_publishes_an_openapi_schema_for_the_frontend(client):
 
     assert response.status_code == 200
     assert "/api/chronicles/" in response.json()["paths"]
+
+
+def test_a_request_for_a_missing_chronicle_is_recorded_without_a_link(client):
+    client.get(reverse("api:get_chronicle", args=[999]))
+
+    [event] = UsageEvent.objects.all()
+    assert (event.chronicle, event.params) == (None, {"chronicle_id": "999"})
