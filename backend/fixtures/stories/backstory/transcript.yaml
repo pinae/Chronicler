@@ -1,0 +1,8 @@
+title: Backstory
+kind: session
+players: [Anna, Ben]
+utterances:
+  - {order: 1, speaker: gm, text: Mira trusts her steward Aldric.}
+  - {order: 2, speaker: gm, text: "(To Anna, from her backstory) Aldric knows where Mira hides the seal."}
+  - {order: 3, speaker: gm, text: At night Aldric steals the seal.}
+  - {order: 4, speaker: gm, text: Mira finds out that Aldric stole it.}

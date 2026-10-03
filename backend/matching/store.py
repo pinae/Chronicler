@@ -6,7 +6,7 @@ from django.conf import settings
 from django.db import transaction
 
 from chronicle.facts import StoredChronicleFacts
-from chronicle.models import Beat, Chronicle
+from chronicle.models import Beat, Chronicle, Player
 from matching.beats import PlainBeat
 from matching.engine import Fill, HypothesisState, IncrementalMatcher, MatcherConfig, StepResult, World
 from matching.models import Hypothesis, StepFill
@@ -23,8 +23,12 @@ def matcher_config_from_settings() -> MatcherConfig:
 
 
 class StoredMatcher:
-    def __init__(self, chronicle: Chronicle) -> None:
+    """Runs the matcher over a stored chronicle: the unfiltered lattice, or one player's lattice
+    built only from the beats that player has seen."""
+
+    def __init__(self, chronicle: Chronicle, for_player: Player | None = None) -> None:
         self.chronicle = chronicle
+        self.for_player = for_player
         self.schema_rows = {schema.slug: schema for schema in Schema.objects.all()}
         self.definitions = {slug: definition_of(schema) for slug, schema in self.schema_rows.items()}
         self.engine = IncrementalMatcher(
@@ -32,7 +36,10 @@ class StoredMatcher:
         )
 
     def step(self, beat: Beat) -> StepResult:
-        result = self.engine.step(PlainBeat.from_model(beat), self.world())
+        plain_beat = PlainBeat.from_model(beat)
+        if self.for_player is not None and self.for_player.pk not in plain_beat.known_by_players:
+            return StepResult()
+        result = self.engine.step(plain_beat, self.world())
         self.save([*result.new, *result.changed])
         return result
 
@@ -40,14 +47,15 @@ class StoredMatcher:
         return World(
             entity_kinds=dict(self.chronicle.entities.values_list("pk", "kind")),
             players=frozenset(self.chronicle.players.values_list("pk", flat=True)),
-            facts=StoredChronicleFacts(self.chronicle),
+            facts=StoredChronicleFacts(self.chronicle, self.for_player),
+            for_player=self.for_player.pk if self.for_player else None,
         )
 
     # Loading
 
     def load_hypotheses(self) -> list[HypothesisState]:
         rows = list(
-            Hypothesis.objects.filter(chronicle=self.chronicle)
+            Hypothesis.objects.filter(chronicle=self.chronicle, for_player=self.for_player)
             .select_related("schema", "refuted_by")
             .order_by("pk")
         )
@@ -59,7 +67,9 @@ class StoredMatcher:
         return list(states.values())
 
     def load_fills(self) -> dict[int, list[Fill]]:
-        fills = StepFill.objects.filter(hypothesis__chronicle=self.chronicle).select_related("step", "beat")
+        fills = StepFill.objects.filter(
+            hypothesis__chronicle=self.chronicle, hypothesis__for_player=self.for_player
+        ).select_related("step", "beat")
         fills_by_hypothesis: dict[int, list[Fill]] = {}
         for fill in fills.order_by("beat__t", "pk"):
             fills_by_hypothesis.setdefault(fill.hypothesis_id, []).append(
@@ -100,6 +110,7 @@ class StoredMatcher:
             binding=state.binding,
             weight=self.engine.weight(state),
             created_at_t=state.created_at_t,
+            for_player=self.for_player,
         )
         return row.pk
 

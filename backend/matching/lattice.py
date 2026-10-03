@@ -11,7 +11,7 @@ from typing import Self
 
 from django.conf import settings
 
-from chronicle.models import Chronicle
+from chronicle.models import Chronicle, Player
 from matching.engine import LIVE, Fill, weight_of
 from matching.models import Hypothesis, StepFill
 from schemas.definitions import SchemaDefinition
@@ -44,9 +44,10 @@ class Lattice:
     hypotheses: tuple[LatticeHypothesis, ...]
 
     @classmethod
-    def at(cls, chronicle: Chronicle, t: int) -> Self:
+    def at(cls, chronicle: Chronicle, t: int, for_player: Player | None = None) -> Self:
+        """The unfiltered lattice at t, or with `for_player` that player's lattice."""
         rows = (
-            Hypothesis.objects.filter(chronicle=chronicle, created_at_t__lte=t)
+            Hypothesis.objects.filter(chronicle=chronicle, for_player=for_player, created_at_t__lte=t)
             .select_related("schema", "refuted_by")
             .order_by("created_at_t", "pk")
         )

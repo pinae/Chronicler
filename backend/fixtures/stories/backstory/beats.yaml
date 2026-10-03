@@ -1,0 +1,17 @@
+- utterance: 1
+  beats:
+    - {t: 1, pred: trusts, args: {who: "@mira", whom: "@aldric"}, present: [mira, aldric], text: Mira trusts Aldric.}
+- utterance: 2
+  beats:
+    - t: 2
+      pred: learns
+      args: {who: "@aldric", what: {pred: hides, args: {who: "@mira", what: "@seal"}}}
+      present: [aldric]
+      players: [Anna]
+      text: Aldric learned where Mira hides the seal (Anna's backstory).
+- utterance: 3
+  beats:
+    - {t: 3, pred: steals, kind: action, args: {who: "@aldric", what: "@seal", from: "@mira"}, present: [aldric], text: Aldric steals the seal.}
+- utterance: 4
+  beats:
+    - {t: 4, pred: learns, args: {who: "@mira", what: "#3"}, present: [mira], text: Mira learns that Aldric stole the seal.}

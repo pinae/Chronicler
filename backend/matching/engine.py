@@ -93,10 +93,15 @@ class World:
     players: frozenset[int] = frozenset()
     # Without facts constraints are not checked, which lets tests exercise matching in isolation.
     facts: ChronicleFacts | None = None
+    for_player: int | None = None  # matching for one player's lattice
 
     def context_for(self, schema: SchemaDefinition, fills: Mapping[str, Sequence[int]]) -> MatchContext:
         return MatchContext(
-            role_kinds=schema.roles, entity_kinds=self.entity_kinds, fills=fills, players=self.players
+            role_kinds=schema.roles,
+            entity_kinds=self.entity_kinds,
+            fills=fills,
+            players=self.players,
+            for_player=self.for_player,
         )
 
 

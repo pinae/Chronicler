@@ -31,6 +31,8 @@ class Hypothesis(models.Model):
     refines = models.ForeignKey(
         "self", null=True, blank=True, related_name="refinements", on_delete=models.SET_NULL
     )
+    # Empty: the unfiltered lattice over every beat. Set: the lattice of what this player has seen.
+    for_player = models.ForeignKey(Player, null=True, blank=True, related_name="+", on_delete=models.CASCADE)
     # Merging never deletes: the merged hypothesis points to the one that absorbed it.
     merged_into = models.ForeignKey(
         "self", null=True, blank=True, related_name="absorbed", on_delete=models.SET_NULL

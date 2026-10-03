@@ -1,0 +1,3 @@
+mira: {kind: character, name: Mira}
+aldric: {kind: character, name: Aldric, aliases: [the steward]}
+seal: {kind: secret, name: The family seal}
