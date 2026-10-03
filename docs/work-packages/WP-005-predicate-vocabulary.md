@@ -31,4 +31,13 @@ WP-001.
   version is reviewed by the user before this package is marked done.
 
 ## Status
-open
+done
+
+## Summary
+`schemas/vocabulary.yaml` holds the 26 starter predicates from §5, with a trailing `?` marking
+optional roles. `schemas/vocabulary.py` loads it into typed `Predicate`/`Role` objects and
+validates arguments recursively, including well-formed value shapes (`{"entity": 17}` etc.).
+`UnknownPredicate` is raised separately from `InvalidBeatArgs`, even inside a proposition, so
+ingest can quarantine instead of failing. Role choices follow the §5 table (e.g. social predicates
+require `whom`, `says.what` must be a proposition). Per the user's 2026-10-03 instruction, Claude
+made these calls without the planned review; the YAML is the place to change them.

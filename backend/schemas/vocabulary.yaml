@@ -1,0 +1,120 @@
+# Predicate vocabulary (concept §5): the closed set of predicates a beat may use.
+#
+# Each predicate lists its roles and, per role, the value kinds it accepts:
+#   entity  — {"entity": 17}        a character, object, place, faction, secret or source
+#   literal — {"literal": "kitchen"} a plain value
+#   beat    — {"beat": 42}          a reference to another beat
+#   prop    — {"prop": {...}}       a nested, beat-shaped proposition (claims, beliefs)
+# A role name ending in "?" is optional.
+#
+# Growing this file is a reviewed change, like a migration. Map new verbs onto existing predicates
+# ("lends", "hands over" → gives; "resigns" → breaks; "announces" → says) before adding one.
+
+predicates:
+  # transfer
+  gives:
+    who: [entity]
+    what: [entity, literal]
+    to: [entity]
+  takes:
+    who: [entity]
+    what: [entity, literal]
+    from?: [entity]
+  steals:
+    who: [entity]
+    what: [entity, literal]
+    from: [entity]
+
+  # help / harm
+  helps:
+    who: [entity]
+    whom: [entity]
+    how?: [literal]
+  harms:
+    who: [entity]
+    whom: [entity]
+    how?: [literal]
+  protects:
+    who: [entity]
+    whom: [entity]
+    how?: [literal]
+  saves:
+    who: [entity]
+    whom: [entity]
+    how?: [literal]
+  kills:
+    who: [entity]
+    whom: [entity]
+    how?: [literal]
+
+  # social
+  trusts:
+    who: [entity]
+    whom: [entity]
+    what?: [entity, literal, beat, prop]
+  distrusts:
+    who: [entity]
+    whom: [entity]
+    what?: [entity, literal, beat, prop]
+  promises:
+    who: [entity]
+    whom: [entity]
+    what?: [entity, literal, prop]
+  breaks:
+    who: [entity]
+    whom: [entity]
+    what?: [entity, literal, beat, prop]
+  allies:
+    who: [entity]
+    whom: [entity]
+    what?: [entity, literal, prop]
+  opposes:
+    who: [entity]
+    whom: [entity]
+    what?: [entity, literal, prop]
+
+  # epistemic
+  learns:
+    who: [entity]
+    what: [beat, prop]
+    from?: [entity]
+  hides:
+    who: [entity]
+    what: [entity, beat, prop]
+    from?: [entity]
+  reveals:
+    who: [entity]
+    what: [entity, beat, prop]
+    to?: [entity]
+  says:
+    who: [entity]
+    what: [prop]
+    to?: [entity]
+  believes:
+    who: [entity]
+    what: [prop]
+
+  # state
+  has:
+    who: [entity]
+    what: [entity, literal]
+  is_at:
+    who: [entity]
+    where: [entity]
+  is:
+    who: [entity]
+    trait: [literal]
+
+  # intention
+  wants:
+    who: [entity]
+    what: [entity, prop]
+  fears:
+    who: [entity]
+    what: [entity, prop]
+  seeks:
+    who: [entity]
+    what: [entity, prop]
+  avoids:
+    who: [entity]
+    what: [entity, prop]
