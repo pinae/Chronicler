@@ -1,0 +1,33 @@
+- utterance: 1
+  beats:
+    - t: 1
+      pred: is_at
+      args: {who: "@aldric", where: "@hall"}
+      present: [mira, aldric]
+      text: Aldric is in the great hall.
+    - t: 2
+      pred: trusts
+      args: {who: "@mira", whom: "@aldric"}
+      present: [mira, aldric]
+      text: Mira trusts Aldric.
+    - t: 3
+      pred: gives
+      kind: action
+      args: {who: "@mira", what: "@key", to: "@aldric"}
+      present: [mira, aldric]
+      text: Mira gives Aldric the cellar key.
+- utterance: 2
+  beats: []
+- utterance: 3
+  beats:
+    - t: 4
+      pred: is
+      args: {who: "@aldric", trait: nervous}
+      players: [Ben]
+      text: Aldric is nervous (only Ben notices).
+    - t: 5
+      pred: hides
+      args: {who: "@aldric", what: "@key", from: "@mira"}
+      present: [aldric]
+      players: []
+      text: Aldric hides the key from Mira (GM only).

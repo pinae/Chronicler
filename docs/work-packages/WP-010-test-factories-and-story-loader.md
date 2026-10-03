@@ -26,4 +26,13 @@ WP-006, WP-008.
 - The pipeline-driven `FixtureIngester` (WP-029).
 
 ## Status
-open
+done
+
+## Summary
+The root `conftest.py` provides `chronicle`, `players`, `entity_factory`, `beat_factory` (beats are
+appended, never created directly) and `load_story`. `chronicle/story_fixtures.py` reads the
+format documented in `fixtures/stories/README.md`. Deviations from §9.1: `transcript.yaml` is a
+mapping that carries title, kind and players besides the utterances, entities get a `slug`, and
+`beats.yaml` uses a compact argument notation (`@slug`, `#t`, nested `{pred, args}`). Unknown
+entities, never-mentioned entities, unknown speakers and miscounted `t`s are reported with file and
+position. `load_story("minimal")` builds the five-beat session.

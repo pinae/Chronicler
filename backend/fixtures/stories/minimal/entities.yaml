@@ -1,0 +1,4 @@
+mira: {kind: character, name: Mira, aliases: [Lady Mira]}
+aldric: {kind: character, name: Aldric, aliases: [the steward]}
+hall: {kind: place, name: The great hall}
+key: {kind: object, name: The cellar key}

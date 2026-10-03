@@ -100,6 +100,8 @@ class Entity(models.Model):
     chronicle = models.ForeignKey(Chronicle, related_name="entities", on_delete=models.CASCADE)
     kind = models.CharField(max_length=20, choices=EntityKind)
     canonical_name = models.CharField(max_length=200)
+    # Stable short name for fixtures, ground truth and URLs, e.g. "aldric".
+    slug = models.SlugField(max_length=100, blank=True)
     aliases = models.JSONField(default=list, blank=True)
     introduced_at_t = models.PositiveIntegerField()
 
@@ -107,6 +109,9 @@ class Entity(models.Model):
         verbose_name_plural = "entities"
         constraints = [
             models.CheckConstraint(condition=Q(kind__in=EntityKind.values), name="entity_kind_is_known"),
+            models.UniqueConstraint(
+                fields=["chronicle", "slug"], condition=~Q(slug=""), name="entity_slug_unique_per_chronicle"
+            ),
         ]
 
     def __str__(self) -> str:

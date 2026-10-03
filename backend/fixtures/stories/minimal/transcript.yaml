@@ -1,0 +1,17 @@
+title: The Minimal Hall
+kind: session
+players: [Anna, Ben]
+utterances:
+  - order: 1
+    speaker: gm
+    text: >-
+      In the great hall, Lady Mira hands the cellar key to her steward, Aldric. She trusts him
+      with everything.
+  - order: 2
+    speaker: Anna
+    text: I don't like the way the steward looks at that key.
+  - order: 3
+    speaker: gm
+    text: >-
+      (To Ben, privately:) You notice Aldric's hands shaking. (GM note: Aldric keeps the key
+      hidden from Mira.)
