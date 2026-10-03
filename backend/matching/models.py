@@ -57,3 +57,24 @@ class StepFill(models.Model):
 
     def __str__(self) -> str:
         return f"{self.step} filled at t={self.beat.t}"
+
+
+class Expectation(models.Model):
+    """For a live hypothesis and its next open step: the distribution over which entity would fill it,
+    as the reader model saw it at computed_at_t. Kept per t because it depends on the model."""
+
+    hypothesis = models.ForeignKey(Hypothesis, related_name="expectations", on_delete=models.CASCADE)
+    step = models.ForeignKey(Step, on_delete=models.PROTECT)
+    computed_at_t = models.PositiveIntegerField()
+    for_player = models.ForeignKey(Player, null=True, blank=True, related_name="+", on_delete=models.SET_NULL)
+    question = models.TextField()
+    # [{"label": "A", "text": "Aldric", "binding_delta": {"T": 17}, "p": 0.41}, ...,
+    #  {"label": "C", "text": "nothing like this yet", "null": true, "p": 0.12}]
+    candidates = models.JSONField()
+    outside_mass = models.FloatField(default=0.0)  # probability the model put outside the candidate labels
+    llm_call = models.ForeignKey(
+        "llm.LLMCall", null=True, blank=True, related_name="+", on_delete=models.SET_NULL
+    )
+
+    def __str__(self) -> str:
+        return f"{self.question} (t={self.computed_at_t})"

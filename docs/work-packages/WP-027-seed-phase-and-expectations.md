@@ -22,4 +22,14 @@ WP-023, WP-024, WP-025, WP-026.
 Ollama-backed readouts (WP-028).
 
 ## Status
-open
+done
+
+## Summary
+`Expectation` stores, per hypothesis, open step, `computed_at_t` and audience: the question text, the
+candidates (label, text, `binding_delta` or `null`, `p`), the mass outside the candidates and the
+`LLMCall`. `reader.expectations.seed_expectations(chronicle, t, audience, reader, context_builder)`
+asks about every live hypothesis of the audience's lattice. Each readout's context comes from the
+context builder, so a player's readout only sees `visible_to(player, t)`. Earlier rows are never
+overwritten. Decisions: the Seed phase runs after Maintain, so refuted hypotheses are not asked about.
+An audience is only asked about hypotheses whose fills it saw and whose bound entities it knows, so
+questions cannot give away GM-only beats. Each candidate page becomes one row.

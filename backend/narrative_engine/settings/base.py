@@ -92,3 +92,4 @@ INJECTED = {
 # Reader model context (concept §9.3): recent beats plus beats supporting the strongest hypotheses.
 READER_CONTEXT_RECENT_BEATS = 30
 READER_CONTEXT_TOP_HYPOTHESES = 5
+READER_MAX_CANDIDATES = 20  # labels per readout question; the native API returns at most 20 top_logprobs
