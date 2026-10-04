@@ -3,9 +3,10 @@ import { Link } from "react-router";
 
 import styles from "./ChronicleFrame.module.css";
 
-export type ChronicleScreen = "beats" | "lattice" | "knowledge" | "try";
+export type ChronicleScreen = "map" | "beats" | "lattice" | "knowledge" | "try";
 
 const SCREENS: { screen: ChronicleScreen; label: string; path: string }[] = [
+  { screen: "map", label: "Story map", path: "/map" },
   { screen: "beats", label: "Beats", path: "" },
   { screen: "lattice", label: "Lattice", path: "/lattice" },
   { screen: "knowledge", label: "Who knows what", path: "/knowledge" },

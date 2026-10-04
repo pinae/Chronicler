@@ -35,6 +35,10 @@ section says what changes with a model.
   player learned of later still shows its own `t`. **(voiced)** marks a theory a player said out
   loud.
 
+The **Story map** tab (`story-map.md`) shows much of this tour at a glance: one river of readings
+per audience beside the beats, with the game master's secrets hatched. The scenarios below use the
+other screens, which show the details.
+
 ## Before you start
 
 1. Start the database: `docker compose up -d` in the repository root.

@@ -1,0 +1,73 @@
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.map {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  overflow-x: auto;
+  background: var(--surface-panel);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-panel);
+}
+
+/* Fixed row heights keep every beat's row aligned with the rivers beside it; the row lines are
+   backgrounds, because borders would add height. */
+.beats {
+  flex: 1 1 24rem;
+  min-width: 18rem;
+  margin: 0;
+  table-layout: fixed;
+  border-collapse: collapse;
+  box-shadow: none;
+  border: none;
+}
+
+.beats th,
+.beats td {
+  height: var(--row-height);
+  padding: 0 var(--space-2);
+  line-height: var(--row-height);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border: none;
+  background-image: linear-gradient(to top, var(--rule) 1px, transparent 1px);
+}
+
+.beats th {
+  background-color: var(--surface-sunken);
+  background-image: linear-gradient(to top, var(--brass) 2px, transparent 2px);
+}
+
+.beats th:first-child,
+.beats td:first-child {
+  width: 2.5rem;
+  color: var(--ink-muted);
+}
+
+.column {
+  flex: 0 0 auto;
+}
+
+.columnName {
+  height: var(--row-height);
+  line-height: var(--row-height);
+  background-image: linear-gradient(to top, var(--brass) 2px, transparent 2px);
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-align: center;
+  color: var(--ink-muted);
+  background-color: var(--surface-sunken);
+  white-space: nowrap;
+}

@@ -6,7 +6,7 @@ import { ChronicleFrame } from "./ChronicleFrame";
 
 const STEWARD = { id: 2, title: "The Steward of Wend" };
 
-function showFrame(current: "beats" | "lattice" | "knowledge" | "try") {
+function showFrame(current: "map" | "beats" | "lattice" | "knowledge" | "try") {
   render(
     <MemoryRouter>
       <ChronicleFrame chronicle={STEWARD} current={current}>
@@ -23,6 +23,7 @@ describe("ChronicleFrame", () => {
     const nav = screen.getByRole("navigation", { name: "Chronicle" });
     const links = within(nav).getAllByRole("link");
     expect(links.map((link) => [link.textContent, link.getAttribute("href")])).toEqual([
+      ["Story map", "/chronicles/2/map"],
       ["Beats", "/chronicles/2"],
       ["Lattice", "/chronicles/2/lattice"],
       ["Who knows what", "/chronicles/2/knowledge"],

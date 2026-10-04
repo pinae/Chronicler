@@ -5,6 +5,7 @@ import { ChroniclesPage } from "./chronicles/ChroniclesPage";
 import { KnowledgePage } from "./knowledge/KnowledgePage";
 import { LatticePage } from "./lattice/LatticePage";
 import { AppShell } from "./shell/AppShell";
+import { StoryMapPage } from "./storyMap/StoryMapPage";
 import { TryBeatPage } from "./tryBeat/TryBeatPage";
 
 export function App() {
@@ -14,6 +15,7 @@ export function App() {
         <Routes>
           <Route path="/" element={<ChroniclesPage />} />
           <Route path="/chronicles/:chronicleId" element={<ChroniclePage />} />
+          <Route path="/chronicles/:chronicleId/map" element={<StoryMapPage />} />
           <Route path="/chronicles/:chronicleId/lattice" element={<LatticePage />} />
           <Route path="/chronicles/:chronicleId/knowledge" element={<KnowledgePage />} />
           <Route path="/chronicles/:chronicleId/try" element={<TryBeatPage />} />

@@ -74,7 +74,8 @@ cd .. && corepack enable && yarn install && yarn workspace chronicler-frontend b
 uv run python manage.py runserver                             # then open http://localhost:8000
 ```
 
-In the browser: the chronicle list (`docs/usage/browse-chronicles.md`), a chronicle's beats as
+In the browser: the **story map** with a river of readings per audience (`docs/usage/story-map.md`),
+the chronicle list (`docs/usage/browse-chronicles.md`), a chronicle's beats as
 each audience saw them (`chronicle.md`), the lattice of hypotheses at any beat (`lattice.md`), what
 the audience expects next (`expectations.md`), who knows what (`knowledge.md`) and trying a beat
 before narrating it (`try-a-beat.md`). The Django admin is at `/admin/` (`admin.md`).
