@@ -96,6 +96,14 @@ def read_transcript(slug: str, stories_dir: Path = STORIES_DIR) -> Transcript:
     )
 
 
+def read_entities(slug: str, stories_dir: Path = STORIES_DIR) -> list[EntitySpec]:
+    """The story's entity table; empty while it has none."""
+    path = stories_dir / slug / "entities.yaml"
+    if not path.exists():
+        return []
+    return [read_entity(entity_slug, entry) for entity_slug, entry in (read_yaml(path) or {}).items()]
+
+
 def read_story(slug: str, stories_dir: Path = STORIES_DIR) -> StoryFixture:
     directory = stories_dir / slug
     transcript = read_transcript(slug, stories_dir)

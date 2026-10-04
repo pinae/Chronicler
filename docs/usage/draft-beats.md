@@ -16,7 +16,9 @@ correct them in the YAML files before the story is replayed or evaluated.
 **Result:** the command prints `Drafted <n> beats and <m> entities from <k> utterances; <r> marked for review`
 and writes `fixtures/stories/alice/beats.yaml` and `entities.yaml`. Every beat carries the
 ingester's `confidence`. Utterances are drafted in order, each against the entities and beats drafted
-before it, so later beats can refer to earlier ones. Nothing is stored in the database.
+before it, so later beats can refer to earlier ones. Nothing is stored in the database. If the story
+already has an `entities.yaml` (for example the outlet written by `docs/usage/import-media.md`),
+those entities are known from the start, may speak (a media outlet), and are kept.
 
 ## Review the draft
 1. Search `beats.yaml` for `review:`.

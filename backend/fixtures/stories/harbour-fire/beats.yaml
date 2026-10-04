@@ -1,0 +1,17 @@
+# Every statement of the outlet is a claim: says(who=@courier, what=<the statement>), kind claim.
+- utterance: 1
+  beats:
+    - {t: 1, pred: says, kind: claim, args: {who: "@courier", what: {pred: harms, args: {who: "@holt", whom: "@petra"}}}, text: The Courier says Holt harmed Petra.}
+    - {t: 2, pred: says, kind: claim, args: {who: "@courier", what: {pred: is_at, args: {who: "@holt", where: "@harbour"}}}, text: The Courier says Holt was at the harbour.}
+- utterance: 2
+  beats:
+    - {t: 3, pred: says, kind: claim, args: {who: "@courier", what: {pred: trusts, args: {who: "@petra", whom: "@holt"}}}, text: The Courier says Petra trusted Holt.}
+- utterance: 3
+  beats:
+    - {t: 4, pred: says, kind: claim, args: {who: "@courier", what: {pred: wants, args: {who: "@holt", what: {pred: has, args: {who: "@holt", what: "@harbour"}}}}}, text: The Courier says Holt wants the harbour land.}
+- utterance: 4
+  beats:
+    - {t: 5, pred: says, kind: claim, args: {who: "@courier", what: {pred: helps, args: {who: "@neighbours", whom: "@petra"}}}, text: The Courier says the neighbours helped Petra.}
+- utterance: 5
+  beats:
+    - {t: 6, pred: says, kind: claim, args: {who: "@courier", what: {pred: distrusts, args: {who: "@fishers", whom: "@holt"}}}, text: The Courier says the fishers distrust Holt.}

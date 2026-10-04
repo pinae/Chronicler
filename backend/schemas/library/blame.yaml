@@ -1,0 +1,37 @@
+# Blame (RQ4, concept §9.4): a source accuses someone of harming a victim, gives them a motive and
+# reports that people turn against them. Every step is a claim by the same source ($O), so the
+# engine measures how strongly an outlet's reporting instantiates the narrative, never whether it
+# is true.
+slug: blame
+name: Blame
+roles: {O: source, A: character, V: character}
+prior: -2.0
+payoff_steps: [condemnation]
+constraints:
+  - {type: distinct, roles: [A, V]}
+steps:
+  - step_id: accusation
+    phase: setup
+    trigger: true
+    patterns:
+      - {pred: harms, args: {who: $A, whom: $V}, claimed_by: $O}
+      - {pred: steals, args: {who: $A, what: "*", from: $V}, claimed_by: $O}
+    weight: 1.0
+  - step_id: motive
+    phase: development
+    patterns:
+      - {pred: wants, args: {who: $A, what: "*"}, claimed_by: $O}
+      - {pred: opposes, args: {who: $A, whom: $V}, claimed_by: $O}
+    weight: 0.5
+  - step_id: sympathy
+    phase: development
+    required: false
+    patterns:
+      - {pred: helps, args: {who: "*", whom: $V}, claimed_by: $O}
+    weight: 0.5
+  - step_id: condemnation
+    phase: payoff
+    patterns:
+      - {pred: distrusts, args: {who: "*", whom: $A}, claimed_by: $O}
+      - {pred: opposes, args: {who: "*", whom: $A}, claimed_by: $O}
+    weight: 1.5

@@ -1,0 +1,6 @@
+courier: {kind: source, name: The Courier}
+holt: {kind: character, name: Mayor Holt, aliases: [Holt, the mayor]}
+petra: {kind: character, name: Petra, aliases: [old Petra]}
+harbour: {kind: place, name: The harbour}
+neighbours: {kind: faction, name: The neighbours}
+fishers: {kind: faction, name: The fishers}

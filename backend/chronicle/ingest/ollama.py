@@ -16,6 +16,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.utils.text import slugify
 
 from chronicle.beat_args import referenced_beat_ts
+from chronicle.ingest.claims import as_claims
 from chronicle.ingest.interfaces import IngestedBeat, IngestResult, NewEntity
 from chronicle.models import Chronicle, EntityKind, SourceKind, Utterance
 from chronicle.story_fixtures import expand_args
@@ -92,11 +93,15 @@ class OllamaIngester:
         if proposal.problems:
             answer = self.ask(repair_prompt(prompt, answer, proposal.problems))
             proposal = Proposal.from_answer(answer, known, self.vocabulary, next_t)
-        return IngestResult(
+        result = IngestResult(
             beats=tuple(proposal.valid_beats),
             new_entities=tuple(proposal.new_entities),
             problems=tuple(proposal.problems),
         )
+        outlet = utterance.speaker_entity
+        if outlet is not None and outlet.kind == EntityKind.SOURCE:
+            return as_claims(result, outlet)
+        return result
 
     def ask(self, prompt: str) -> dict[str, Any]:
         return self.answers.ask(

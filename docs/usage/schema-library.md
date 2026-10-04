@@ -10,7 +10,7 @@ and loading again.
 ## Load the library
 1. In `backend/`, run `uv run python manage.py load_schemas`.
 
-**Result:** the command prints `Loaded 1 schema: betrayal` (one name per file in the library).
+**Result:** the command prints `Loaded 2 schemas: betrayal, blame` (one name per file in the library).
 Running it again changes nothing: schemas are updated in place, not duplicated.
 
 ## Write a schema
@@ -43,7 +43,7 @@ Optional pattern keys: `tags_any`, `tags_all`, `scope: {players_know: true}` and
 
 Run `uv run python manage.py load_schemas`.
 
-**Result:** `Loaded 2 schemas: betrayal, rivalry`.
+**Result:** `Loaded 3 schemas: betrayal, blame, rivalry`.
 
 ## Constraints
 A schema may list constraints that every match must satisfy; a hypothesis that violates one is

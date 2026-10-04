@@ -6,7 +6,7 @@ import yaml
 from django.core.management import CommandError, call_command
 
 from schemas.definitions import parse_schema
-from schemas.library import LIBRARY_DIR, definition_of, load_library, save_schema
+from schemas.library import LIBRARY_DIR, definition_of, load_library, read_library, save_schema
 from schemas.models import Schema, Step
 
 pytestmark = pytest.mark.django_db
@@ -42,11 +42,13 @@ def test_stored_schema_reads_back_as_the_same_definition():
 
 
 def test_loading_an_unchanged_library_twice_creates_no_duplicates():
+    definitions = read_library()
+
     load_library()
     load_library()
 
-    assert Schema.objects.count() == 1
-    assert Step.objects.count() == 5
+    assert Schema.objects.count() == len(definitions)
+    assert Step.objects.count() == sum(len(definition.steps) for definition in definitions)
 
 
 def test_saving_a_changed_definition_updates_the_schema_in_place():
@@ -76,7 +78,7 @@ def test_load_schemas_command_reports_what_it_loaded():
 
     call_command("load_schemas", stdout=output)
 
-    assert "Loaded 1 schema: betrayal" in output.getvalue()
+    assert "Loaded 2 schemas: betrayal, blame" in output.getvalue()
 
 
 def test_load_schemas_command_fails_with_the_file_and_problem(tmp_path):

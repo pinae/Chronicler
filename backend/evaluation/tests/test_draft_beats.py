@@ -173,3 +173,59 @@ def test_drafting_keeps_nothing_in_the_database(lantern):
     draft("lantern", lantern)
 
     assert Chronicle.objects.count() == 0
+
+
+def test_entities_declared_before_drafting_are_known_to_the_ingester_and_kept(lantern):
+    (lantern / "lantern" / "entities.yaml").write_text(
+        yaml.safe_dump({"wena": {"kind": "character", "name": "Wena"}})
+    )
+    ScriptedIngester.script = {
+        1: IngestResult(
+            beats=(IngestedBeat(pred="trusts", args={"who": "@wena", "whom": "@master"}),),
+            new_entities=(MASTER,),
+        )
+    }
+
+    draft("lantern", lantern)
+
+    beats, entities = drafted(lantern)
+    assert beats[0]["beats"][0]["args"] == {"who": "@wena", "whom": "@master"}
+    assert entities == {
+        "wena": {"kind": "character", "name": "Wena"},
+        "master": {"kind": "character", "name": "The harbour master"},
+    }
+
+
+class OutletIngester:
+    """States what the speaking outlet claims, as the ingester does for media utterances."""
+
+    def ingest(self, chronicle, utterance):
+        outlet = utterance.speaker_entity
+        claim = {
+            "who": f"@{outlet.slug}",
+            "what": {"pred": "is", "args": {"who": f"@{outlet.slug}", "trait": "first"}},
+        }
+        return IngestResult(beats=(IngestedBeat(pred="says", args=claim, source_kind="claim"),))
+
+
+def test_a_media_outlet_declared_as_an_entity_speaks_its_passages(tmp_path, settings):
+    (tmp_path / "fire").mkdir()
+    (tmp_path / "fire" / "transcript.yaml").write_text(
+        yaml.safe_dump(
+            {
+                "title": "Fire",
+                "kind": "media",
+                "utterances": [{"order": 1, "speaker": "courier", "text": "We were first."}],
+            }
+        )
+    )
+    (tmp_path / "fire" / "entities.yaml").write_text(
+        yaml.safe_dump({"courier": {"kind": "source", "name": "The Courier"}})
+    )
+    settings.INJECTED = {**settings.INJECTED, "Ingester": f"{__name__}.OutletIngester"}
+
+    draft("fire", tmp_path)
+
+    [entry] = drafted(tmp_path, "fire")[0]
+    assert entry["beats"][0]["args"]["who"] == "@courier"
+    assert entry["beats"][0]["kind"] == "claim"

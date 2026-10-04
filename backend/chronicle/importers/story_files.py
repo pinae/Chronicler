@@ -34,6 +34,10 @@ def write_transcript(
     )
 
 
+def write_entities(directory: Path, entities: dict[str, dict[str, Any]]) -> None:
+    (directory / "entities.yaml").write_text(yaml.safe_dump(entities, sort_keys=False, allow_unicode=True))
+
+
 def write_readme_skeleton(
     directory: Path, slug: str, kind: str, provenance: str = TODO, license_text: str = TODO
 ) -> None:

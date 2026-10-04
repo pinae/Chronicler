@@ -183,6 +183,45 @@ def test_beats_still_invalid_after_repair_are_dropped_and_reported(court):
     assert "ronan" in result.problems[0]
 
 
+def test_what_a_media_outlet_states_becomes_a_claim_by_that_outlet(court):
+    chronicle, _ = court
+    courier = Entity.objects.create(
+        chronicle=chronicle, slug="courier", kind="source", canonical_name="The Courier", introduced_at_t=1
+    )
+    passage = Utterance.objects.create(
+        chronicle=chronicle, order=2, speaker_entity=courier, text="Mira trusts the steward, the paper says."
+    )
+
+    result = OllamaIngester(transport=ScriptedServer(answer([TRUST]))).ingest(chronicle, passage)
+
+    [claim] = result.beats
+    assert (claim.pred, claim.source_kind, claim.present) == ("says", "claim", ())
+    assert dict(claim.args) == {
+        "who": "@courier",
+        "what": {"pred": "trusts", "args": {"who": "@mira", "whom": "@aldric"}},
+    }
+    assert claim.text == "The Courier says: Mira trusts Aldric."
+
+
+def test_a_claim_the_model_already_attributed_to_the_outlet_is_kept_as_it_is(court):
+    chronicle, _ = court
+    courier = Entity.objects.create(
+        chronicle=chronicle, slug="courier", kind="source", canonical_name="The Courier", introduced_at_t=1
+    )
+    passage = Utterance.objects.create(chronicle=chronicle, order=2, speaker_entity=courier, text="...")
+    attributed = {
+        "pred": "says",
+        "args": {"who": "@courier", "what": {"pred": "trusts", "args": {"who": "@mira", "whom": "@aldric"}}},
+        "kind": "claim",
+        "text": "The Courier says Mira trusts Aldric.",
+    }
+
+    [claim] = OllamaIngester(transport=ScriptedServer(answer([attributed]))).ingest(chronicle, passage).beats
+
+    assert dict(claim.args) == attributed["args"]
+    assert claim.text == "The Courier says Mira trusts Aldric."
+
+
 def test_server_without_structured_output_gets_prompted_json(court):
     chronicle, utterance = court
     prose_answer = "Here you go:\n```json\n" + json.dumps(answer([TRUST])) + "\n```"

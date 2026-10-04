@@ -9,8 +9,6 @@ from chronicle.ingest.interfaces import Ingester
 from evaluation.drafting import draft_story
 from narrative_engine import di
 
-DRAFTED_FILES = ("beats.yaml", "entities.yaml")
-
 
 class Command(BaseCommand):
     help = "Draft a story's beats.yaml and entities.yaml from its transcript with the configured ingester."
@@ -27,9 +25,8 @@ class Command(BaseCommand):
     def handle(self, *args: Any, **options: Any) -> None:
         story, stories_dir = options["story"], Path(options["stories_dir"])
         directory = stories_dir / story
-        existing = [name for name in DRAFTED_FILES if (directory / name).exists()]
-        if existing and not options["force"]:
-            raise CommandError(f"{story} already has a {existing[0]}; pass --force to replace it")
+        if (directory / "beats.yaml").exists() and not options["force"]:
+            raise CommandError(f"{story} already has a beats.yaml; pass --force to replace it")
         ingester: Ingester = di.make("Ingester")
         draft = draft_story(story, stories_dir, ingester)
         write_yaml(directory / "beats.yaml", draft.beats)

@@ -24,4 +24,15 @@ Fact labels (WP-053); a Rete matcher for large corpora (deferred, §13).
   (§11 R3) or one event and outlet (§9.4); the concept says both.
 
 ## Status
-open
+done
+
+## Summary
+Decided: one story per event and outlet (concept §9.4), because completion per outlet needs a
+lattice built from that outlet's claims alone; the input is a YAML collection (`event`, `title`,
+`articles` with outlet, author, published_at, url, text). `manage.py import_media` writes, per
+outlet, a `media` transcript (one utterance per paragraph, spoken by the outlet, with its source
+fields) and `entities.yaml` with the outlet as `source`; `draft_beats` now starts from a story's
+declared entities and lets an outlet speak. `OllamaIngester` wraps everything an outlet states as
+`says(who=@outlet, what=…)` with kind `claim`. The new library schema `blame` (claimed_by patterns
+only) is completed by the claims of the media fixture `harbour-fire`, while `betrayal` ignores its
+claim that Petra trusted Holt. Usage doc: `docs/usage/import-media.md`.

@@ -5,6 +5,7 @@ rolled back, so later utterances are ingested against the entities and beats dra
 nothing is kept. What the ingester proposed is returned in the fixture format (beats.yaml,
 entities.yaml), with `review` marks where a human has to decide."""
 
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -13,9 +14,9 @@ from django.db import transaction
 
 from chronicle.beat_log import AppendError
 from chronicle.ingest.interfaces import IngestedBeat, Ingester, IngestResult, NewEntity
-from chronicle.models import Chronicle, Player, Utterance
-from chronicle.story_fixtures import SPEAKERS_WITHOUT_IDENTITY, Transcript, UtteranceSpec, read_transcript
-from narrative_engine.pipeline import IngestError, Pipeline
+from chronicle.models import Chronicle, Entity, Player, Utterance
+from chronicle.story_fixtures import EntitySpec, Transcript, UtteranceSpec, read_entities, read_transcript
+from narrative_engine.pipeline import IngestError, Pipeline, create_entity
 from reader.context import RecentAndSupportingBeats
 from schemas.vocabulary import BeatArgsError, default_vocabulary
 
@@ -54,23 +55,30 @@ class RecordingIngester:
 
 
 def draft_story(slug: str, stories_dir: Path, ingester: Ingester) -> StoryDraft:
+    """Entities the story already declares (e.g. the outlet of a media story) are known from the
+    start and kept."""
     transcript = read_transcript(slug, stories_dir)
+    declared = read_entities(slug, stories_dir)
     with transaction.atomic():
-        draft = draft_transcript(slug, transcript, ingester)
+        draft = draft_transcript(slug, transcript, declared, ingester)
         transaction.set_rollback(True)
     return draft
 
 
-def draft_transcript(slug: str, transcript: Transcript, ingester: Ingester) -> StoryDraft:
+def draft_transcript(
+    slug: str, transcript: Transcript, declared: Sequence[EntitySpec], ingester: Ingester
+) -> StoryDraft:
     chronicle = Chronicle.objects.create(kind=transcript.kind, title=transcript.title, meta={"fixture": slug})
     players = {name: Player.objects.create(chronicle=chronicle, name=name) for name in transcript.players}
+    entities = {entity.slug: create_entity(chronicle, new_entity(entity), 1) for entity in declared}
     recorder = RecordingIngester(ingester)
     pipeline = Pipeline(
         chronicle, recorder, reader=None, context_builder=RecentAndSupportingBeats(), audiences=()
     )
     draft = StoryDraft(utterance_count=len(transcript.utterances))
+    draft.entities = {entity.slug: entity_entry(new_entity(entity)) for entity in declared}
     for spec in transcript.utterances:
-        utterance = create_utterance(chronicle, spec, players)
+        utterance = create_utterance(chronicle, spec, players, entities)
         try:
             pipeline.process(utterance)
         except (IngestError, AppendError, BeatArgsError) as error:
@@ -80,13 +88,23 @@ def draft_transcript(slug: str, transcript: Transcript, ingester: Ingester) -> S
     return draft
 
 
-def create_utterance(chronicle: Chronicle, spec: UtteranceSpec, players: dict[str, Player]) -> Utterance:
-    """Speakers who are neither players nor the GM or narrator have no entity yet; they speak
-    without identity until the reviewer adds them."""
-    speaker = players.get(spec.speaker) if spec.speaker not in SPEAKERS_WITHOUT_IDENTITY else None
+def create_utterance(
+    chronicle: Chronicle, spec: UtteranceSpec, players: Mapping[str, Player], entities: Mapping[str, Entity]
+) -> Utterance:
+    """A speaker is a player, a declared entity (a media outlet) or, like the GM and the narrator,
+    no one in particular."""
     return Utterance.objects.create(
-        chronicle=chronicle, order=spec.order, speaker_player=speaker, text=spec.text, source=spec.source
+        chronicle=chronicle,
+        order=spec.order,
+        speaker_player=players.get(spec.speaker),
+        speaker_entity=entities.get(spec.speaker),
+        text=spec.text,
+        source=spec.source,
     )
+
+
+def new_entity(spec: EntitySpec) -> NewEntity:
+    return NewEntity(slug=spec.slug, kind=spec.kind, name=spec.name, aliases=tuple(spec.aliases))
 
 
 def add_result(draft: StoryDraft, order: int, result: IngestResult) -> None:

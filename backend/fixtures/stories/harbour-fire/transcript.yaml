@@ -1,0 +1,25 @@
+title: The Harbour Fire (The Courier)
+kind: media
+utterances:
+  - order: 1
+    speaker: courier
+    text: >-
+      Fire destroyed old Petra's boat shed last night. Witnesses saw Mayor Holt at the harbour
+      shortly before the flames.
+    source: {outlet: The Courier, author: Ines Varga, published_at: "2026-05-02T07:30:00Z", url: "https://courier.example/harbour-fire"}
+  - order: 2
+    speaker: courier
+    text: Petra once trusted Holt with the harbour fund.
+    source: {outlet: The Courier, author: Ines Varga, published_at: "2026-05-02T07:30:00Z", url: "https://courier.example/harbour-fire"}
+  - order: 3
+    speaker: courier
+    text: Holt has long wanted the harbour land for a hotel.
+    source: {outlet: The Courier, author: Ines Varga, published_at: "2026-05-03T09:00:00Z", url: "https://courier.example/holt-hotel"}
+  - order: 4
+    speaker: courier
+    text: The neighbours helped Petra clear the ashes.
+    source: {outlet: The Courier, author: Tom Reiss, published_at: "2026-05-04T08:15:00Z", url: "https://courier.example/neighbours"}
+  - order: 5
+    speaker: courier
+    text: The fishers say they no longer trust the mayor.
+    source: {outlet: The Courier, author: Tom Reiss, published_at: "2026-05-04T08:15:00Z", url: "https://courier.example/neighbours"}
