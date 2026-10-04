@@ -28,8 +28,9 @@ class ChronicleAdmin(admin.ModelAdmin):
 
 @admin.register(Player)
 class PlayerAdmin(admin.ModelAdmin):
-    list_display = ["name", "chronicle", "implicit"]
+    list_display = ["name", "chronicle", "implicit", "consent_given_at", "pseudonym"]
     list_filter = ["implicit"]
+    readonly_fields = ["pseudonym"]
 
 
 @admin.register(Entity)

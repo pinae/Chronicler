@@ -1,3 +1,4 @@
+import secrets
 from typing import TYPE_CHECKING, Any
 
 from django.db import models, transaction
@@ -82,6 +83,10 @@ class Chronicle(models.Model):
         return append_beat(self, draft, t)
 
 
+def new_pseudonym() -> str:
+    return f"player-{secrets.token_hex(4)}"
+
+
 class Player(models.Model):
     """One audience member. Sessions: one per human at the table.
     Literature / media: exactly one implicit row ('reader' / 'public'), created with the chronicle."""
@@ -89,6 +94,10 @@ class Player(models.Model):
     chronicle = models.ForeignKey(Chronicle, related_name="players", on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     implicit = models.BooleanField(default=False)
+    # A recorded table may be studied only once every human at it agreed (RQ2, WP-056).
+    consent_given_at = models.DateTimeField(null=True, blank=True)
+    # Stands in for the name in every study export; random, so it reveals nothing.
+    pseudonym = models.CharField(max_length=20, unique=True, default=new_pseudonym, editable=False)
 
     def __str__(self) -> str:
         return self.name

@@ -7,6 +7,7 @@ from django.core.management.base import BaseCommand, CommandError, CommandParser
 from django.db.models import QuerySet
 
 from gm_ui.models import UsageEvent
+from gm_ui.study import has_consent, pseudonymized_params
 
 
 class Command(BaseCommand):
@@ -19,8 +20,19 @@ class Command(BaseCommand):
         parser.add_argument("--output", default=None, help="write to this file instead of the console")
 
     def handle(self, *args: Any, **options: Any) -> None:
-        events = selected_events(options)
-        lines = [json.dumps(event_record(event), ensure_ascii=False) for event in events]
+        """Tables where not every player consented are left out; players appear by pseudonym."""
+        events = list(selected_events(options).select_related("chronicle"))
+        consent = {event.chronicle: has_consent(event.chronicle) for event in events if event.chronicle}
+        left_out = sum(1 for consented in consent.values() if not consented)
+        if left_out:
+            self.stderr.write(
+                f"Left out {left_out} chronicle{'s' if left_out > 1 else ''} without every player's consent."
+            )
+        lines = [
+            json.dumps(event_record(event), ensure_ascii=False)
+            for event in events
+            if event.chronicle is None or consent[event.chronicle]
+        ]
         if options["output"] is None:
             self.stdout.write("\n".join(lines))
             return
@@ -52,6 +64,6 @@ def event_record(event: UsageEvent) -> dict[str, Any]:
         "view": event.view,
         "chronicle": event.chronicle_id,
         "t": event.t,
-        "params": event.params,
+        "params": pseudonymized_params(event.params, event.chronicle),
         "created_at": event.created_at.isoformat(),
     }

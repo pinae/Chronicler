@@ -20,4 +20,14 @@ Study design and ethics approval.
 - Legal requirements (e.g. GDPR) need clarifying with the human before this package starts.
 
 ## Status
-open
+done (technical safeguards; the legal review is still open)
+
+## Summary
+Players record `consent_given_at` (editable in the admin) and carry a random, unique, read-only
+`pseudonym`; implicit players need no consent. `export_usage` leaves out chronicles where any human
+player has not consented (and says so on stderr) and replaces player ids in the parameters with
+pseudonyms; the new `export_session <chronicle>` exports utterances with pseudonymous speakers and
+player names in the text replaced, and refuses without everyone's consent. Characters and outlets
+keep their names. The legal requirements (GDPR: lawful basis, retention, erasure requests, the
+wording of consent) still need clarifying with the human; nothing here settles them. Usage doc:
+`docs/usage/consent.md`.
