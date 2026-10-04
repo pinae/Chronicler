@@ -63,7 +63,7 @@ Each package's status is kept in its own file, not here.
 | [WP-045](WP-045-prose-importer.md) | Prose importer | R1 | 029 |
 | [WP-046](WP-046-session-transcript-importer.md) | Session transcript importer | R1 | 029 |
 | [WP-047](WP-047-draft-beats-command.md) | Draft beats command | R1 | 031 |
-| [WP-048](WP-048-rq1-corpus-and-report.md) | RQ1 corpus and report | R1 | 044, 045, 046, 047 |
+| [WP-048](WP-048-rq1-report.md) | RQ1 report | R1 | 042, 043, 045, 046, 047 |
 | [WP-049](WP-049-story-writer-and-generate.md) | Story writer protocol and generate command | R2 | 029, 042 |
 | [WP-050](WP-050-ollama-story-writer.md) | Ollama story writer | R2 | 023, 049 |
 | [WP-051](WP-051-paired-comparison-and-blind-export.md) | Paired comparison and blind export | R2 | 050 |
@@ -72,3 +72,4 @@ Each package's status is kept in its own file, not here.
 | [WP-054](WP-054-cross-chronicle-comparison.md) | Cross-chronicle comparison | R3 | 040, 053 |
 | [WP-055](WP-055-usage-export-and-summaries.md) | Usage event export and session summaries | R4 | 039 |
 | [WP-056](WP-056-consent-and-anonymisation.md) | Consent and anonymisation | R4 | 055 |
+| [WP-057](WP-057-rq1-corpus.md) | RQ1 corpus (split off WP-048) | R1 | 044, 048 |

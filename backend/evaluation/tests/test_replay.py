@@ -185,3 +185,18 @@ def test_a_partial_replay_records_no_truth_readouts(steward_with_ground_truth):
     run = replayed_run(steward_with_ground_truth, "--reader", "uniform", "--until", "10")
 
     assert "truth" not in run
+
+
+def test_run_file_names_the_original_predicate_of_a_quarantined_beat(chronicle, entity_factory, beat_factory):
+    mira = entity_factory(kind="character", canonical_name="Mira")
+    beat_factory("adores", who=mira, text="Mira adores the sea.")
+
+    [beat] = build_run(chronicle, "adhoc")["beats"]
+
+    assert beat == {
+        "t": 1,
+        "pred": "unknown",
+        "original_pred": "adores",
+        "text": "Mira adores the sea.",
+        "quarantined": True,
+    }

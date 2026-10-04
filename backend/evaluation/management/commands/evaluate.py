@@ -8,6 +8,7 @@ from django.core.management.base import BaseCommand, CommandError, CommandParser
 from evaluation.ground_truth import read_ground_truth
 from evaluation.metrics import ALL
 from evaluation.report import metric_rows, table
+from evaluation.run_files import NoRunFile, latest_run_file
 
 
 class Command(BaseCommand):
@@ -22,7 +23,12 @@ class Command(BaseCommand):
 
     def handle(self, *args: Any, **options: Any) -> None:
         story = options["story"]
-        path = Path(options["run"]) if options["run"] else latest_run_file(Path(options["runs_dir"]), story)
+        try:
+            path = (
+                Path(options["run"]) if options["run"] else latest_run_file(Path(options["runs_dir"]), story)
+            )
+        except NoRunFile as error:
+            raise CommandError(str(error)) from error
         run = json.loads(path.read_text())
         audience = options["audience"]
         check_audience(run, audience)
@@ -32,14 +38,6 @@ class Command(BaseCommand):
             f"run of {run['created_at']} ({path.name})\n"
         )
         self.stdout.write(table(metric_rows(run, truth, audience, options["top_k"])))
-
-
-def latest_run_file(runs_dir: Path, story: str) -> Path:
-    """Run files are named by their UTC timestamp, so the last name is the latest run."""
-    run_files = sorted((runs_dir / story).glob("*.json"))
-    if not run_files:
-        raise CommandError(f"no run file for {story}; run `manage.py replay {story}` first")
-    return run_files[-1]
 
 
 def check_audience(run: dict[str, Any], audience: str) -> None:

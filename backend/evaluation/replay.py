@@ -106,7 +106,13 @@ def build_run(
             for entity in chronicle.entities.all()
         },
         "beats": [
-            {"t": beat.t, "pred": beat.pred, "text": beat.text, "quarantined": beat.is_quarantined}
+            {
+                "t": beat.t,
+                "pred": beat.pred,
+                "original_pred": beat.original_pred,
+                "text": beat.text,
+                "quarantined": beat.is_quarantined,
+            }
             for beat in chronicle.beats.all()
         ],
         "timeline": [

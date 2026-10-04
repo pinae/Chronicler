@@ -62,6 +62,8 @@ def run_file(
     return {
         "format": "chronicler-run/1",
         "story": "synthetic",
+        "created_at": "2026-10-04T00:00:00+00:00",
+        "reader": None,
         "entities": ENTITIES,
         "beats": beats if beats is not None else [beat(t) for t in range(1, last_t + 1)],
         "timeline": [
@@ -75,10 +77,11 @@ def run_file(
     }
 
 
-def beat(t: int, quarantined: bool = False) -> dict[str, Any]:
+def beat(t: int, quarantined: bool = False, original_pred: str = "adores") -> dict[str, Any]:
     return {
         "t": t,
         "pred": "unknown" if quarantined else "trusts",
+        "original_pred": original_pred if quarantined else "",
         "text": f"beat {t}",
         "quarantined": quarantined,
     }

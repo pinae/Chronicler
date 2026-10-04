@@ -2,6 +2,7 @@
 
 from evaluation.ground_truth import GroundTruth
 from evaluation.metrics import (
+    ALL,
     RECALL_KS,
     Run,
     Share,
@@ -16,6 +17,7 @@ from evaluation.metrics import (
 )
 
 NOT_AVAILABLE = "n/a"
+DEFAULT_TOP_K = 5
 
 
 def metric_rows(run: Run, truth: GroundTruth | None, audience: str, top_k: int) -> list[tuple[str, str]]:
@@ -72,3 +74,42 @@ def table(rows: list[tuple[str, str]]) -> str:
         *(f"{metric.ljust(width)}  {value}" for metric, value in rows),
     ]
     return "\n".join(lines)
+
+
+def story_section(story: str, run: Run, truth: GroundTruth | None, run_name: str) -> str:
+    """One story of the RQ1 report: its metrics and the beats the vocabulary could not express."""
+    rows = metric_rows(run, truth, ALL, top_k=DEFAULT_TOP_K)
+    lines = [
+        f"## {story}",
+        "",
+        f"Run `{run_name}`, reader {run['reader'] or 'none'}, {len(run['beats'])} beats.",
+        "",
+        "| Metric | Value |",
+        "|---|---|",
+        *(f"| {metric} | {value} |" for metric, value in rows),
+        "",
+        *quarantined_lines(run),
+    ]
+    return "\n".join(lines) + "\n"
+
+
+def quarantined_lines(run: Run) -> list[str]:
+    quarantined = [beat for beat in run["beats"] if beat["quarantined"]]
+    if not quarantined:
+        return ["Every beat could be expressed in the vocabulary."]
+    return [
+        "Beats the vocabulary could not express (quarantined, with the predicate the ingester proposed):",
+        "",
+        "| t | predicate | text |",
+        "|---|---|---|",
+        *(f"| {beat['t']} | {beat['original_pred']} | {beat['text']} |" for beat in quarantined),
+    ]
+
+
+def markdown_report(sections: list[str], generated_on: str) -> str:
+    header = (
+        "# RQ1 report\n\n"
+        f"Generated on {generated_on} by `manage.py report` from the latest run of each story; the "
+        "metrics are those of `manage.py evaluate` (concept §9.2) for the unfiltered lattice.\n"
+    )
+    return "\n".join([header, *sections])

@@ -14,7 +14,8 @@
   "matcher": {"repeatable_fill_cap": 3, "weight_floor": -6.0, "max_live_per_schema": 50},
   "players": {"3": "Anna", "4": "Ben"},
   "entities": {"17": {"slug": "aldric", "name": "Aldric", "kind": "character"}},
-  "beats": [{"t": 1, "pred": "is_at", "text": "Mira holds court…", "quarantined": false}],
+  "beats": [{"t": 1, "pred": "is_at", "original_pred": "", "text": "Mira holds court…", "quarantined": false}],
+                                      // original_pred: what the ingester proposed for a quarantined beat
   "timeline": [                       // one entry per t, from 0 (before the first beat) to the last beat
     {
       "t": 13,
