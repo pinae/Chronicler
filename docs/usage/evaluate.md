@@ -34,7 +34,8 @@ calibration (Brier score)       0.047
 ```
 
 The uniform reader believes nothing in particular, so no beat fits the truth better than its rival
-and the belief in the truth never rises; a language model gives these rows meaning. The rows:
+and the belief in the truth never rises; a language model gives these rows meaning
+(`replay … --reader configured`, see `guided-tour.md`). The rows:
 
 | Metric | Means |
 |---|---|

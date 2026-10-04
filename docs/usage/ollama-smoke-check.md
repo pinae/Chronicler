@@ -48,7 +48,7 @@ What the lines mean:
 | answer-letter mass, model defaults | the same with the model's defaults; a thinking model puts its first token on its reasoning, which is why readouts turn thinking off | anything |
 | logprobs depend on temperature | whether the server scales the reported probabilities by the temperature; readouts use temperature 1, so either way they see the model's own distribution | either |
 | json-schema | structured output for ingest | yes |
-| prompt-logprobs | probabilities of the prompt's tokens, which would give Bayes factors in one call | either (WP-044) |
+| prompt-logprobs | probabilities of the prompt's tokens, which would give Bayes factors in one call; without them they are scored token by token (ADR-009) | either |
 
 If **answer-letter mass, thinking off** is low (say below 50%), readouts see mostly other tokens and
 their answers mean little: check the model name, update Ollama, or try another model.

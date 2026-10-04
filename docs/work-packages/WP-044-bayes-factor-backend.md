@@ -20,10 +20,13 @@ WP-003, WP-028, WP-043.
 Weight calibration (deferred, §13).
 
 ## Status
-blocked
+done
 
-The smoke result is in (`docs/llm-smoke.md`, 2026-10-04): Ollama 0.22.1 with `gemma4:e4b` gives
-no prompt logprobs, so the first option is out. Choosing between a sidecar and forced scoring
-needs a measurement against the deployed server, which the development environment cannot reach.
-Until then `OllamaChoiceReader.beat_log_likelihood` raises `NotImplementedError`, and replays record
-`bayes_factors: null`, which `evaluate` shows as `n/a` (WP-041, WP-042).
+## Summary
+The owner's server gives no prompt logprobs (Ollama 0.22.1), so ADR-009 chooses forced scoring
+through the top logprobs of generated tokens: the story so far is sent raw, ending where the beat's
+line begins, and the beat's text is walked token by token, taking the longest alternative that
+continues it and charging an upper bound where none does. `OllamaChoiceReader.beat_log_likelihood`
+uses it, so replays with a model record Bayes factors and `evaluate` reports retrospective fit. The
+measurement on the deployed server is the `--llm` integration test; a vLLM sidecar with prompt
+logprobs is the exact alternative if the bounds turn out too coarse.

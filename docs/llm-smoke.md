@@ -24,8 +24,8 @@ What follows from it (revised with WP-063, see below):
   20 top logprobs, a question pages its candidates at 20 labels (`READER_MAX_CANDIDATES`).
 - Structured output by JSON schema works, as the ingester (WP-031) needs.
 - Ollama does not score prompt tokens, so the Bayes-factor estimator (WP-044) cannot read
-  log P(beat | context) from the prompt. The remaining options are a vLLM or llama.cpp sidecar, or
-  forced scoring token by token; WP-044 needs a measurement against the server to choose.
+  log P(beat | context) from the prompt. ADR-009 chose forced scoring token by token through the top
+  logprobs of generated tokens; a sidecar server with prompt logprobs is the exact alternative.
 
 ### Why the readouts of this run were not usable (WP-063)
 

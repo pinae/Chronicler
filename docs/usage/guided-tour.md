@@ -337,7 +337,10 @@ that fell **outside the letters**.
 
 5. Run `uv run python manage.py evaluate broken-jug`.
 
-**Result:** **largest surprise** and **calibration** now have values. A good reader's belief in the
-truth rises most at the confession (largest surprise at t = 26), and its answer to "Who broke Frau
-Marthe's jug?" at t=23 lies close to the annotated one (calibration near 0). **Retrospective fit**
-needs Bayes factors (WP-044).
+**Result:** **retrospective fit**, **largest surprise** and **calibration** now have values. A good
+reader finds the clues in the dormant window (fit above 0%: the wig, the judge's wounds and his
+eagerness to convict fit "the judge did it" better than its rival), its belief in the truth rises
+most at the confession (largest surprise at t = 26), and its answer to "Who broke Frau Marthe's
+jug?" at t=23 lies close to the annotated one (calibration near 0). Retrospective fit scores every
+dormant-window beat token by token (ADR-009), so the first run takes a few hundred short requests;
+re-runs come from the call log.

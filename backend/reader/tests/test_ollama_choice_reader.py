@@ -170,6 +170,39 @@ def test_response_without_logprobs_is_an_error_that_points_to_the_smoke_check(se
         reader.readout(CONTEXT, QUESTION)
 
 
+class WholeTextServer(FakeServer):
+    """Offers the rest of the scored line as one token with probability 0.5."""
+
+    def __init__(self, line):
+        super().__init__({})
+        self.line = line
+
+    def generate(self, request):
+        self.requests.append(request)
+        scored = request["prompt"].split("\nt=3:")[-1]
+        remaining = self.line[len(scored) :]
+        return first_token((remaining, 0.5))
+
+
+@pytest.mark.django_db
+def test_a_beat_is_scored_as_the_next_line_of_the_story_under_the_assumption(settings):
+    settings.OLLAMA_READER_MODEL = "reader-model"
+    server = WholeTextServer(" Aldric steals the key.")
+    reader = OllamaChoiceReader(transport=server)
+
+    log_likelihood = reader.beat_log_likelihood(
+        CONTEXT.assuming("Aldric is betraying Mira."), ContextBeat(t=3, text="Aldric steals the key.")
+    )
+
+    assert log_likelihood == pytest.approx(math.log(0.5))
+    [request] = server.requests
+    prompt = request["prompt"]
+    assert request["raw"] is True
+    assert prompt.index("t=1: Mira trusts Aldric.") < prompt.index("t=2: Mira has the key.")
+    assert "Assume: Aldric is betraying Mira." in prompt
+    assert prompt.endswith("The next event:\nt=3:")
+
+
 def test_reader_without_a_configured_model_explains_what_is_missing(settings):
     settings.OLLAMA_READER_MODEL = None
 
@@ -217,3 +250,22 @@ def test_distribution_over_four_labels_from_the_real_server(settings):
 
     assert sum(readout.probabilities.values()) == pytest.approx(1.0, abs=1e-6)
     assert readout.probabilities["D"] > 0
+
+
+@pytest.mark.llm
+@pytest.mark.django_db
+def test_a_beat_that_fits_an_assumption_is_more_likely_under_it_on_the_real_server(settings):
+    """Integration (`pytest --llm`): identical contexts give a log Bayes factor of 0, and a theft is
+    more likely when the reader assumes a thief than when it assumes a loyal servant."""
+    from llm.transport import HttpOllamaTransport
+    from reader.bayes import bayes_factor
+
+    settings.OLLAMA_READER_MODEL = os.environ["OLLAMA_READER_MODEL"]
+    reader = OllamaChoiceReader(
+        transport=HttpOllamaTransport(os.environ["OLLAMA_BASE_URL"], timeout_seconds=120)
+    )
+    theft = ContextBeat(t=3, text="Aldric steals the key.")
+    thief, loyal = "Aldric is a thief.", "Aldric is utterly loyal to Mira."
+
+    assert bayes_factor(reader, theft, CONTEXT, thief, thief) == pytest.approx(0.0, abs=1e-9)
+    assert bayes_factor(reader, theft, CONTEXT, thief, loyal) > 0

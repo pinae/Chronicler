@@ -11,6 +11,7 @@ from django.core.exceptions import ImproperlyConfigured
 from llm.cache import CachedOllama
 from llm.next_token import label_masses, next_token_request
 from llm.transport import HttpOllamaTransport, OllamaTransport
+from reader.forced_scoring import score_continuation
 from reader.interfaces import ContextBeat, Question, ReaderContext, Readout
 
 MAX_TOP_LOGPROBS = 20  # the native API's maximum (see docs/llm-smoke.md)
@@ -52,7 +53,11 @@ class OllamaChoiceReader:
         return Readout(probabilities=probabilities, outside_mass=outside_mass, llm_call_id=call.pk)
 
     def beat_log_likelihood(self, context: ReaderContext, beat: ContextBeat) -> float:
-        raise NotImplementedError("Bayes factors need the estimator chosen in WP-044")
+        """Log-probability of the beat's text as the next line of the story (ADR-009)."""
+        score = score_continuation(
+            self.client, self.model, scoring_prompt(context, beat.t), f" {beat.text}", settings.OLLAMA_NUM_CTX
+        )
+        return score.log_likelihood
 
 
 def transport_from_settings() -> OllamaTransport:
@@ -62,16 +67,24 @@ def transport_from_settings() -> OllamaTransport:
 
 
 def choice_prompt(context: ReaderContext, question: Question) -> str:
-    story = "\n".join(f"t={beat.t}: {beat.text}" for beat in context.beats) or "Nothing has happened yet."
-    assumption = f"\nAssume: {context.assumption}\n" if context.assumption else ""
     options = "\n".join(f"{candidate.label}) {candidate.text}" for candidate in question.candidates)
     return (
-        "You are reading a story as it unfolds. This is what you know so far:\n"
-        f"{story}\n{assumption}\n"
+        f"{story_so_far(context)}\n"
         "Which option best completes the next event of the story?\n"
         f"{question.text}\n{options}\n"
         "Answer with the letter only."
     )
+
+
+def scoring_prompt(context: ReaderContext, t: int) -> str:
+    """The story so far, ending where the line of beat t begins; the model continues it raw."""
+    return f"{story_so_far(context)}\nThe next event:\nt={t}:"
+
+
+def story_so_far(context: ReaderContext) -> str:
+    story = "\n".join(f"t={beat.t}: {beat.text}" for beat in context.beats) or "Nothing has happened yet."
+    assumption = f"\nAssume: {context.assumption}\n" if context.assumption else ""
+    return f"You are reading a story as it unfolds. This is what you know so far:\n{story}\n{assumption}"
 
 
 def label_distribution(response: Mapping[str, Any], labels: Sequence[str]) -> tuple[dict[str, float], float]:
