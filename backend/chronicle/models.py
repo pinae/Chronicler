@@ -252,3 +252,28 @@ class ScopeGrant(models.Model):
         if not self._state.adding:
             raise ImmutableGrant("scope grants cannot change once stored")
         super().save(*args, **kwargs)
+
+
+class Verdict(models.TextChoices):
+    VERIFIED = "verified"
+    FALSE = "false"
+    UNVERIFIED = "unverified"
+    MISLEADING = "misleading"
+
+
+class FactLabel(models.Model):
+    """An external factuality verdict on a beat, usually a claim (RQ4). Written by annotators and
+    fact-check imports, never by the engine: the engine measures narratives, it does not judge truth."""
+
+    beat = models.ForeignKey(Beat, related_name="fact_labels", on_delete=models.CASCADE)
+    verdict = models.CharField(max_length=20, choices=Verdict)
+    labeler = models.CharField(max_length=200)  # who judged: an annotator or a fact-checking source
+    note = models.TextField(blank=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["beat", "labeler"], name="one_fact_label_per_labeler_and_beat"),
+        ]
+
+    def __str__(self) -> str:
+        return f"t={self.beat.t}: {self.verdict} ({self.labeler})"

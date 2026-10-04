@@ -24,4 +24,13 @@ Automatic fact checking: the engine never judges truth.
 - Open: the format of the annotation sheet or fact-check source.
 
 ## Status
-open
+done
+
+## Summary
+`FactLabel` (beat, verdict ∈ verified/false/unverified/misleading, labeler, note; one label per
+labeler and beat) is editable in the admin. `manage.py import_fact_labels <chronicle id> <sheet.csv>`
+reads a CSV annotation sheet (`t, verdict, labeler[, note]`, the format decided here), replaces a
+labeler's earlier verdict, imports the attachable rows and lists the others by line. The boundary
+test scans every engine package (matching, reader, evaluation, writing, narrative_engine, llm,
+schemas) for code that creates, changes or deletes labels; reading them stays allowed for WP-054.
+Usage doc: `docs/usage/fact-labels.md`.

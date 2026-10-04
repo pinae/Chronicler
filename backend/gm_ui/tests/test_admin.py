@@ -3,7 +3,7 @@ from django.apps import apps
 from django.contrib import admin
 from django.urls import reverse
 
-from chronicle.models import Beat, Chronicle, Entity, Player, ScopeGrant
+from chronicle.models import Beat, Chronicle, Entity, FactLabel, Player, ScopeGrant
 from evaluation.replay import replay_story
 from llm.models import LLMCall
 from matching.models import Hypothesis
@@ -16,7 +16,8 @@ OUR_APPS = ["chronicle", "schemas", "matching", "reader", "llm", "evaluation", "
 
 @pytest.fixture
 def every_kind_of_record(client):
-    replay_story("steward", reader=UniformReader(), until_t=10)
+    steward = replay_story("steward", reader=UniformReader(), until_t=10)
+    FactLabel.objects.create(beat=steward.beats.get(t=1), verdict="verified", labeler="annotator")
     LLMCall.objects.create(
         request_hash="a" * 64,
         model="reader",
@@ -57,8 +58,8 @@ def test_engine_records_are_read_only(admin_client, model):
     assert not model_admin.has_delete_permission(request)
 
 
-@pytest.mark.parametrize("model", [Chronicle, Player, Entity])
-def test_story_metadata_stays_editable(admin_client, model):
+@pytest.mark.parametrize("model", [Chronicle, Player, Entity, FactLabel])
+def test_story_metadata_and_annotations_stay_editable(admin_client, model):
     request = admin_client.get("/").wsgi_request
 
     assert admin.site._registry[model].has_change_permission(request)

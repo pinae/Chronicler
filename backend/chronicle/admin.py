@@ -1,6 +1,15 @@
 from django.contrib import admin
 
-from chronicle.models import Beat, Chronicle, Entity, EntityAttribute, Player, ScopeGrant, Utterance
+from chronicle.models import (
+    Beat,
+    Chronicle,
+    Entity,
+    EntityAttribute,
+    FactLabel,
+    Player,
+    ScopeGrant,
+    Utterance,
+)
 from narrative_engine.read_only_admin import ReadOnlyAdmin, ReadOnlyInline
 
 
@@ -57,3 +66,13 @@ class ScopeGrantAdmin(ReadOnlyAdmin):
 @admin.register(EntityAttribute)
 class EntityAttributeAdmin(ReadOnlyAdmin):
     list_display = ["entity", "key", "value", "source_beat"]
+
+
+@admin.register(FactLabel)
+class FactLabelAdmin(admin.ModelAdmin):
+    """Annotators' verdicts are editable; the beats they judge are not."""
+
+    list_display = ["__str__", "beat", "verdict", "labeler"]
+    list_filter = ["verdict", "labeler"]
+    raw_id_fields = ["beat"]
+    search_fields = ["beat__text", "note"]
