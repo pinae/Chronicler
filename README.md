@@ -53,6 +53,11 @@ no database server; to run them on PostgreSQL as CI does: `uv run pytest --ds=na
 
 ## Trying it out
 
+**Start with the guided tour, [`docs/usage/guided-tour.md`](docs/usage/guided-tour.md):** *Macbeth*
+as a roleplaying session and Kleist's *The Broken Jug* as a pen-and-paper adventure, step by step,
+with what you should see on every screen and why. It tells you whether the engine reads two
+well-known plots the way you do.
+
 Everything below works without a language model (`--reader uniform` is the know-nothing
 baseline). Each step links the usage doc that describes it in detail. Start the database first
 (see above).

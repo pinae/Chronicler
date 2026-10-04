@@ -76,6 +76,18 @@ def test_suspicion_alone_starts_a_hidden_crime_whose_victim_is_still_open():
     assert (suspected.binding["V"], suspected.status) == (None, LIVE)
 
 
+def test_growing_suspicion_strengthens_one_reading_instead_of_starting_another():
+    thane_was_there = proposition("is_at", who=entity(THANE), where="the chamber")
+    matcher = run(
+        "hidden_crime",
+        beat(1, "distrusts", who=entity(LORD), whom=entity(THANE)),
+        beat(2, "learns", who=entity(LORD), what=thane_was_there),
+    )
+
+    [suspected] = matcher.live()
+    assert suspected.fill_ts("suspicion") == [1, 2]
+
+
 def test_a_usurper_who_kills_the_ruler_and_takes_the_crown_completes_a_usurpation():
     matcher = run(
         "usurpation",

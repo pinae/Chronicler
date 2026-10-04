@@ -24,6 +24,7 @@ steps:
     phase: development
     trigger: true
     required: false
+    repeatable: true
     patterns:
       - {pred: distrusts, args: {who: $I, whom: $C}}
       - {pred: learns, args: {who: $I, what: {pred: is_at, args: {who: $C, where: "*"}}}}

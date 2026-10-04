@@ -1,0 +1,16 @@
+macbeth: {kind: character, name: Macbeth, aliases: [Thane of Glamis, the tyrant]}
+lady-macbeth: {kind: character, name: Lady Macbeth}
+banquo: {kind: character, name: Banquo}
+macduff: {kind: character, name: Macduff, aliases: [Thane of Fife]}
+duncan: {kind: character, name: King Duncan, aliases: [Duncan, the king]}
+malcolm: {kind: character, name: Malcolm, aliases: [the prince, Prince of Cumberland]}
+fleance: {kind: character, name: Fleance, aliases: [Banquo's son]}
+witches: {kind: character, name: The three witches, aliases: [the weird sisters]}
+grooms: {kind: character, name: The grooms, aliases: [the king's chamberlains]}
+murderers: {kind: character, name: The murderers}
+doctor: {kind: character, name: The doctor}
+cawdor: {kind: object, name: The thaneship of Cawdor}
+crown: {kind: object, name: The crown of Scotland}
+heath: {kind: place, name: The heath}
+inverness: {kind: place, name: Macbeth's castle at Inverness}
+england: {kind: place, name: England}

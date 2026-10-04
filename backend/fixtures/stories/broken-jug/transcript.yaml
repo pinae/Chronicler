@@ -1,0 +1,115 @@
+title: The Broken Jug (an adventure)
+kind: session
+# A pen-and-paper adventure after Kleist's comedy. Anna plays Walter, the visiting judicial
+# counsellor; Ben plays Licht, the clerk; Clara plays Ruprecht, the accused. The game master plays
+# everyone else, the culprit included. Lines marked "(to ...)" are played out privately.
+players: [Anna, Ben, Clara]
+utterances:
+  - order: 1
+    speaker: gm
+    text: >-
+      (GM notes, not read out) Last night Judge Adam crept into Eve's room with a forged letter:
+      her fiancé Ruprecht would be sent to the East Indies with the militia, unless she was kind to
+      the judge, who could get him exempted. When Ruprecht came to the door, Adam leapt out of the
+      window and knocked Frau Marthe's prized jug off the shelf.
+  - order: 2
+    speaker: gm
+    text: >-
+      (To Clara) Your briefing: last night you heard a man in Eve's room and broke the door in. The
+      man leapt out of the window; the jug crashed to the floor; you struck him twice on the head with
+      the door handle in the dark. You think it was Lebrecht the cobbler.
+  - order: 3
+    speaker: gm
+    text: >-
+      Morning in the courtroom at Huisum. Judge Adam sits bandaging two wounds on his head; his wig
+      is missing. The clerk Licht comes in.
+  - order: 4
+    speaker: Ben
+    text: "Licht: Good heavens, judge, what happened to your head? And where is your wig?"
+  - order: 5
+    speaker: gm
+    text: >-
+      Adam says he fell getting out of bed this morning and struck his head on the stove; the cat
+      had her kittens in his wig.
+  - order: 6
+    speaker: Ben
+    text: >-
+      Licht (aside, to the GM): If the inspector finds this court in disorder, the next judge of
+      Huisum is me.
+  - order: 7
+    speaker: gm
+    text: >-
+      Anna, this is your entrance: Walter, judicial counsellor from Utrecht, is inspecting the
+      village courts. He has just suspended the judge of Holla.
+  - order: 8
+    speaker: Anna
+    text: "Walter: Carry on with today's case, judge. I shall only listen."
+  - order: 9
+    speaker: gm
+    text: >-
+      Frau Marthe storms in with Eve and Ruprecht, the broken jug in her arms. She demands justice:
+      Ruprecht broke her jug last night in Eve's room.
+  - order: 10
+    speaker: gm
+    text: >-
+      Adam turns pale when he sees who the parties are. He declares the matter clear at once:
+      Ruprecht broke the jug.
+  - order: 11
+    speaker: Anna
+    text: "Walter: Not so fast, judge. We shall hear everyone. Clerk, write it all down."
+  - order: 12
+    speaker: Anna
+    text: I think the boy did it. Her mother caught him there, after all.
+  - order: 13
+    speaker: Clara
+    text: >-
+      Ruprecht: I was at Eve's door, yes, but I did not break the jug! A man leapt out of the
+      window, and I gave him two good blows on the head. It was Lebrecht, the cobbler, I'd swear it.
+  - order: 14
+    speaker: Clara
+    text: Lebrecht broke the jug. I'm sure of it.
+  - order: 15
+    speaker: gm
+    text: When Ruprecht speaks of the blows, the judge touches his bandage.
+  - order: 16
+    speaker: Ben
+    text: >-
+      Licht (aside, to the GM): Two blows on the head, and our judge has two wounds on his head.
+      I don't believe a word of his stove.
+  - order: 17
+    speaker: Ben
+    text: The judge broke that jug himself.
+  - order: 18
+    speaker: gm
+    text: >-
+      Adam presses Eve to say that it was Ruprecht. (GM notes: he is hiding his own deed.) Eve
+      refuses to name anyone.
+  - order: 19
+    speaker: Anna
+    text: >-
+      Walter: Judge, you are leading the witness, and I don't like it. Clerk, send for Ruprecht's
+      aunt, Frau Brigitte.
+  - order: 20
+    speaker: gm
+    text: >-
+      Frau Brigitte brings a wig she found in the trellis under Eve's window. It fits the judge.
+      In the snow she followed a strange track, one foot human and one like a hoof, from the window
+      to the judge's house. Walter knows the judge's club foot.
+  - order: 21
+    speaker: Anna
+    text: "Walter: Now I see it. I will prove that the judge broke this jug."
+  - order: 22
+    speaker: gm
+    text: Adam hastily sentences Ruprecht to the stocks for breaking the jug.
+  - order: 23
+    speaker: gm
+    text: >-
+      Eve breaks her silence before the whole court: it was the judge. He came to her room with a
+      letter saying Ruprecht would be sent to the East Indies, and that only he could save him. When
+      Ruprecht knocked, he leapt out of the window and broke the jug.
+  - order: 24
+    speaker: gm
+    text: >-
+      Adam flees from the court across the fields. Walter makes Licht judge in his place and tells
+      Eve the letter was a forgery: Ruprecht stays at home. Frau Marthe still wants justice for her
+      jug and sets off for the government in Utrecht.

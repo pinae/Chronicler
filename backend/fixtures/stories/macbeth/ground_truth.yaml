@@ -1,0 +1,11 @@
+# Macbeth kills Duncan (t=17) while his wife keeps watch, blames the grooms (t=20) and is crowned
+# (t=22). Banquo and Macduff only suspect him. The table learns the truth at t=32, when the doctor
+# hears Lady Macbeth confess in her sleep.
+reveal_t: 32
+true_hypothesis:
+  schema: hidden_crime
+  binding: {C: macbeth, V: duncan}
+dormant_window: [18, 31]
+reader_beliefs:
+  # After the coronation, a reader at the table who did not see the murder.
+  - {t: 22, question: "Who killed King Duncan?", answer: {macbeth: 0.6, grooms: 0.2, malcolm: 0.1, none: 0.1}}

@@ -76,3 +76,4 @@ Each package's status is kept in its own file, not here.
 | [WP-058](WP-058-development-database-and-env.md) | Development database and settings from .env | M0 | 001, 003 |
 | [WP-059](WP-059-learned-beats-in-player-views.md) | Learned beats enter players' views and lattices | M5 | 008, 021 |
 | [WP-060](WP-060-schemas-for-the-example-stories.md) | Schemas for the example stories | M3 | 011, 012 |
+| [WP-061](WP-061-example-stories-and-guided-tour.md) | Example stories (Macbeth, The Broken Jug) and a guided tour | M9 | 043, 059, 060 |

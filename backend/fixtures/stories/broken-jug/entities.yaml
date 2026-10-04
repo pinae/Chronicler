@@ -1,0 +1,13 @@
+adam: {kind: character, name: Judge Adam, aliases: [Adam, the judge, the village judge]}
+licht: {kind: character, name: Licht, aliases: [the clerk]}
+walter: {kind: character, name: Walter, aliases: [the judicial counsellor, the inspector]}
+marthe: {kind: character, name: Frau Marthe, aliases: [Marthe Rull, the widow]}
+eve: {kind: character, name: Eve, aliases: [Evchen, Marthe's daughter]}
+ruprecht: {kind: character, name: Ruprecht, aliases: [Eve's fiancé]}
+brigitte: {kind: character, name: Frau Brigitte, aliases: [Ruprecht's aunt]}
+lebrecht: {kind: character, name: Lebrecht, aliases: [the cobbler]}
+jug: {kind: object, name: The jug, aliases: [Marthe's jug]}
+wig: {kind: object, name: The wig}
+judgeship: {kind: object, name: The office of village judge, aliases: [the judge's seat]}
+eves-room: {kind: place, name: Eve's room, aliases: [Eve's window]}
+court: {kind: place, name: The courtroom at Huisum}

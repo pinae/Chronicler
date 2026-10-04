@@ -24,6 +24,8 @@ not duplicated.
 | `usurpation` | U(surper), R(uler), P(ower) | R favours U; U wants P, kills R and takes P | a favour or trust R grants | U has P |
 | `prophecy` | S(eer), H(older), X (the thing foretold) | S foretells that H will have X; H wants or fears it | the foretelling | H has X, or is given it |
 
+The [guided tour](guided-tour.md) shows these schemas at work on two well-known plays.
+
 To load only some files (the test suite does this, so that its expectations do not change whenever
 the library grows), set `SCHEMA_LIBRARY_SLUGS = ["betrayal", "blame"]` in the settings module.
 

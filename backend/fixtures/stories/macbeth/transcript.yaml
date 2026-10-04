@@ -1,0 +1,125 @@
+title: Macbeth (a session)
+kind: session
+# Anna plays Macbeth, Ben plays Lady Macbeth, Clara plays Banquo, Dora plays Macduff.
+# The game master plays everyone else; scenes marked "(to ...)" are played out privately.
+players: [Anna, Ben, Clara, Dora]
+utterances:
+  - order: 1
+    speaker: gm
+    text: >-
+      (To Anna and Clara) Thunder on a blasted heath. Returning from battle, Macbeth and Banquo meet
+      three witches. "All hail, Macbeth, Thane of Cawdor! All hail, Macbeth, that shalt be king hereafter!"
+  - order: 2
+    speaker: gm
+    text: (To Anna and Clara) To Banquo they say, "Thou shalt get kings, though thou be none." Then they vanish.
+  - order: 3
+    speaker: Clara
+    text: "Banquo: Were such things here as we do speak about? Or have we eaten on the insane root?"
+  - order: 4
+    speaker: gm
+    text: >-
+      (To Anna and Clara) Ross rides up: the king has made Macbeth Thane of Cawdor, for the old thane
+      was a traitor.
+  - order: 5
+    speaker: Anna
+    text: >-
+      Macbeth (aside, to the GM): Two truths are told. If chance will have me king, why, chance may
+      crown me. But I want that crown.
+  - order: 6
+    speaker: gm
+    text: >-
+      At the palace of Forres, King Duncan thanks his generals before the court. He trusts Macbeth
+      and Banquo above all. Then he names his son Malcolm Prince of Cumberland, heir to the throne.
+  - order: 7
+    speaker: Dora
+    text: I bet Macbeth wants that throne for himself.
+  - order: 8
+    speaker: gm
+    text: (To Ben) At Inverness, Lady Macbeth reads her husband's letter about the witches and their promise.
+  - order: 9
+    speaker: Ben
+    text: >-
+      Lady Macbeth: Glamis thou art, and Cawdor, and shalt be what thou art promised. The king comes
+      here tonight. He shall never see tomorrow.
+  - order: 10
+    speaker: gm
+    text: >-
+      Duncan arrives at Inverness with his court and praises his gracious hostess. Banquo and his son
+      Fleance, Malcolm and Macduff are with him.
+  - order: 11
+    speaker: gm
+    text: >-
+      (To Anna and Ben) In a side room, Lady Macbeth sets out the plan: she will drug the king's
+      grooms, and Macbeth will kill the sleeping king with their daggers.
+  - order: 12
+    speaker: Anna
+    text: "Macbeth: I am settled. Is this a dagger which I see before me?"
+  - order: 13
+    speaker: gm
+    text: >-
+      (To Anna and Ben) Lady Macbeth drugs the grooms' wine and keeps watch while Macbeth enters
+      Duncan's chamber and kills the sleeping king.
+  - order: 14
+    speaker: gm
+    text: >-
+      Morning. Macduff goes to wake the king and finds him murdered. Macbeth rushes into the chamber
+      and, "in fury", kills the two grooms, saying they killed the king.
+  - order: 15
+    speaker: gm
+    text: Malcolm flees to England; his brother flees to Ireland.
+  - order: 16
+    speaker: Dora
+    text: "Macduff: The king's sons are stolen away and fled, which puts upon them suspicion of the deed."
+  - order: 17
+    speaker: gm
+    text: Macbeth is crowned King of Scotland at Scone.
+  - order: 18
+    speaker: Clara
+    text: >-
+      Banquo (aside, to the GM): Thou hast it now, king, Cawdor, Glamis, all, as the weird women
+      promised, and I fear thou playedst most foully for it.
+  - order: 19
+    speaker: Clara
+    text: I'm sure Macbeth killed the king himself.
+  - order: 20
+    speaker: Anna
+    text: >-
+      Macbeth (aside, to the GM): To be thus is nothing, but to be safely thus. They hailed Banquo
+      father to a line of kings. Upon my head they placed a fruitless crown.
+  - order: 21
+    speaker: gm
+    text: (To Anna) Macbeth hires two murderers to waylay Banquo and Fleance on their evening ride.
+  - order: 22
+    speaker: gm
+    text: >-
+      (To Clara) In the dusk the murderers fall on Banquo. "Fly, good Fleance, fly!" Banquo dies;
+      Fleance escapes into the night.
+  - order: 23
+    speaker: gm
+    text: >-
+      At the banquet, Macbeth sees Banquo's ghost in his chair and raves at it; the guests leave in
+      confusion. Word comes that Banquo was murdered on the road.
+  - order: 24
+    speaker: Dora
+    text: "Macduff (to the GM): The tyrant's hand is in this. I will not sit at his table again."
+  - order: 25
+    speaker: Dora
+    text: Forget the sons. I bet Macbeth had Banquo murdered.
+  - order: 26
+    speaker: gm
+    text: Macduff rides to England to join Malcolm. Macbeth has Macduff's wife and children slaughtered.
+  - order: 27
+    speaker: gm
+    text: >-
+      At Dunsinane a doctor watches Lady Macbeth walk in her sleep, washing invisible blood from her
+      hands: "Who would have thought the old man to have had so much blood in him?" The doctor's
+      report reaches Macduff in England.
+  - order: 28
+    speaker: gm
+    text: Lady Macbeth dies. Malcolm's army comes to Dunsinane, carrying boughs from Birnam Wood.
+  - order: 29
+    speaker: Dora
+    text: "Macduff: Despair thy charm: Macduff was from his mother's womb untimely ripped!"
+  - order: 30
+    speaker: gm
+    text: Macduff kills Macbeth in single combat, and Malcolm is crowned king.

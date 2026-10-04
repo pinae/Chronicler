@@ -1,0 +1,77 @@
+# Players: Anna (Walter), Ben (Licht), Clara (Ruprecht). `players: []` keeps a beat with the GM.
+- utterance: 1
+  beats:
+    - {t: 1, pred: is_at, args: {who: "@adam", where: "@eves-room"}, present: [adam, eve], players: [], text: Last night Judge Adam came to Eve's room.}
+    - {t: 2, pred: harms, kind: action, args: {who: "@adam", whom: "@eve", how: threatens her with a forged letter}, present: [adam, eve], players: [], text: Adam threatens Eve with a forged letter about Ruprecht's conscription.}
+    - {t: 3, pred: harms, kind: action, args: {who: "@adam", whom: "@marthe", how: breaks her jug fleeing through the window}, present: [adam, eve], players: [], text: Adam breaks Frau Marthe's jug as he leaps out of the window.}
+- utterance: 2
+  beats:
+    - {t: 4, pred: believes, args: {who: "@ruprecht", what: {pred: is_at, args: {who: "@lebrecht", where: "@eves-room"}}}, present: [ruprecht], players: [Clara], text: Ruprecht believes it was Lebrecht in Eve's room.}
+- utterance: 3
+  beats:
+    - {t: 5, pred: is_at, args: {who: "@adam", where: "@court"}, present: [adam, licht], text: Judge Adam is in his courtroom.}
+    - {t: 6, pred: is, args: {who: "@adam", trait: wounded on the head}, present: [adam, licht], text: The judge has two wounds on his head.}
+    - {t: 7, pred: has, args: {who: "@adam", what: "@judgeship"}, present: [adam, licht], text: Adam is the village judge.}
+- utterance: 5
+  beats:
+    - {t: 8, pred: says, kind: claim, args: {who: "@adam", what: {pred: is, args: {who: "@adam", trait: fell out of bed}}}, present: [adam, licht], text: Adam says he fell getting out of bed.}
+- utterance: 6
+  beats:
+    - {t: 9, pred: wants, args: {who: "@licht", what: "@judgeship"}, present: [licht], players: [Ben], text: Licht wants to become judge.}
+- utterance: 7
+  beats:
+    - {t: 10, pred: is_at, args: {who: "@walter", where: "@court"}, present: [walter, adam, licht], text: Walter arrives at the court.}
+- utterance: 9
+  beats:
+    - {t: 11, pred: is_at, args: {who: "@eve", where: "@court"}, present: [marthe, eve, ruprecht, adam, walter, licht], text: Eve stands silent beside her mother.}
+    - {t: 12, pred: has, args: {who: "@marthe", what: "@jug"}, present: [marthe, eve, ruprecht, adam, walter, licht], text: Frau Marthe brings her jug.}
+    - {t: 13, pred: is, args: {who: "@jug", trait: broken}, present: [marthe, eve, ruprecht, adam, walter, licht], text: The jug is broken.}
+    - {t: 14, pred: says, kind: claim, args: {who: "@marthe", what: {pred: harms, args: {who: "@ruprecht", whom: "@marthe"}}}, present: [marthe, eve, ruprecht, adam, walter, licht], text: Marthe accuses Ruprecht of breaking her jug.}
+- utterance: 10
+  beats:
+    - {t: 15, pred: is, args: {who: "@adam", trait: nervous}, present: [marthe, eve, ruprecht, adam, walter, licht], text: The judge turns pale.}
+    - {t: 16, pred: says, kind: claim, args: {who: "@adam", what: {pred: harms, args: {who: "@ruprecht", whom: "@marthe"}}}, present: [marthe, eve, ruprecht, adam, walter, licht], text: Adam declares that Ruprecht broke the jug.}
+- utterance: 12
+  theories:
+    - {schema: hidden_crime, binding: {C: ruprecht, V: marthe}}
+- utterance: 13
+  beats:
+    - {t: 17, pred: is_at, args: {who: "@ruprecht", where: "@eves-room"}, present: [marthe, eve, ruprecht, adam, walter, licht], text: Ruprecht admits he was at Eve's door last night.}
+    - {t: 18, pred: says, kind: claim, args: {who: "@ruprecht", what: {pred: is_at, args: {who: "@lebrecht", where: "@eves-room"}}}, present: [marthe, eve, ruprecht, adam, walter, licht], text: Ruprecht says it was Lebrecht in Eve's room.}
+- utterance: 14
+  theories:
+    - {schema: hidden_crime, binding: {C: lebrecht, V: marthe}}
+- utterance: 16
+  beats:
+    - {t: 19, pred: distrusts, args: {who: "@licht", whom: "@adam"}, present: [licht], players: [Ben], text: Licht suspects the judge.}
+- utterance: 17
+  theories:
+    - {schema: hidden_crime, binding: {C: adam, V: marthe}}
+- utterance: 18
+  beats:
+    - {t: 20, pred: hides, args: {who: "@adam", what: "#3", from: "@walter"}, present: [adam], players: [], text: Adam hides that he broke the jug.}
+- utterance: 19
+  beats:
+    - {t: 21, pred: distrusts, args: {who: "@walter", whom: "@adam"}, present: [marthe, eve, ruprecht, adam, walter, licht], text: Walter distrusts the judge.}
+- utterance: 20
+  beats:
+    - {t: 22, pred: is_at, args: {who: "@wig", where: "@eves-room"}, present: [brigitte, marthe, eve, ruprecht, adam, walter, licht], text: Frau Brigitte found a wig under Eve's window.}
+    - {t: 23, pred: has, args: {who: "@adam", what: "@wig"}, present: [brigitte, marthe, eve, ruprecht, adam, walter, licht], text: The wig is the judge's.}
+    - {t: 24, pred: learns, args: {who: "@walter", what: {pred: is_at, args: {who: "@adam", where: "@eves-room"}}, from: "@brigitte"}, present: [brigitte, marthe, eve, ruprecht, adam, walter, licht], text: Walter concludes that the judge was at Eve's window last night.}
+- utterance: 21
+  theories:
+    - {schema: hidden_crime, binding: {C: adam, V: marthe, I: walter}}
+- utterance: 22
+  beats:
+    - {t: 25, pred: says, kind: claim, args: {who: "@adam", what: {pred: harms, args: {who: "@ruprecht", whom: "@marthe"}}}, present: [brigitte, marthe, eve, ruprecht, adam, walter, licht], text: Adam sentences Ruprecht for breaking the jug.}
+- utterance: 23
+  beats:
+    - {t: 26, pred: learns, args: {who: "@walter", what: "#3", from: "@eve"}, present: [brigitte, marthe, eve, ruprecht, adam, walter, licht], text: Walter learns from Eve that the judge broke the jug.}
+    - {t: 27, pred: learns, args: {who: "@licht", what: "#3", from: "@eve"}, present: [brigitte, marthe, eve, ruprecht, adam, walter, licht], text: Licht learns it too.}
+    - {t: 28, pred: learns, args: {who: "@ruprecht", what: "#3", from: "@eve"}, present: [brigitte, marthe, eve, ruprecht, adam, walter, licht], text: Ruprecht learns it too.}
+    - {t: 29, pred: learns, args: {who: "@marthe", what: "#3", from: "@eve"}, present: [brigitte, marthe, eve, ruprecht, adam, walter, licht], text: Frau Marthe learns who broke her jug.}
+    - {t: 30, pred: learns, args: {who: "@walter", what: "#2", from: "@eve"}, present: [brigitte, marthe, eve, ruprecht, adam, walter, licht], text: Walter learns how the judge threatened Eve.}
+- utterance: 24
+  beats:
+    - {t: 31, pred: is, args: {who: "@adam", trait: fled}, present: [walter, licht, marthe, eve, ruprecht], text: The judge flees across the fields.}
+    - {t: 32, pred: has, args: {who: "@licht", what: "@judgeship"}, present: [walter, licht, eve, ruprecht], text: Licht becomes judge in Adam's place.}

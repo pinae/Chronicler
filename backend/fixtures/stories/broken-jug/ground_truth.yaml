@@ -1,0 +1,10 @@
+# Judge Adam broke Frau Marthe's jug (t=3, known only to the GM) and judges the case himself. Eve
+# names him before the court at t=26.
+reveal_t: 26
+true_hypothesis:
+  schema: hidden_crime
+  binding: {C: adam, V: marthe}
+dormant_window: [4, 25]
+reader_beliefs:
+  # After the wig is found under Eve's window (t=23).
+  - {t: 23, question: "Who broke Frau Marthe's jug?", answer: {adam: 0.6, ruprecht: 0.2, lebrecht: 0.1, none: 0.1}}

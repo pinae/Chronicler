@@ -1,0 +1,96 @@
+# Players: Anna (Macbeth), Ben (Lady Macbeth), Clara (Banquo), Dora (Macduff).
+# `players:` lists who learns a beat; without it, everyone at the table does.
+- utterance: 1
+  beats:
+    - {t: 1, pred: is_at, args: {who: "@macbeth", where: "@heath"}, present: [macbeth, banquo, witches], players: [Anna, Clara], text: Macbeth and Banquo meet the witches on the heath.}
+    - {t: 2, pred: says, args: {who: "@witches", what: {pred: has, args: {who: "@macbeth", what: "@cawdor"}}}, present: [macbeth, banquo, witches], players: [Anna, Clara], text: The witches hail Macbeth as Thane of Cawdor.}
+    - {t: 3, pred: says, args: {who: "@witches", what: {pred: has, args: {who: "@macbeth", what: "@crown"}}}, present: [macbeth, banquo, witches], players: [Anna, Clara], text: The witches hail Macbeth as king hereafter.}
+- utterance: 2
+  beats:
+    - {t: 4, pred: says, args: {who: "@witches", what: {pred: has, args: {who: "@fleance", what: "@crown"}}}, present: [macbeth, banquo, witches], players: [Anna, Clara], text: The witches foretell that Banquo's son will be king.}
+- utterance: 4
+  beats:
+    - {t: 5, pred: gives, kind: action, args: {who: "@duncan", what: "@cawdor", to: "@macbeth"}, present: [macbeth, banquo], players: [Anna, Clara], text: King Duncan makes Macbeth Thane of Cawdor.}
+- utterance: 5
+  beats:
+    - {t: 6, pred: wants, args: {who: "@macbeth", what: "@crown"}, present: [macbeth], players: [Anna], text: Macbeth wants the crown.}
+- utterance: 6
+  beats:
+    - {t: 7, pred: has, args: {who: "@duncan", what: "@crown"}, present: [duncan, macbeth, banquo, malcolm, macduff], text: Duncan wears the crown of Scotland.}
+    - {t: 8, pred: trusts, args: {who: "@duncan", whom: "@macbeth"}, present: [duncan, macbeth, banquo, malcolm, macduff], text: Duncan trusts Macbeth.}
+    - {t: 9, pred: trusts, args: {who: "@duncan", whom: "@banquo"}, present: [duncan, macbeth, banquo, malcolm, macduff], text: Duncan trusts Banquo.}
+    - {t: 10, pred: gives, kind: action, args: {who: "@duncan", what: Prince of Cumberland, to: "@malcolm"}, present: [duncan, macbeth, banquo, malcolm, macduff], text: Duncan names Malcolm Prince of Cumberland.}
+- utterance: 7
+  theories:
+    - {schema: usurpation, binding: {U: macbeth, R: duncan}}
+- utterance: 8
+  beats:
+    - {t: 11, pred: learns, args: {who: "@lady-macbeth", what: "#3", from: "@macbeth"}, present: [lady-macbeth], players: [Ben], text: Lady Macbeth learns that the witches promised Macbeth the crown.}
+- utterance: 9
+  beats:
+    - {t: 12, pred: wants, args: {who: "@lady-macbeth", what: {pred: has, args: {who: "@macbeth", what: "@crown"}}}, present: [lady-macbeth], players: [Ben], text: Lady Macbeth wants Macbeth to have the crown.}
+- utterance: 10
+  beats:
+    - {t: 13, pred: is_at, args: {who: "@duncan", where: "@inverness"}, present: [duncan, macbeth, lady-macbeth, banquo, fleance, malcolm, macduff], text: Duncan arrives at Inverness.}
+    - {t: 14, pred: trusts, args: {who: "@duncan", whom: "@lady-macbeth"}, present: [duncan, macbeth, lady-macbeth, banquo, fleance, malcolm, macduff], text: Duncan trusts his hostess.}
+- utterance: 11
+  beats:
+    - {t: 15, pred: promises, args: {who: "@macbeth", whom: "@lady-macbeth", what: {pred: kills, args: {who: "@macbeth", whom: "@duncan"}}}, present: [macbeth, lady-macbeth], players: [Anna, Ben], text: Macbeth promises his wife to kill Duncan.}
+- utterance: 13
+  beats:
+    - {t: 16, pred: harms, kind: action, args: {who: "@lady-macbeth", whom: "@grooms", how: drugs their wine}, present: [lady-macbeth, grooms], players: [Ben], text: Lady Macbeth drugs the grooms.}
+    - {t: 17, pred: kills, kind: action, args: {who: "@macbeth", whom: "@duncan"}, present: [macbeth, lady-macbeth], players: [Anna, Ben], text: Macbeth kills the sleeping Duncan while his wife keeps watch.}
+- utterance: 14
+  beats:
+    - {t: 18, pred: is, args: {who: "@duncan", trait: murdered}, present: [macduff, macbeth, lady-macbeth, banquo, malcolm], text: Duncan is found murdered.}
+    - {t: 19, pred: kills, kind: action, args: {who: "@macbeth", whom: "@grooms"}, present: [macbeth, grooms, macduff, banquo], text: Macbeth kills the grooms.}
+    - {t: 20, pred: says, kind: claim, args: {who: "@macbeth", what: {pred: kills, args: {who: "@grooms", whom: "@duncan"}}}, present: [macbeth, macduff, banquo, malcolm, lady-macbeth], text: Macbeth says the grooms killed Duncan.}
+- utterance: 15
+  beats:
+    - {t: 21, pred: is_at, args: {who: "@malcolm", where: "@england"}, present: [malcolm], text: Malcolm flees to England.}
+- utterance: 16
+  theories:
+    - {schema: hidden_crime, binding: {C: malcolm, V: duncan}}
+- utterance: 17
+  beats:
+    - {t: 22, pred: has, args: {who: "@macbeth", what: "@crown"}, present: [macbeth, lady-macbeth, banquo, macduff], text: Macbeth is crowned king.}
+- utterance: 18
+  beats:
+    - {t: 23, pred: distrusts, args: {who: "@banquo", whom: "@macbeth"}, present: [banquo], players: [Clara], text: Banquo suspects Macbeth.}
+- utterance: 19
+  theories:
+    - {schema: hidden_crime, binding: {C: macbeth, V: duncan}}
+- utterance: 20
+  beats:
+    - {t: 24, pred: fears, args: {who: "@macbeth", what: {pred: has, args: {who: "@fleance", what: "@crown"}}}, present: [macbeth], players: [Anna], text: Macbeth fears that Banquo's son will be king.}
+- utterance: 21
+  beats:
+    - {t: 25, pred: harms, kind: action, args: {who: "@macbeth", whom: "@banquo", how: hires murderers against him}, present: [macbeth, murderers], players: [Anna], text: Macbeth sends murderers after Banquo.}
+- utterance: 22
+  beats:
+    - {t: 26, pred: kills, kind: action, args: {who: "@murderers", whom: "@banquo"}, present: [murderers, banquo, fleance], players: [Clara], text: The murderers kill Banquo; Fleance escapes.}
+- utterance: 23
+  beats:
+    - {t: 27, pred: is, args: {who: "@macbeth", trait: haunted}, present: [macbeth, lady-macbeth, macduff], text: Macbeth raves at a ghost only he can see.}
+    - {t: 28, pred: is, args: {who: "@banquo", trait: murdered}, present: [macbeth, lady-macbeth, macduff], text: Banquo was murdered on the road.}
+- utterance: 24
+  beats:
+    - {t: 29, pred: distrusts, args: {who: "@macduff", whom: "@macbeth"}, present: [macduff], players: [Dora], text: Macduff suspects Macbeth.}
+- utterance: 25
+  theories:
+    - {schema: hidden_crime, binding: {C: macbeth, V: banquo}}
+- utterance: 26
+  beats:
+    - {t: 30, pred: is_at, args: {who: "@macduff", where: "@england"}, present: [macduff, malcolm], text: Macduff joins Malcolm in England.}
+    - {t: 31, pred: harms, kind: action, args: {who: "@macbeth", whom: "@macduff", how: has his family slaughtered}, present: [macbeth, murderers], text: Macbeth has Macduff's family slaughtered.}
+- utterance: 27
+  beats:
+    - {t: 32, pred: learns, args: {who: "@doctor", what: "#17", from: "@lady-macbeth"}, present: [doctor, lady-macbeth], text: The doctor hears Lady Macbeth confess the murder of Duncan in her sleep.}
+    - {t: 33, pred: learns, args: {who: "@macduff", what: "#17", from: "@doctor"}, present: [macduff, doctor], text: Macduff learns that Macbeth killed Duncan.}
+- utterance: 28
+  beats:
+    - {t: 34, pred: is, args: {who: "@lady-macbeth", trait: dead}, present: [lady-macbeth, macbeth], text: Lady Macbeth dies.}
+- utterance: 30
+  beats:
+    - {t: 35, pred: kills, kind: action, args: {who: "@macduff", whom: "@macbeth"}, present: [macduff, macbeth, malcolm], text: Macduff kills Macbeth.}
+    - {t: 36, pred: has, args: {who: "@malcolm", what: "@crown"}, present: [malcolm, macduff], text: Malcolm is crowned king.}
