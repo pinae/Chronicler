@@ -44,6 +44,35 @@ uv run python manage.py migrate
 uv run python manage.py runserver
 ```
 
+## Trying it out
+
+Everything below works without a language model (`--reader uniform` is the know-nothing
+baseline). Each step links the usage doc that describes it in detail.
+
+```bash
+cd backend
+uv run python manage.py migrate
+uv run python manage.py load_schemas                          # docs/usage/schema-library.md
+uv run python manage.py replay steward --reader uniform --per-player   # docs/usage/replay.md
+uv run python manage.py replay ferryman --reader uniform
+uv run python manage.py evaluate steward                      # docs/usage/evaluate.md
+uv run python manage.py report steward ferryman --output /tmp/rq1.md   # docs/usage/report.md
+cd ../frontend && npm ci && npm run build && cd ../backend
+uv run python manage.py runserver                             # then open http://localhost:8000
+```
+
+In the browser: the chronicle list (`docs/usage/browse-chronicles.md`), a chronicle's beats as
+each audience saw them (`chronicle.md`), the lattice of hypotheses at any beat (`lattice.md`), what
+the audience expects next (`expectations.md`), who knows what (`knowledge.md`) and trying a beat
+before narrating it (`try-a-beat.md`). The Django admin is at `/admin/` (`admin.md`).
+
+More commands, all documented in `docs/usage/`: importing books, sessions and news coverage
+(`import-prose.md`, `import-session.md`, `import-media.md`), drafting their beats with the language
+model (`draft-beats.md`), writing stories toward a twist and comparing writers (`generate.md`,
+`compare.md`), fact labels and outlet comparison (`fact-labels.md`, `compare-outlets.md`), and the
+usage study (`usage-study.md`, `consent.md`). Packages still waiting for input are marked
+`blocked` in `docs/work-packages/`.
+
 ## Frontend
 
 Requirements: Node 22.13 or newer.
