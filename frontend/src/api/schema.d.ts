@@ -172,6 +172,26 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/chronicles/{chronicle_id}/river": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get River
+     * @description For the game master and each player, the threads they hold at every beat (story map).
+     */
+    get: operations["gm_ui_river_api_get_river"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -402,6 +422,68 @@ export interface components {
       /** Optional */
       optional: boolean;
     };
+    /** ColumnOut */
+    ColumnOut: {
+      /** Audience */
+      audience: string;
+      /** Name */
+      name: string;
+      /** Threads */
+      threads: components["schemas"]["ThreadOut"][];
+      /** Moments */
+      moments: components["schemas"]["MomentOut"][];
+      /** Events */
+      events: components["schemas"]["EventOut"][];
+    };
+    /** EventOut */
+    EventOut: {
+      /** T */
+      t: number;
+      /** Thread */
+      thread: number;
+      /** Kind */
+      kind: string;
+      /** Step */
+      step: string | null;
+    };
+    /** MomentOut */
+    MomentOut: {
+      /** T */
+      t: number;
+      /** Shares */
+      shares: components["schemas"]["ShareOut"][];
+      /** Other */
+      other: number;
+    };
+    /** RiverOut */
+    RiverOut: {
+      /** Last T */
+      last_t: number;
+      /** Columns */
+      columns: components["schemas"]["ColumnOut"][];
+    };
+    /** ShareOut */
+    ShareOut: {
+      /** Thread */
+      thread: number;
+      /** Share */
+      share: number;
+      /** Status */
+      status: string;
+      /** Secret */
+      secret: boolean;
+    };
+    /** ThreadOut */
+    ThreadOut: {
+      /** Id */
+      id: number;
+      /** Schema Slug */
+      schema_slug: string;
+      /** Schema Name */
+      schema_name: string;
+      /** Binding */
+      binding: components["schemas"]["BindingEntry"][];
+    };
   };
   responses: never;
   parameters: never;
@@ -620,6 +702,28 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["PredicateOut"][];
+        };
+      };
+    };
+  };
+  gm_ui_river_api_get_river: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        chronicle_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RiverOut"];
         };
       };
     };

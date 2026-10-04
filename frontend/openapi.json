@@ -426,6 +426,36 @@
           }
         }
       }
+    },
+    "/api/chronicles/{chronicle_id}/river": {
+      "get": {
+        "operationId": "gm_ui_river_api_get_river",
+        "summary": "Get River",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "chronicle_id",
+            "schema": {
+              "title": "Chronicle Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RiverOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "For the game master and each player, the threads they hold at every beat (story map)."
+      }
     }
   },
   "components": {
@@ -1011,6 +1041,161 @@
         },
         "required": ["name", "kinds", "optional"],
         "title": "RoleOut",
+        "type": "object"
+      },
+      "ColumnOut": {
+        "properties": {
+          "audience": {
+            "title": "Audience",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "threads": {
+            "items": {
+              "$ref": "#/components/schemas/ThreadOut"
+            },
+            "title": "Threads",
+            "type": "array"
+          },
+          "moments": {
+            "items": {
+              "$ref": "#/components/schemas/MomentOut"
+            },
+            "title": "Moments",
+            "type": "array"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/EventOut"
+            },
+            "title": "Events",
+            "type": "array"
+          }
+        },
+        "required": ["audience", "name", "threads", "moments", "events"],
+        "title": "ColumnOut",
+        "type": "object"
+      },
+      "EventOut": {
+        "properties": {
+          "t": {
+            "title": "T",
+            "type": "integer"
+          },
+          "thread": {
+            "title": "Thread",
+            "type": "integer"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "step": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Step"
+          }
+        },
+        "required": ["t", "thread", "kind", "step"],
+        "title": "EventOut",
+        "type": "object"
+      },
+      "MomentOut": {
+        "properties": {
+          "t": {
+            "title": "T",
+            "type": "integer"
+          },
+          "shares": {
+            "items": {
+              "$ref": "#/components/schemas/ShareOut"
+            },
+            "title": "Shares",
+            "type": "array"
+          },
+          "other": {
+            "title": "Other",
+            "type": "number"
+          }
+        },
+        "required": ["t", "shares", "other"],
+        "title": "MomentOut",
+        "type": "object"
+      },
+      "RiverOut": {
+        "properties": {
+          "last_t": {
+            "title": "Last T",
+            "type": "integer"
+          },
+          "columns": {
+            "items": {
+              "$ref": "#/components/schemas/ColumnOut"
+            },
+            "title": "Columns",
+            "type": "array"
+          }
+        },
+        "required": ["last_t", "columns"],
+        "title": "RiverOut",
+        "type": "object"
+      },
+      "ShareOut": {
+        "properties": {
+          "thread": {
+            "title": "Thread",
+            "type": "integer"
+          },
+          "share": {
+            "title": "Share",
+            "type": "number"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "secret": {
+            "title": "Secret",
+            "type": "boolean"
+          }
+        },
+        "required": ["thread", "share", "status", "secret"],
+        "title": "ShareOut",
+        "type": "object"
+      },
+      "ThreadOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "schema_slug": {
+            "title": "Schema Slug",
+            "type": "string"
+          },
+          "schema_name": {
+            "title": "Schema Name",
+            "type": "string"
+          },
+          "binding": {
+            "items": {
+              "$ref": "#/components/schemas/BindingEntry"
+            },
+            "title": "Binding",
+            "type": "array"
+          }
+        },
+        "required": ["id", "schema_slug", "schema_name", "binding"],
+        "title": "ThreadOut",
         "type": "object"
       }
     }

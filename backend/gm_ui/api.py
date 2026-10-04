@@ -87,7 +87,9 @@ def list_beats(
 from gm_ui.dry_run_api import router as dry_run_router  # noqa: E402
 from gm_ui.knowledge_api import router as knowledge_router  # noqa: E402
 from gm_ui.lattice_api import router as lattice_router  # noqa: E402
+from gm_ui.river_api import router as river_router  # noqa: E402
 
 api.add_router("", lattice_router)
 api.add_router("", knowledge_router)
 api.add_router("", dry_run_router)
+api.add_router("", river_router)

@@ -167,3 +167,13 @@ def test_a_binding_read_back_from_the_database_keeps_the_schemas_role_order():
     assert {tuple(hypothesis.binding) for hypothesis in lattice.hypotheses} == {("T", "V", "S")}
     assert {tuple(state.binding) for state in reloaded} == {("T", "V", "S")}
     assert str(Hypothesis.objects.filter(chronicle=chronicle).first()).startswith("betrayal(T=")
+
+
+def test_the_timeline_is_the_lattice_at_every_t_for_every_audience():
+    from evaluation.replay import replay_story
+
+    chronicle = replay_story("steward", reader=None, per_player=True)
+
+    for player in [None, *chronicle.players.all()]:
+        timeline = Lattice.timeline(chronicle, 24, for_player=player)
+        assert timeline == [Lattice.at(chronicle, t, for_player=player) for t in range(25)]

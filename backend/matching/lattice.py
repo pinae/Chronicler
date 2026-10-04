@@ -61,6 +61,30 @@ class Lattice:
             hypotheses.append(hypothesis_at(row, t, definition, fills.get(row.pk, ())))
         return cls(t=t, hypotheses=tuple(hypotheses))
 
+    @classmethod
+    def timeline(cls, chronicle: Chronicle, last_t: int, for_player: Player | None = None) -> list[Self]:
+        """The lattice at every t from 0 to last_t, as `at` gives it, from one load of the stored rows."""
+        rows = list(
+            Hypothesis.objects.filter(chronicle=chronicle, for_player=for_player, created_at_t__lte=last_t)
+            .select_related("schema", "refuted_by")
+            .order_by("created_at_t", "pk")
+        )
+        fills = fills_up_to(chronicle, last_t)
+        definitions: dict[str, SchemaDefinition] = {}
+        for row in rows:
+            definitions.setdefault(row.schema.slug, definition_of(row.schema))
+        return [
+            cls(
+                t=t,
+                hypotheses=tuple(
+                    hypothesis_at(row, t, definitions[row.schema.slug], made_by(fills.get(row.pk, ()), t))
+                    for row in rows
+                    if row.created_at_t <= t
+                ),
+            )
+            for t in range(last_t + 1)
+        ]
+
     def live(self) -> list[LatticeHypothesis]:
         return [hypothesis for hypothesis in self.hypotheses if hypothesis.is_live]
 
@@ -74,6 +98,10 @@ def fills_up_to(chronicle: Chronicle, t: int) -> dict[int, tuple[Fill, ...]]:
         at_t = None if fill.filled_at_t == fill.beat.t else fill.filled_at_t
         fills.setdefault(fill.hypothesis_id, []).append(Fill(fill.step.step_id, fill.beat.t, at_t=at_t))
     return {hypothesis_id: tuple(hypothesis_fills) for hypothesis_id, hypothesis_fills in fills.items()}
+
+
+def made_by(fills: tuple[Fill, ...], t: int) -> tuple[Fill, ...]:
+    return tuple(fill for fill in fills if fill.filled_at_t <= t)
 
 
 def hypothesis_at(
