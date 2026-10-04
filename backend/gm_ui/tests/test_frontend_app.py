@@ -32,7 +32,7 @@ def test_missing_build_explains_how_to_build_it(client, tmp_path, settings):
     response = client.get("/")
 
     assert response.status_code == 503
-    assert b"npm run build" in response.content
+    assert b"yarn build" in response.content
 
 
 @pytest.mark.django_db

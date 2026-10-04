@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.http import HttpRequest, HttpResponse, JsonResponse
 
-MISSING_BUILD = "The frontend has not been built yet: run `npm run build` in frontend/ (see README.md)."
+MISSING_BUILD = "The frontend has not been built yet: run `yarn build` in frontend/ (see README.md)."
 
 
 def healthz(request: HttpRequest) -> JsonResponse:

@@ -1,6 +1,7 @@
 # ADR-007: Frontend toolchain, serving and browser tests
 
-**Status:** accepted (2026-10-03) · **Work package:** WP-034
+**Status:** accepted (2026-10-03) · **Work package:** WP-034 · The package manager (npm) and the
+versions below are superseded by ADR-010 (Yarn 4 workspaces, Node 24, 2026-10-04).
 
 ## Context
 The GM/writer screens are a React app in `frontend/` (ADR-001) on top of the JSON API (ADR-006). We

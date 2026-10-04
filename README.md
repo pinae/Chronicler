@@ -70,7 +70,7 @@ uv run python manage.py replay steward --reader uniform --per-player   # docs/us
 uv run python manage.py replay ferryman --reader uniform
 uv run python manage.py evaluate steward                      # docs/usage/evaluate.md
 uv run python manage.py report steward ferryman --output /tmp/rq1.md   # docs/usage/report.md
-cd ../frontend && npm ci && npm run build && cd ../backend
+cd .. && corepack enable && yarn install && yarn workspace chronicler-frontend build && cd backend
 uv run python manage.py runserver                             # then open http://localhost:8000
 ```
 
@@ -92,23 +92,28 @@ usage study (`usage-study.md`, `consent.md`). Packages still waiting for input a
 
 ## Frontend
 
-Requirements: Node 22.13 or newer.
+Requirements: Node 24 LTS (`.node-version`; 22.22.2 or newer works too) and Yarn 4 through
+Corepack (ADR-010). The frontend and the browser tests are Yarn workspaces with one `yarn.lock` in
+the repository root.
 
 ```bash
+corepack enable              # once; Node 25 and newer: npm install -g corepack first
+yarn install                 # in the repository root: installs frontend/ and e2e/
 cd frontend
-npm ci
-npm run dev                  # http://localhost:5173, forwards /api to Django on port 8000
-npm test                     # component tests
-npm run lint && npm run format:check && npm run typecheck
-npm run build                # frontend/dist, served by Django under / (ADR-007)
-npm run generate:api-types   # after changing the API
+yarn dev                     # http://localhost:5173, forwards /api to Django on port 8000
+yarn test                    # component tests
+yarn lint && yarn format:check && yarn typecheck
+yarn build                   # frontend/dist, served by Django under / (ADR-007)
+yarn generate:api-types      # after changing the API
 ```
 
 ## Browser tests
 
 ```bash
 cd e2e
-npm ci
-npx playwright install chromium   # skip if the browser is pre-installed
-npx playwright test               # builds the frontend and starts Django with the e2e settings
+yarn playwright install chromium   # skip if the browser is pre-installed
+yarn playwright test               # builds the frontend and starts Django with the e2e settings
 ```
+
+In a container with a pre-installed Chromium of another build, point Playwright to it:
+`CHROMIUM_EXECUTABLE=/opt/pw-browsers/chromium yarn playwright test`.

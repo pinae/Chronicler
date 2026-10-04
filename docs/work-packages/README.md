@@ -79,3 +79,4 @@ Each package's status is kept in its own file, not here.
 | [WP-061](WP-061-example-stories-and-guided-tour.md) | Example stories (Macbeth, The Broken Jug) and a guided tour | M9 | 043, 059, 060 |
 | [WP-062](WP-062-django-6.md) | Upgrade to Django 6.1 | M0 | 001 |
 | [WP-063](WP-063-real-token-probabilities.md) | Readouts read the model's real answer probabilities | M6 | 003, 024, 028 |
+| [WP-064](WP-064-yarn-and-stack-update.md) | Yarn 4 workspaces and an updated frontend stack | M8 | 034 |

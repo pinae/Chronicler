@@ -26,13 +26,13 @@ repos:
         pass_filenames: false
       - id: frontend-lint
         name: frontend lint, format and types
-        entry: bash -c "cd frontend && npm run --silent lint && npm run --silent format:check && npm run --silent typecheck"
+        entry: bash -c "cd frontend && yarn lint && yarn format:check && yarn typecheck"
         language: system
         files: ^frontend/
         pass_filenames: false
       - id: frontend-test
         name: frontend tests
-        entry: bash -c "cd frontend && npm test --silent"
+        entry: bash -c "cd frontend && yarn test"
         language: system
         files: ^frontend/
         pass_filenames: false

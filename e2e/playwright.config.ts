@@ -1,9 +1,12 @@
 import { defineConfig, devices } from "@playwright/test";
 
-// The scenarios in docs/usage/ run against Django serving the built frontend (ADR-007), with the
+// The scenarios in docs/usage/ run against Django serving the built frontend (ADR-007, ADR-010), with the
 // e2e settings: a throwaway SQLite database that each test seeds with fixture stories.
 const port = 8001;
 const e2eSettings = "--settings=narrative_engine.settings.e2e";
+// CI installs the Chromium build this Playwright version expects. Development containers that ship
+// another build point CHROMIUM_EXECUTABLE to it.
+const chromiumExecutable = process.env.CHROMIUM_EXECUTABLE;
 
 export default defineConfig({
   testDir: "./tests",
@@ -16,10 +19,18 @@ export default defineConfig({
     baseURL: `http://127.0.0.1:${port}`,
     trace: "retain-on-failure",
   },
-  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
+  projects: [
+    {
+      name: "chromium",
+      use: {
+        ...devices["Desktop Chrome"],
+        launchOptions: chromiumExecutable ? { executablePath: chromiumExecutable } : {},
+      },
+    },
+  ],
   webServer: {
     command: [
-      "npm --prefix ../frontend run build",
+      "yarn workspace chronicler-frontend build",
       `cd ../backend && uv run python manage.py migrate ${e2eSettings} --verbosity 0`,
       `uv run python manage.py runserver 127.0.0.1:${port} --noreload ${e2eSettings}`,
     ].join(" && "),

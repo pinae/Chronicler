@@ -66,42 +66,44 @@ jobs:
         working-directory: frontend
     steps:
       - uses: actions/checkout@v7
+      # Before setup-node, so that its Yarn cache uses the Yarn of packageManager (ADR-010).
+      - name: Enable Corepack
+        working-directory: .
+        run: corepack enable
       - uses: actions/setup-node@v7
         with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: frontend/package-lock.json
+          node-version-file: .node-version
+          cache: yarn
       - uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
         with:
           working-directory: backend
           enable-cache: true
       - name: Install dependencies from the lock file
-        run: npm ci
+        run: yarn install --immutable
       - name: Lint
-        run: npm run lint
+        run: yarn lint
       - name: Check formatting
-        run: npm run format:check
+        run: yarn format:check
       - name: Type check
-        run: npm run typecheck
+        run: yarn typecheck
       - name: Test
-        run: npm test
+        run: yarn test
       - name: API types match the backend's OpenAPI schema
         run: |
           (cd ../backend && uv sync --frozen)
-          npm run generate:api-types
+          yarn generate:api-types
           git diff --exit-code -- openapi.json src/api/schema.d.ts
 
   e2e:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+      - name: Enable Corepack
+        run: corepack enable
       - uses: actions/setup-node@v7
         with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: |
-            frontend/package-lock.json
-            e2e/package-lock.json
+          node-version-file: .node-version
+          cache: yarn
       - uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
         with:
           working-directory: backend
@@ -109,14 +111,13 @@ jobs:
       - name: Install dependencies from the lock files
         run: |
           (cd backend && uv sync --frozen)
-          npm ci --prefix frontend
-          npm ci --prefix e2e
+          yarn install --immutable
       - name: Install the browser
         working-directory: e2e
-        run: npx playwright install --with-deps chromium
+        run: yarn playwright install --with-deps chromium
       - name: Browser tests of the scenarios in docs/usage
         working-directory: e2e
-        run: npx playwright test
+        run: yarn playwright test
       - uses: actions/upload-artifact@v5
         if: failure()
         with:

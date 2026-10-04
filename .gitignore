@@ -231,3 +231,12 @@ node_modules/
 frontend/dist/
 e2e/test-results/
 e2e/playwright-report/
+
+# Yarn 4 (ADR-010): keep the configuration, not the cache or install state
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+.pnp.*

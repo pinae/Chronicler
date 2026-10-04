@@ -5,7 +5,7 @@ how many beats it holds, so a game master or writer can open one.
 
 ## Before you start
 - The app runs: `cd backend && uv run python manage.py runserver` with the frontend built
-  (`cd frontend && npm run build`), or `npm run dev` in `frontend/` for development.
+  (`cd frontend && yarn build`), or `yarn dev` in `frontend/` for development.
 - For the first scenario, the stories `minimal` and `steward` have been replayed
   (`uv run python manage.py replay minimal --reader none`, the same for `steward`).
 
@@ -23,7 +23,7 @@ followed by **session · 5 beats**. The newest chronicle comes first.
 **Result:** under the heading **Chronicles** the page says **No chronicles yet**.
 
 ## The backend cannot be reached
-1. Stop the backend while the development server (`npm run dev`) keeps running (the browser test
+1. Stop the backend while the development server (`yarn dev`) keeps running (the browser test
    simulates this by failing the request to `/api/chronicles/`).
 2. Go to **/**.
 
