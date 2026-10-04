@@ -1,5 +1,6 @@
 """Hand-built run files (docs/run-file-format.md) with known metric values."""
 
+from collections.abc import Sequence
 from typing import Any
 
 from evaluation.ground_truth import GroundTruth, TrueHypothesis
@@ -80,4 +81,32 @@ def beat(t: int, quarantined: bool = False) -> dict[str, Any]:
         "pred": "unknown" if quarantined else "trusts",
         "text": f"beat {t}",
         "quarantined": quarantined,
+    }
+
+
+def with_truth(
+    run: dict[str, Any],
+    beliefs: Sequence[tuple[int, float]] = (),
+    log_bayes_factors: Sequence[tuple[int, float]] | None = None,
+    reader_beliefs: Sequence[tuple[dict[str, float], dict[str, float]]] = (),
+) -> dict[str, Any]:
+    """The run with a `truth` record: beliefs as (t, p), Bayes factors as (t, log factor), reader
+    beliefs as (annotated, readout)."""
+    truth = ALDRIC_BETRAYS_MIRA
+    return {
+        **run,
+        "truth": {
+            "reveal_t": truth.reveal_t,
+            "schema": truth.true_hypothesis.schema,
+            "binding": {"T": ALDRIC, "V": MIRA},
+            "dormant_window": list(truth.dormant_window),
+            "beliefs": [{"t": t, "p": p, "llm_call": None} for t, p in beliefs],
+            "bayes_factors": None
+            if log_bayes_factors is None
+            else [{"t": t, "log_bayes_factor": factor, "dominant": None} for t, factor in log_bayes_factors],
+            "reader_beliefs": [
+                {"t": 5, "question": "Who will harm Mira?", "annotated": annotated, "readout": readout}
+                for annotated, readout in reader_beliefs
+            ],
+        },
     }

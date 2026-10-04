@@ -6,7 +6,7 @@ Format: docs/run-file-format.md.
 """
 
 import json
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -80,11 +80,20 @@ def speaker_entity_for(chronicle: Chronicle, story: StoryFixture, slug: str) -> 
 
 
 def build_run(
-    chronicle: Chronicle, story: str, audiences: Sequence[Player | None] = (None,), reader: str | None = None
+    chronicle: Chronicle,
+    story: str,
+    audiences: Sequence[Player | None] = (None,),
+    reader: str | None = None,
+    truth: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
+    """The run file (docs/run-file-format.md). `truth` is what the reader made of the story's
+    ground truth (evaluation/truth_readouts.py), if it was asked."""
     last_t = chronicle.beats.count()
     expectations = Expectation.objects.filter(hypothesis__chronicle=chronicle).select_related("step")
-    return {
+    llm_calls = {e.llm_call_id for e in expectations if e.llm_call_id is not None}
+    if truth is not None:
+        llm_calls |= {belief["llm_call"] for belief in truth["beliefs"] if belief["llm_call"] is not None}
+    run = {
         "format": RUN_FORMAT,
         "story": story,
         "chronicle": chronicle.pk,
@@ -113,8 +122,11 @@ def build_run(
             }
             for t in range(last_t + 1)
         ],
-        "llm_calls": sorted({e.llm_call_id for e in expectations if e.llm_call_id is not None}),
+        "llm_calls": sorted(llm_calls),
     }
+    if truth is not None:
+        run["truth"] = dict(truth)
+    return run
 
 
 def audience_key(audience: Player | None) -> str:

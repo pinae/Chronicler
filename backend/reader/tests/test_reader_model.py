@@ -73,6 +73,14 @@ def test_bayes_factor_compares_the_same_beat_under_both_hypotheses():
     assert first_beat is second_beat is THEFT
 
 
+def test_bayes_factor_against_no_assumption_compares_with_the_plain_reader():
+    reader = RecordingReader({"Aldric betrays Mira.": -1.0, None: -2.0})
+
+    log_factor = bayes_factor(reader, THEFT, CONTEXT, "Aldric betrays Mira.", None)
+
+    assert log_factor == pytest.approx(1.0)
+
+
 def test_test_settings_bind_the_reader_model_to_the_table_reader():
     assert isinstance(di.make("ReaderModel"), TableReader)
 

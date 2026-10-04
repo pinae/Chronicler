@@ -5,12 +5,14 @@ missing answers None (or a Share without a total) rather than failing."""
 
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
+from itertools import pairwise
 from typing import Any
 
 from evaluation.ground_truth import GroundTruth, TrueHypothesis
+from matching.engine import COMPLETE, LIVE
 
 ALL = "all"  # the unfiltered lattice; other audiences are player names
-HELD = {"live", "complete"}  # statuses in which the lattice still holds a reading
+HELD = {LIVE, COMPLETE}  # statuses in which the lattice still holds a reading
 RECALL_KS = (1, 5, 20)
 
 Run = Mapping[str, Any]
@@ -133,3 +135,42 @@ def top_readings(hypotheses: Iterable[LatticeEntry], k: int) -> list[LatticeEntr
     player voiced it, so it is not the engine's reading. Ties: the older first, as when pruning."""
     readings = [h for h in hypotheses if h["status"] in HELD and h["fills"]]
     return sorted(readings, key=lambda h: (-h["weight"], h["created_at_t"]))[:k]
+
+
+# Reader-based metrics, over the run file's `truth` record (evaluation/truth_readouts.py)
+
+
+def retrospective_fit(run: Run) -> Share:
+    """Of the dormant-window beats the table saw, how many favour the truth over the strongest
+    other reading (Bayes factor > 1)? High: the clues were there."""
+    bayes_factors = run.get("truth", {}).get("bayes_factors") or []
+    favouring = sum(1 for record in bayes_factors if record["log_bayes_factor"] > 0)
+    return Share(favouring, len(bayes_factors))
+
+
+def surprise_curve(run: Run) -> list[tuple[int, float]]:
+    """(t, change in the belief in the truth since the previous readout). A good twist rises at
+    the reveal, not before."""
+    beliefs = sorted(run.get("truth", {}).get("beliefs") or [], key=lambda belief: belief["t"])
+    return [(current["t"], current["p"] - previous["p"]) for previous, current in pairwise(beliefs)]
+
+
+def largest_surprise_t(run: Run) -> int | None:
+    """The t of the largest rise in belief in the truth (ties: the earliest)."""
+    curve = surprise_curve(run)
+    if not curve:
+        return None
+    return max(curve, key=lambda point: (point[1], -point[0]))[0]
+
+
+def calibration(run: Run) -> float | None:
+    """Brier score of the readouts against the annotated beliefs: the mean, over the annotated
+    questions, of the squared differences summed over the answers. 0 is perfect."""
+    answered = run.get("truth", {}).get("reader_beliefs") or []
+    if not answered:
+        return None
+    scores = [
+        sum((record["readout"].get(answer, 0.0) - p) ** 2 for answer, p in record["annotated"].items())
+        for record in answered
+    ]
+    return sum(scores) / len(scores)

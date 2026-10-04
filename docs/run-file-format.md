@@ -43,9 +43,33 @@
       ]
     }
   ],
-  "llm_calls": [7, 8, 9]              // ids of the LLMCall rows the run used
+  "llm_calls": [7, 8, 9],             // ids of the LLMCall rows the run used
+  "truth": {                          // only for a whole story with a ground_truth.yaml, replayed with a reader
+    "reveal_t": 22, "schema": "betrayal", "binding": {"T": 17, "V": 16}, "dormant_window": [8, 21],
+    "beliefs": [{"t": 2, "p": 0.5, "llm_call": 11}],         // P(yes) to "Is the story <truth>?" per t
+    "bayes_factors": [                                        // null if the reader cannot score beats
+      {"t": 8, "log_bayes_factor": 0.4, "dominant": 38}       // truth vs. the strongest other reading
+    ],
+    "reader_beliefs": [
+      {"t": 16, "question": "Who will harm Mira?",
+       "annotated": {"aldric": 0.4, "edda": 0.4, "none": 0.2},
+       "readout": {"aldric": 0.3, "edda": 0.5, "none": 0.2}}
+    ]
+  }
 }
 ```
+
+The `truth` record is what the reader model makes of the story's ground truth, for the table's
+view (`evaluation/truth_readouts.py`):
+
+- **beliefs**: at every `t` at which the table knows the truth's entities, the reader is asked
+  "Is the story a Betrayal with T = Aldric, V = Mira?" (yes/no); `p` is P(yes).
+- **bayes_factors**: for every beat of the dormant window the table saw,
+  `log p(beat | truth) − log p(beat | rival)` with the context before the beat. The rival
+  (`dominant`) is the strongest hypothesis the table could hold before the beat that is not the
+  truth (with at least one fill; ties: the older); without one, the reader assuming nothing.
+  Both are put to the reader in the same phrasing: "Suppose the story is a Betrayal with …".
+- **reader_beliefs**: each annotated question, asked with the annotated answers as candidates.
 
 Hypothesis ids are only meaningful within one run; compare runs by schema, binding (via entity
 slugs) and fills.

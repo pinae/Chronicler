@@ -1,7 +1,9 @@
 import json
+import shutil
 from io import StringIO
 
 import pytest
+import yaml
 from django.core.management import call_command
 
 from evaluation.replay import RUN_FORMAT, build_run, replay_story, write_run
@@ -156,3 +158,49 @@ def test_replay_can_build_a_lattice_for_every_player(tmp_path):
     # Only Ben saw how Aldric learned where the seal is hidden.
     assert any(hypothesis["binding"]["S"] == seal for hypothesis in lattices["Ben"])
     assert not any(hypothesis["binding"]["S"] == seal for hypothesis in lattices["Anna"])
+
+
+@pytest.fixture
+def steward_with_ground_truth(tmp_path, settings):
+    stories_dir = tmp_path / "stories"
+    shutil.copytree(settings.FIXTURE_STORIES_DIR / "steward", stories_dir / "steward")
+    (stories_dir / "steward" / "ground_truth.yaml").write_text(
+        yaml.safe_dump(
+            {
+                "reveal_t": 22,
+                "true_hypothesis": {"schema": "betrayal", "binding": {"T": "aldric", "V": "mira"}},
+                "dormant_window": [8, 21],
+            }
+        )
+    )
+    settings.FIXTURE_STORIES_DIR = stories_dir
+    return tmp_path / "runs"
+
+
+def replayed_run(output_dir, *options):
+    call_command("replay", "steward", *options, "--output-dir", str(output_dir), stdout=StringIO())
+    [run_file] = (output_dir / "steward").glob("*.json")
+    return json.loads(run_file.read_text())
+
+
+def test_replay_of_a_story_with_ground_truth_records_what_the_reader_makes_of_the_truth(
+    steward_with_ground_truth,
+):
+    run = replayed_run(steward_with_ground_truth, "--reader", "uniform")
+
+    truth = run["truth"]
+    assert (truth["reveal_t"], truth["dormant_window"]) == (22, [8, 21])
+    assert {belief["p"] for belief in truth["beliefs"]} == {0.5}
+    assert {record["log_bayes_factor"] for record in truth["bayes_factors"]} == {0.0}
+
+
+def test_replay_without_a_reader_records_no_truth_readouts(steward_with_ground_truth):
+    run = replayed_run(steward_with_ground_truth, "--reader", "none")
+
+    assert "truth" not in run
+
+
+def test_a_partial_replay_records_no_truth_readouts(steward_with_ground_truth):
+    run = replayed_run(steward_with_ground_truth, "--reader", "uniform", "--until", "10")
+
+    assert "truth" not in run
