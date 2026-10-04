@@ -22,8 +22,8 @@ Weight calibration (deferred, §13).
 ## Status
 blocked
 
-Waiting for the Ollama smoke result (`docs/llm-smoke.md` is still pending): the development
-environment cannot reach the GPU server. Until then `OllamaChoiceReader.beat_log_likelihood`
-raises `NotImplementedError`, and replays record `bayes_factors: null`, which `evaluate` shows as
-`n/a` (WP-041, WP-042). To unblock: run `uv run python -m llm.smoke` against the deployed server
-and commit its output to `docs/llm-smoke.md`.
+The smoke result is in (`docs/llm-smoke.md`, 2026-10-04): Ollama 0.22.1 with `gemma4:e4b` gives
+no prompt logprobs, so the first option is out. Choosing between a sidecar and forced scoring
+needs a measurement against the deployed server, which the development environment cannot reach.
+Until then `OllamaChoiceReader.beat_log_likelihood` raises `NotImplementedError`, and replays record
+`bayes_factors: null`, which `evaluate` shows as `n/a` (WP-041, WP-042).
