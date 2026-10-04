@@ -1,6 +1,7 @@
 # ADR-002: Python toolchain
 
-**Status:** accepted (2026-10-03) · **Work package:** WP-001
+**Status:** accepted (2026-10-03) · **Work package:** WP-001 · **Amended:** 2026-10-04 (WP-062),
+Django 6.1 instead of 5.2 LTS, see *Amendment* below.
 
 ## Context
 The concept (§10, §12) already fixes most of the Python toolchain: `uv`, Django LTS, pytest with
@@ -54,3 +55,17 @@ checks made, so later packages do not re-decide them.
 - Upgrading to Django 6.2 LTS (after April 2027) means bumping Django and django-stubs together.
 - The development server needs `DJANGO_SECRET_KEY` and `DATABASE_URL`; `backend/.env.example`
   shows the expected values. Tests need nothing.
+
+## Amendment (2026-10-04, WP-062): Django 6.1
+The project owner asked for a recent Django 6.x. The project now runs on **Django `>=6.1.1,<6.2`**
+with **django-stubs 6.1.x**; everything else above stands. 6.1 is the newest feature release (6.1.1
+on PyPI, 2026-10-04). Under Django's support policy the latest two feature releases receive
+security fixes, so 6.1 is covered until the release after 6.2 LTS (about the end of 2027); moving on
+to 6.2 LTS after its release in April 2027 keeps the original intent of running an LTS.
+
+The upgrade needed no code changes: the settings already set `DEFAULT_AUTO_FIELD` (6.0 changed its
+default), the project uses none of the APIs changed in 6.0 and 6.1 (custom expressions, email
+internals, `first()` after a cleared ordering, combined querysets with default ordering), no
+migration is generated and the suite passes on SQLite and PostgreSQL 18 (release notes:
+[6.0](https://github.com/django/django/blob/main/docs/releases/6.0.txt),
+[6.1](https://github.com/django/django/blob/main/docs/releases/6.1.txt)).

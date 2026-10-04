@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Narrative interpretation engine: chronicle, schema matching and reader-model expectations"
 requires-python = ">=3.12"
 dependencies = [
-    "django>=5.2,<5.3",
+    "django>=6.1.1,<6.2",
     "django-environ>=0.14",
     "django-ninja>=1.7,<2",
     "httpx>=0.28",
@@ -16,7 +16,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "django-stubs[compatible-mypy]>=5.2.9,<5.3",
+    "django-stubs[compatible-mypy]>=6.1.1,<6.2",
     "factory-boy>=3.3",
     "pre-commit>=4.6",
     "pytest>=9",
