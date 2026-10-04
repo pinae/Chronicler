@@ -1,0 +1,3 @@
+herald: {kind: source, name: Harbour Herald}
+holt: {kind: character, name: Mayor Holt, aliases: [Holt, the mayor]}
+petra: {kind: character, name: Petra}

@@ -1,0 +1,11 @@
+title: The Harbour Fire (Harbour Herald)
+kind: media
+utterances:
+  - order: 1
+    speaker: herald
+    text: Some residents blame Mayor Holt for the fire at Petra's boat shed.
+    source: {outlet: Harbour Herald, author: Ana Lund, published_at: "2026-05-02T12:00:00Z", url: "https://herald.example/fire"}
+  - order: 2
+    speaker: herald
+    text: The fire brigade found no link between Holt and the fire.
+    source: {outlet: Harbour Herald, author: Ana Lund, published_at: "2026-05-03T12:00:00Z", url: "https://herald.example/brigade"}

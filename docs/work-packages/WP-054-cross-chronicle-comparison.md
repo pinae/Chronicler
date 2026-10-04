@@ -20,4 +20,13 @@ WP-040, WP-053.
 Any statement about which outlet is right.
 
 ## Status
-open
+done
+
+## Summary
+`evaluation/outlets.py` compares outlets as plain `OutletLattice`s (readings with entity slugs, and
+the beats labeled false or unverified): `completion` (required steps of the best held reading),
+`step_overlap` (Jaccard of (reading, step) pairs, the source role left out since each outlet is its
+own source) and `suspect_weight_share` (share of the strongest reading's step weight, with the
+repeat cap, resting on doubted claims), each tested on synthetic data. `manage.py compare_outlets
+<chronicle ids>` prints them per instantiated schema after the §1 boundary statement; a second
+media fixture, `harbour-fire-herald`, backs the command test. Usage doc: `docs/usage/compare-outlets.md`.

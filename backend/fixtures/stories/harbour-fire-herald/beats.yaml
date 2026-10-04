@@ -1,0 +1,6 @@
+- utterance: 1
+  beats:
+    - {t: 1, pred: says, kind: claim, args: {who: "@herald", what: {pred: harms, args: {who: "@holt", whom: "@petra"}}}, text: The Herald reports residents blaming Holt.}
+- utterance: 2
+  beats:
+    - {t: 2, pred: says, kind: claim, args: {who: "@herald", what: {pred: is, args: {who: "@holt", trait: not involved}}}, text: The Herald says Holt was not involved.}
