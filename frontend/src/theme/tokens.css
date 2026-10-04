@@ -1,0 +1,135 @@
+/* Design tokens (ADR-012). Light: parchment and brass. Dark: night workshop.
+   Text colours meet WCAG AA on both surfaces; schema colours are the validated palette of ADR-011. */
+
+:root {
+  color-scheme: light;
+
+  --surface-page: #efe4cc;
+  --surface-panel: #f8f1e1;
+  --surface-sunken: #e9dcbf;
+  --surface-raised: #fbf6ea;
+
+  --ink: #2b2118;
+  --ink-muted: #5c4a38;
+  --ink-faint: #8b7760;
+  --accent: #8a4a1c;
+  --link: #7a3412;
+
+  --brass: #b48a36;
+  --brass-light: #e2c072;
+  --brass-dark: #7a5a12;
+  --copper: #b5651d;
+  --iron: #2b241d;
+  --iron-light: #4a3f33;
+  --on-iron: #e6c77c;
+  --on-brass: #2b2118;
+  --rule: #c9b48a;
+  --glow-top: rgb(255 250 235 / 35%);
+  --glow-bottom: rgb(120 80 30 / 12%);
+  --current-top: #7a3c12;
+  --current-bottom: #5e2e0d;
+  --on-current: #fbf6ea;
+
+  --schema-betrayal: #8b3b3b;
+  --schema-usurpation: #95761a;
+  --schema-blame: #0f9b89;
+  --schema-hidden-crime: #5283e0;
+  --schema-prophecy: #82439d;
+  --schema-other: #a89a80;
+  --hatch: var(--surface-panel);
+
+  --font-display: "Cinzel Variable", "Trajan Pro", Georgia, serif;
+  --font-text: "Crimson Pro Variable", Georgia, "Times New Roman", serif;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --radius: 4px;
+  --shadow-panel: 0 1px 0 rgb(255 255 255 / 60%) inset, 0 2px 6px rgb(60 40 20 / 18%);
+  --shadow-pressed: 0 1px 3px rgb(40 25 10 / 45%) inset;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    color-scheme: dark;
+
+    --surface-page: #17120e;
+    --surface-panel: #2a231c;
+    --surface-sunken: #211b15;
+    --surface-raised: #332a21;
+
+    --ink: #f0e6d2;
+    --ink-muted: #c9b99b;
+    --ink-faint: #9c8b70;
+    --accent: #e0a35a;
+    --link: #f0b46a;
+
+    --brass: #c9a24a;
+    --brass-light: #e6c77c;
+    --brass-dark: #8f6a1f;
+    --copper: #d27b3a;
+    --iron: #0f0c09;
+    --iron-light: #2f271f;
+    --on-iron: #e6c77c;
+    --on-brass: #1b140e;
+    --rule: #5a4a36;
+    --glow-top: rgb(255 190 110 / 7%);
+    --glow-bottom: rgb(0 0 0 / 35%);
+    --current-top: #e0a35a;
+    --current-bottom: #c98a42;
+    --on-current: #1b140e;
+
+    --schema-betrayal: #bb584d;
+    --schema-usurpation: #b38c15;
+    --schema-blame: #29a895;
+    --schema-hidden-crime: #3e96ea;
+    --schema-prophecy: #9760af;
+    --schema-other: #7a6c58;
+
+    --shadow-panel: 0 1px 0 rgb(255 230 180 / 6%) inset, 0 2px 8px rgb(0 0 0 / 55%);
+    --shadow-pressed: 0 1px 3px rgb(0 0 0 / 70%) inset;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --surface-page: #17120e;
+  --surface-panel: #2a231c;
+  --surface-sunken: #211b15;
+  --surface-raised: #332a21;
+
+  --ink: #f0e6d2;
+  --ink-muted: #c9b99b;
+  --ink-faint: #9c8b70;
+  --accent: #e0a35a;
+  --link: #f0b46a;
+
+  --brass: #c9a24a;
+  --brass-light: #e6c77c;
+  --brass-dark: #8f6a1f;
+  --copper: #d27b3a;
+  --iron: #0f0c09;
+  --iron-light: #2f271f;
+  --on-iron: #e6c77c;
+  --on-brass: #1b140e;
+  --rule: #5a4a36;
+  --glow-top: rgb(255 190 110 / 7%);
+  --glow-bottom: rgb(0 0 0 / 35%);
+  --current-top: #e0a35a;
+  --current-bottom: #c98a42;
+  --on-current: #1b140e;
+
+  --schema-betrayal: #bb584d;
+  --schema-usurpation: #b38c15;
+  --schema-blame: #29a895;
+  --schema-hidden-crime: #3e96ea;
+  --schema-prophecy: #9760af;
+  --schema-other: #7a6c58;
+
+  --shadow-panel: 0 1px 0 rgb(255 230 180 / 6%) inset, 0 2px 8px rgb(0 0 0 / 55%);
+  --shadow-pressed: 0 1px 3px rgb(0 0 0 / 70%) inset;
+}

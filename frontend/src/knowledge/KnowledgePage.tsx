@@ -1,9 +1,10 @@
-import { Link, useParams } from "react-router";
+import { useParams } from "react-router";
 
 import type { ChronicleDetail, EntitySummary, KnownBeat } from "../api/types";
 import { useApi } from "../api/useApi";
 import { TimeSlider } from "../chronicle/TimeSlider";
 import { useChronicleView } from "../chronicle/useChronicleView";
+import { ChronicleFrame } from "../shell/ChronicleFrame";
 import { KnowerSelect } from "./KnowerSelect";
 import { KnowledgeTable } from "./KnowledgeTable";
 
@@ -32,10 +33,7 @@ function KnowledgeView({
   const knower = view.param("knower") ?? "";
 
   return (
-    <main>
-      <p>
-        <Link to={`/chronicles/${chronicle.id}`}>Beats of {chronicle.title}</Link>
-      </p>
+    <ChronicleFrame chronicle={chronicle} current="knowledge">
       <h1>Who knows what in {chronicle.title}</h1>
       <KnowerSelect
         characters={characters}
@@ -49,7 +47,7 @@ function KnowledgeView({
       ) : (
         <KnownBeats chronicleId={chronicle.id} knower={knower} chosenT={view.chosenT} />
       )}
-    </main>
+    </ChronicleFrame>
   );
 }
 

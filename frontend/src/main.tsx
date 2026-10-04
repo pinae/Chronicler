@@ -1,3 +1,8 @@
+import "@fontsource-variable/cinzel";
+import "@fontsource-variable/crimson-pro";
+import "./theme/tokens.css";
+import "./theme/global.css";
+
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 

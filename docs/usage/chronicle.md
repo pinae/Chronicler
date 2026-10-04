@@ -15,6 +15,17 @@ see them as any audience saw them, at any point in the story.
 lists 24 beats with their **t**, **Predicate** and text, among them **Aldric steals the seal from Mira.**
 The slider **Up to beat** shows **t = 24 of 24**, and **Seen by** shows **All beats**.
 
+## Move between the chronicle's screens
+1. Go to **/** and click **The Steward of Wend**.
+
+**Result:** below the breadcrumb **All chronicles › The Steward of Wend**, the navigation
+**Beats · Lattice · Who knows what · Try a beat** marks **Beats** as the current screen.
+
+2. Click **Lattice** in that navigation.
+
+**Result:** the heading **Lattice of The Steward of Wend** appears and **Lattice** is marked
+instead. **All chronicles** leads back to the list.
+
 ## See what the table saw
 1. On the page of **The Steward of Wend**, choose **The table** in **Seen by**.
 2. Set **Up to beat** to `21`.

@@ -135,15 +135,14 @@ describe("LatticePage", () => {
     ).toEqual(["All beats", "Anna"]);
   });
 
-  it("links back to the chronicle", async () => {
+  it("is the current screen of the chronicle's navigation", async () => {
     fakeApi({ "/api/chronicles/2": STEWARD, "/api/chronicles/2/lattice?audience=all": NOW });
 
     showLattice();
 
-    expect(await screen.findByRole("link", { name: "Beats of The Steward of Wend" })).toHaveAttribute(
-      "href",
-      "/chronicles/2",
-    );
+    const nav = await screen.findByRole("navigation", { name: "Chronicle" });
+    expect(within(nav).getByRole("link", { name: "Lattice" })).toHaveAttribute("aria-current", "page");
+    expect(within(nav).getByRole("link", { name: "Beats" })).toHaveAttribute("href", "/chronicles/2");
   });
 });
 

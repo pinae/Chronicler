@@ -7,7 +7,14 @@ const backendDir = fileURLToPath(new URL("../../backend", import.meta.url));
 export function seed(...stories: string[]): void {
   execFileSync(
     "uv",
-    ["run", "python", "manage.py", "seed_e2e", ...stories, "--settings=narrative_engine.settings.e2e"],
+    [
+      "run",
+      "python",
+      "manage.py",
+      "seed_e2e",
+      ...stories,
+      "--settings=narrative_engine.settings.e2e",
+    ],
     { cwd: backendDir, stdio: "pipe" },
   );
 }

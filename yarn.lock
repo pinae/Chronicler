@@ -398,6 +398,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@fontsource-variable/cinzel@npm:5.3.0":
+  version: 5.3.0
+  resolution: "@fontsource-variable/cinzel@npm:5.3.0"
+  checksum: 10c0/3585dec55fe23c2e230a4020faed890b0d5275ed9817f02577dad7e3343be87e449db899f3d058ce9e7b81c7f2f32e7e6d846650234df02e622fe4b7cee5940b
+  languageName: node
+  linkType: hard
+
+"@fontsource-variable/crimson-pro@npm:5.3.0":
+  version: 5.3.0
+  resolution: "@fontsource-variable/crimson-pro@npm:5.3.0"
+  checksum: 10c0/47f89dd938b16633206c46c5db74a2426745c44e4c1d36fd6cee2c05d85ae5d5a6625a316f4d7d07991096a6c6e2e518a6c41dee9f86562cfea898bb765ed0ac
+  languageName: node
+  linkType: hard
+
 "@humanfs/core@npm:^0.19.2":
   version: 0.19.2
   resolution: "@humanfs/core@npm:0.19.2"
@@ -1220,6 +1234,8 @@ __metadata:
   resolution: "chronicler-frontend@workspace:frontend"
   dependencies:
     "@eslint/js": "npm:10.0.1"
+    "@fontsource-variable/cinzel": "npm:5.3.0"
+    "@fontsource-variable/crimson-pro": "npm:5.3.0"
     "@testing-library/dom": "npm:10.4.2"
     "@testing-library/jest-dom": "npm:7.0.1"
     "@testing-library/react": "npm:16.3.3"

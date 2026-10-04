@@ -1,10 +1,11 @@
-import { Link, useParams } from "react-router";
+import { useParams } from "react-router";
 
 import type { ChronicleDetail, Lattice, LatticeHypothesis } from "../api/types";
 import { useApi } from "../api/useApi";
 import { AudienceSelect } from "../chronicle/AudienceSelect";
 import { TimeSlider } from "../chronicle/TimeSlider";
 import { useChronicleView } from "../chronicle/useChronicleView";
+import { ChronicleFrame } from "../shell/ChronicleFrame";
 import { ExpectationsPanel } from "./ExpectationsPanel";
 import { HypothesisTable } from "./HypothesisTable";
 
@@ -26,10 +27,7 @@ function LatticeView({ chronicle }: { chronicle: ChronicleDetail }) {
   const lattice = useApi<Lattice>(`/api/chronicles/${chronicle.id}/lattice?${view.query}`);
 
   return (
-    <main>
-      <p>
-        <Link to={`/chronicles/${chronicle.id}`}>Beats of {chronicle.title}</Link>
-      </p>
+    <ChronicleFrame chronicle={chronicle} current="lattice">
       <h1>Lattice of {chronicle.title}</h1>
       <AudienceSelect
         players={chronicle.players}
@@ -51,7 +49,7 @@ function LatticeView({ chronicle }: { chronicle: ChronicleDetail }) {
           />
         </>
       )}
-    </main>
+    </ChronicleFrame>
   );
 }
 

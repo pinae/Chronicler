@@ -28,3 +28,15 @@ followed by **session · 5 beats**. The newest chronicle comes first.
 2. Go to **/**.
 
 **Result:** the page says **Could not load the chronicles.**
+
+## Switch between light and dark
+The interface follows the system's light or dark setting until you choose otherwise.
+
+1. Go to **/** and choose **Dark** in **Theme** (top right).
+
+**Result:** the page turns dark (night workshop: dark panels, brass and copper ornament). After
+reloading the page, **Theme** still shows **Dark**.
+
+2. Choose **System** in **Theme**.
+
+**Result:** the page follows the system setting again.

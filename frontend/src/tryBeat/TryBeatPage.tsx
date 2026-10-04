@@ -1,7 +1,8 @@
-import { Link, useParams } from "react-router";
+import { useParams } from "react-router";
 
 import type { ChronicleDetail, EntitySummary, Predicate } from "../api/types";
 import { useApi } from "../api/useApi";
+import { ChronicleFrame } from "../shell/ChronicleFrame";
 import { CandidateBeatForm } from "./CandidateBeatForm";
 import { EffectsTable } from "./EffectsTable";
 import { useDryRun, type DryRunState } from "./useDryRun";
@@ -31,10 +32,7 @@ function TryBeatView({ chronicle, entities, vocabulary }: ViewProps) {
   const dryRun = useDryRun(chronicle.id);
 
   return (
-    <main>
-      <p>
-        <Link to={`/chronicles/${chronicle.id}`}>Beats of {chronicle.title}</Link>
-      </p>
+    <ChronicleFrame chronicle={chronicle} current="try">
       <h1>Try a beat in {chronicle.title}</h1>
       <p>See what a beat would do to the hypotheses before you narrate it. Nothing you try here is kept.</p>
       <CandidateBeatForm
@@ -45,7 +43,7 @@ function TryBeatView({ chronicle, entities, vocabulary }: ViewProps) {
         onTry={dryRun.tryBeat}
       />
       <DryRunResult state={dryRun.state} />
-    </main>
+    </ChronicleFrame>
   );
 }
 

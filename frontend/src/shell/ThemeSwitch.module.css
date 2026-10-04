@@ -1,0 +1,16 @@
+.switch {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--on-iron);
+}
+
+.switch select {
+  margin-left: var(--space-1);
+  font-size: 0.85rem;
+  color: var(--on-iron);
+  background: var(--iron-light);
+  border-color: var(--brass-dark);
+}

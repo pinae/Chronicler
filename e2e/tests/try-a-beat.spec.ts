@@ -12,26 +12,41 @@ async function openForm(page: Page) {
   await page.goto("/");
   await page.getByRole("link", { name: "The Steward of Wend" }).click();
   await page.getByRole("link", { name: "Try a beat" }).click();
-  await expect(page.getByRole("heading", { name: "Try a beat in The Steward of Wend" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Try a beat in The Steward of Wend" }),
+  ).toBeVisible();
 }
 
-async function compose(page: Page, predicate: string, roles: Record<string, string>) {
+async function compose(
+  page: Page,
+  predicate: string,
+  roles: Record<string, string>,
+) {
   await page.getByLabel("Predicate").selectOption(predicate);
   for (const [role, value] of Object.entries(roles)) {
-    await page.getByRole("combobox", { name: role, exact: true }).selectOption({ label: value });
+    await page
+      .getByRole("combobox", { name: role, exact: true })
+      .selectOption({ label: value });
   }
 }
 
 function effect(page: Page, hypothesis: string) {
-  return page.getByRole("table", { name: "Effects" }).getByRole("row").filter({ hasText: hypothesis });
+  return page
+    .getByRole("table", { name: "Effects" })
+    .getByRole("row")
+    .filter({ hasText: hypothesis });
 }
 
 test("Open the form", async ({ page }) => {
   await openForm(page);
 
   await expect(page.getByLabel("Predicate")).toBeVisible();
-  await expect(page.getByRole("group", { name: "Present" }).getByLabel("Mira")).not.toBeChecked();
-  await expect(page.getByRole("group", { name: "Shown to" }).getByLabel("Anna")).toBeChecked();
+  await expect(
+    page.getByRole("group", { name: "Present" }).getByLabel("Mira"),
+  ).not.toBeChecked();
+  await expect(
+    page.getByRole("group", { name: "Shown to" }).getByLabel("Anna"),
+  ).toBeChecked();
   await expect(page.getByLabel("Lattice of")).toBeVisible();
   await expect(page.getByRole("button", { name: "Try it" })).toBeVisible();
 });
@@ -42,7 +57,9 @@ test("A beat that starts a new suspicion", async ({ page }) => {
 
   await page.getByRole("button", { name: "Try it" }).click();
 
-  await expect(page.getByRole("heading", { name: "If this were beat 25" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "If this were beat 25" }),
+  ).toBeVisible();
   const row = effect(page, "Betrayal: T = Mira, V = Edda, S = ?");
   await expect(row).toContainText("seeded (trust)");
   await expect(row).toContainText("new: -1.5");
@@ -65,10 +82,14 @@ test("A beat that refutes a suspicion", async ({ page }) => {
 
   await page.getByRole("button", { name: "Try it" }).click();
 
-  await expect(effect(page, "Betrayal: T = Mira, V = Aldric, S = ?")).toContainText("refuted");
+  await expect(
+    effect(page, "Betrayal: T = Mira, V = Aldric, S = ?"),
+  ).toContainText("refuted");
 });
 
-test("A player's lattice only changes if the player sees the beat", async ({ page }) => {
+test("A player's lattice only changes if the player sees the beat", async ({
+  page,
+}) => {
   await openForm(page);
   await compose(page, "helps", { who: "Mira", whom: "Aldric" });
   const anna = page.getByRole("group", { name: "Shown to" }).getByLabel("Anna");
@@ -80,7 +101,9 @@ test("A player's lattice only changes if the player sees the beat", async ({ pag
 
   await anna.check();
   await page.getByRole("button", { name: "Try it" }).click();
-  await expect(effect(page, "Betrayal: T = Mira, V = Aldric, S = ?")).toContainText("filled trust");
+  await expect(
+    effect(page, "Betrayal: T = Mira, V = Aldric, S = ?"),
+  ).toContainText("filled trust");
 });
 
 test("A beat with a missing role", async ({ page }) => {
@@ -89,7 +112,9 @@ test("A beat with a missing role", async ({ page }) => {
 
   await page.getByRole("button", { name: "Try it" }).click();
 
-  await expect(page.getByRole("alert")).toHaveText("steals: missing role 'from'");
+  await expect(page.getByRole("alert")).toHaveText(
+    "steals: missing role 'from'",
+  );
 });
 
 test("Nothing you try is kept", async ({ page }) => {
@@ -98,7 +123,10 @@ test("Nothing you try is kept", async ({ page }) => {
   await page.getByRole("button", { name: "Try it" }).click();
   await expect(page.getByRole("table", { name: "Effects" })).toBeVisible();
 
-  await page.getByRole("link", { name: "Beats of The Steward of Wend" }).click();
+  await page
+    .getByRole("navigation", { name: "Chronicle" })
+    .getByRole("link", { name: "Beats" })
+    .click();
 
   await expect(page.getByText("t = 24 of 24")).toBeVisible();
 });

@@ -1,0 +1,68 @@
+.shelf {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: var(--space-4);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* A bound volume: leather-dark spine edge, parchment face, brass corner studs. */
+.volume {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: 8rem;
+  padding: var(--space-4) var(--space-4) var(--space-3) var(--space-6);
+  background: var(--surface-panel);
+  border: 1px solid var(--rule);
+  border-left: 10px solid var(--iron-light);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-panel);
+}
+
+.volume::before,
+.volume::after {
+  content: "";
+  position: absolute;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, var(--brass-light), var(--brass-dark));
+}
+
+.volume::before {
+  top: 6px;
+}
+
+.volume::after {
+  bottom: 6px;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.title::after {
+  /* the whole card is the link's target */
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.volume:hover {
+  border-left-color: var(--copper);
+}
+
+.facts {
+  font-size: 0.9rem;
+  color: var(--ink-muted);
+}

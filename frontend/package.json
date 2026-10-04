@@ -14,6 +14,8 @@
     "generate:api-types": "cd ../backend && uv run python manage.py export_openapi_schema --settings=narrative_engine.settings.test --api gm_ui.api.api --indent 2 --output ../frontend/openapi.json && cd ../frontend && openapi-typescript openapi.json --output src/api/schema.d.ts && prettier --write openapi.json src/api/schema.d.ts"
   },
   "dependencies": {
+    "@fontsource-variable/cinzel": "5.3.0",
+    "@fontsource-variable/crimson-pro": "5.3.0",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "react-router": "8.4.0"

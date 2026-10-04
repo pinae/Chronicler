@@ -57,6 +57,6 @@ ticked), a **Lattice of** choice and the button **Try it**.
 
 ## Nothing you try is kept
 1. Try any beat on the form of **The Steward of Wend**.
-2. Click **Beats of The Steward of Wend**.
+2. Click **Beats** in the chronicle's navigation.
 
 **Result:** the chronicle still ends at beat 24 (**t = 24 of 24**).
