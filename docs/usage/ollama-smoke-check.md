@@ -6,7 +6,8 @@ server or model change and commit the output to `docs/llm-smoke.md`.
 
 ## Before you start
 - The backend is installed (`cd backend && uv sync`) and `backend/.env` contains
-  `DJANGO_SECRET_KEY` and `DATABASE_URL` (see `backend/.env.example`).
+  `DJANGO_SECRET_KEY` and `DATABASE_URL` (see `backend/.env.example`); the database runs
+  (`docker compose up -d` in the repository root, see the README).
 - The Ollama server is running and the models are pulled on it.
 
 ## Check the server
@@ -41,5 +42,8 @@ http://gpu-box:11434` and exits with status 2.
 with status 1.
 
 ## Integration tests
-Run `uv run pytest --llm` with `OLLAMA_BASE_URL` and `OLLAMA_READER_MODEL` set. Without
-`OLLAMA_BASE_URL` the integration tests are reported as skipped.
+Run `uv run pytest --llm` with `OLLAMA_BASE_URL` and `OLLAMA_READER_MODEL` (and
+`OLLAMA_INGEST_MODEL`, `OLLAMA_WRITER_MODEL`) set in the environment, e.g.
+`export OLLAMA_BASE_URL=http://gpu-box:11434`. The tests do not read `backend/.env`, so that a
+developer's file cannot change what they check. Without `OLLAMA_BASE_URL` the integration tests are
+reported as skipped.

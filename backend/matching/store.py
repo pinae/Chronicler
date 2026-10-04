@@ -84,9 +84,10 @@ class StoredMatcher:
         return fills_by_hypothesis
 
     def state_from_row(self, row: Hypothesis, fills: list[Fill]) -> HypothesisState:
+        definition = self.definitions[row.schema.slug]
         return HypothesisState(
-            schema=self.definitions[row.schema.slug],
-            binding=dict(row.binding),
+            schema=definition,
+            binding=definition.in_role_order(row.binding),
             created_at_t=row.created_at_t,
             fills=fills,
             status=row.status,

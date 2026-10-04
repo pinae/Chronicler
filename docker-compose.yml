@@ -1,0 +1,26 @@
+# Development services (ADR-008). Django runs on the host (`uv run python manage.py runserver`);
+# only PostgreSQL runs here, with the credentials of backend/.env.example.
+#
+#   docker compose up -d      start the database (data persists in the volume)
+#   docker compose down       stop it; add -v to delete the data as well
+services:
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: narrative
+      POSTGRES_PASSWORD: narrative
+      POSTGRES_DB: narrative_engine
+    ports:
+      # Only reachable from this machine. Set POSTGRES_PORT if 5432 is taken, and DATABASE_URL to match.
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      # From PostgreSQL 18 on, the image keeps its data under /var/lib/postgresql/<major>/docker.
+      - postgres-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U narrative -d narrative_engine"]
+      interval: 2s
+      timeout: 5s
+      retries: 15
+
+volumes:
+  postgres-data:

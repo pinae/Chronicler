@@ -73,3 +73,4 @@ Each package's status is kept in its own file, not here.
 | [WP-055](WP-055-usage-export-and-summaries.md) | Usage event export and session summaries | R4 | 039 |
 | [WP-056](WP-056-consent-and-anonymisation.md) | Consent and anonymisation | R4 | 055 |
 | [WP-057](WP-057-rq1-corpus.md) | RQ1 corpus (split off WP-048) | R1 | 044, 048 |
+| [WP-058](WP-058-development-database-and-env.md) | Development database and settings from .env | M0 | 001, 003 |

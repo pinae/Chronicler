@@ -27,6 +27,38 @@ jobs:
       - name: Test
         run: uv run pytest
 
+  backend-postgres:
+    # The same tests on PostgreSQL, the database of development (ADR-008): SQLite hides differences
+    # such as JSONB not keeping the order of object keys.
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: narrative
+          POSTGRES_PASSWORD: narrative
+          POSTGRES_DB: narrative_engine
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U narrative -d narrative_engine"
+          --health-interval 2s
+          --health-timeout 5s
+          --health-retries 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
+        with:
+          working-directory: backend
+          enable-cache: true
+      - name: Install dependencies from the lock file
+        run: uv sync --frozen
+      - name: Test on PostgreSQL
+        run: uv run pytest --ds=narrative_engine.settings.test_postgres
+
   frontend:
     runs-on: ubuntu-latest
     defaults:

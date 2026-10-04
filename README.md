@@ -36,18 +36,26 @@ uv run pre-commit install    # once per clone
 
 CI (`.github/workflows/ci.yml`) runs these checks on every push and pull request.
 
-Running the development server needs PostgreSQL and two environment variables:
+Running the development server needs PostgreSQL. `docker-compose.yml` in the repository root
+starts one whose credentials match `backend/.env.example` (ADR-008):
 
 ```bash
-cp .env.example .env         # then edit DJANGO_SECRET_KEY and DATABASE_URL
+docker compose up -d         # in the repository root; data stays in a Docker volume
+cd backend
+cp .env.example .env         # then set DJANGO_SECRET_KEY, and the OLLAMA_* lines for a language model
 uv run python manage.py migrate
 uv run python manage.py runserver
 ```
 
+`docker compose down` stops the database (`down -v` also deletes its data). Every setting can be
+given in `backend/.env` or, taking precedence, in the environment. The tests run on SQLite and need
+no database server; to run them on PostgreSQL as CI does: `uv run pytest --ds=narrative_engine.settings.test_postgres`.
+
 ## Trying it out
 
 Everything below works without a language model (`--reader uniform` is the know-nothing
-baseline). Each step links the usage doc that describes it in detail.
+baseline). Each step links the usage doc that describes it in detail. Start the database first
+(see above).
 
 ```bash
 cd backend

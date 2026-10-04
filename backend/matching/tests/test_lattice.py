@@ -1,6 +1,7 @@
 import pytest
 
 from matching.lattice import Lattice
+from matching.models import Hypothesis
 from matching.store import StoredMatcher
 from matching.tests.story_runs import matched_story
 
@@ -147,3 +148,22 @@ def test_a_hypothesis_is_voiced_in_the_lattice_only_from_the_t_it_was_voiced():
 
     assert before.created_at_t == 4
     assert (before.voiced_by, after.voiced_by) == (None, ben.pk)
+
+
+def sorted_keys(binding):
+    """A binding as PostgreSQL returns it: JSONB does not keep the order of object keys."""
+    return dict(sorted(binding.items()))
+
+
+def test_a_binding_read_back_from_the_database_keeps_the_schemas_role_order():
+    """Regression (steward on PostgreSQL, 2026-10-04): JSONB sorted the roles to S, T, V."""
+    chronicle = matched_story("steward", until_t=11)
+    for hypothesis in Hypothesis.objects.filter(chronicle=chronicle):
+        Hypothesis.objects.filter(pk=hypothesis.pk).update(binding=sorted_keys(hypothesis.binding))
+
+    lattice = Lattice.at(chronicle, 11)
+    reloaded = StoredMatcher(chronicle).engine.hypotheses
+
+    assert {tuple(hypothesis.binding) for hypothesis in lattice.hypotheses} == {("T", "V", "S")}
+    assert {tuple(state.binding) for state in reloaded} == {("T", "V", "S")}
+    assert str(Hypothesis.objects.filter(chronicle=chronicle).first()).startswith("betrayal(T=")

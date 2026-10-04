@@ -44,7 +44,8 @@ class Hypothesis(models.Model):
 
     def __str__(self) -> str:
         roles = ", ".join(
-            f"{role}={entity if entity is not None else '?'}" for role, entity in self.binding.items()
+            f"{role}={self.binding.get(role) if self.binding.get(role) is not None else '?'}"
+            for role in self.schema.role_names
         )
         return f"{self.schema.slug}({roles}) {self.status}"
 

@@ -32,7 +32,8 @@ def save_schema(definition: SchemaDefinition) -> Schema:
             slug=definition.slug,
             defaults={
                 "name": definition.name,
-                "roles": dict(definition.roles),
+                # A list, not an object: PostgreSQL's JSONB would sort the roles.
+                "roles": [[role, kind] for role, kind in definition.roles.items()],
                 "constraints": [constraint.to_document() for constraint in definition.constraints],
                 "payoff_steps": list(definition.payoff_steps),
                 "prior": definition.prior,
@@ -62,7 +63,7 @@ def definition_of(schema: Schema) -> SchemaDefinition:
     document = {
         "slug": schema.slug,
         "name": schema.name,
-        "roles": schema.roles,
+        "roles": dict(schema.roles),
         "prior": schema.prior,
         "payoff_steps": schema.payoff_steps,
         "constraints": schema.constraints,

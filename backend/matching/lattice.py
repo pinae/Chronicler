@@ -83,7 +83,7 @@ def hypothesis_at(
     return LatticeHypothesis(
         id=row.pk,
         schema=row.schema.slug,
-        binding=row.binding,
+        binding=definition.in_role_order(row.binding),
         status=row.status if changed_by_t else LIVE,
         weight=weight_of(definition, fills, settings.MATCHER_REPEATABLE_FILL_CAP),
         created_at_t=row.created_at_t,

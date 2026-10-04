@@ -17,7 +17,9 @@ class Schema(models.Model):
 
     slug = models.SlugField(unique=True)
     name = models.CharField(max_length=200)
-    roles = models.JSONField()  # {"T": "character", "V": "character", "S": "secret"}
+    # [["T", "character"], ["V", "character"], ["S", "secret"]]: pairs in the order of the schema file
+    # (a JSON object would lose that order in PostgreSQL's JSONB).
+    roles = models.JSONField()
     constraints = models.JSONField(default=list, blank=True)
     payoff_steps = models.JSONField(default=list, blank=True)
     prior = models.FloatField(default=0.0)  # log-odds base rate
@@ -25,6 +27,10 @@ class Schema(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+    @property
+    def role_names(self) -> list[str]:
+        return [role for role, _ in self.roles]
 
 
 class Step(models.Model):

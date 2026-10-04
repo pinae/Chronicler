@@ -57,6 +57,10 @@ class SchemaDefinition:
     def step(self, step_id: str) -> StepDefinition:
         return next(step for step in self.steps if step.step_id == step_id)
 
+    def in_role_order(self, binding: Mapping[str, int | None]) -> dict[str, int | None]:
+        """The binding with its roles in the schema's order, whatever order it was stored in."""
+        return {role: binding.get(role) for role in self.roles}
+
     def to_document(self) -> dict[str, Any]:
         document: dict[str, Any] = {
             "slug": self.slug,

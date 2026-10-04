@@ -96,3 +96,14 @@ def test_schema_and_step_read_as_their_names():
 
     assert str(schema) == "Betrayal"
     assert str(schema.steps.get(step_id="harm")) == "betrayal.harm"
+
+
+def test_stored_roles_keep_their_order_on_any_database():
+    """PostgreSQL stores JSON objects as JSONB, which sorts their keys; a list keeps the order of
+    the schema file, which decides e.g. which open role a readout asks about first."""
+    load_library()
+
+    stored = Schema.objects.filter(slug="betrayal").values_list("roles", flat=True).get()
+
+    assert stored == [["T", "character"], ["V", "character"], ["S", "secret"]]
+    assert list(definition_of(Schema.objects.get(slug="betrayal")).roles) == ["T", "V", "S"]
