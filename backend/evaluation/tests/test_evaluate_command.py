@@ -40,7 +40,7 @@ def test_evaluate_prints_every_metric_of_the_latest_run(steward_with_ground_trut
     assert value_of(report, "voiced agreement (top 5)") == "100% (1 of 1)"
     # The uniform reader favours nothing: no beat fits the truth better, no belief rises.
     assert value_of(report, "retrospective fit") == "0% (0 of 10)"
-    assert value_of(report, "largest surprise") == "at t = 3 (reveal at t = 22)"
+    assert value_of(report, "largest surprise") == "n/a"
     assert value_of(report, "calibration (Brier score)") == "n/a"
 
 

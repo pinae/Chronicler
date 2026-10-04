@@ -28,6 +28,11 @@ class TestSurpriseCurve:
 
         assert largest_surprise_t(run) == 3  # ties: the earliest
 
+    def test_a_belief_that_never_rises_holds_no_surprise(self):
+        run = with_truth(EMPTY_RUN, beliefs=[(2, 0.5), (3, 0.5), (4, 0.25)])
+
+        assert largest_surprise_t(run) is None
+
     def test_without_beliefs_there_is_no_surprise_curve(self):
         assert surprise_curve(EMPTY_RUN) == []
         assert largest_surprise_t(with_truth(EMPTY_RUN, beliefs=[(2, 0.5)])) is None

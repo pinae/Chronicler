@@ -17,7 +17,24 @@ model adds to a run are described in `docs/run-file-format.md`.
 
 **Result:** the first line names the story, the reader, the lattice and the run file
 (`Evaluation of steward: reader UniformReader, lattice all, run of …`), followed by a table with one
-row per metric:
+row per metric. For `steward` replayed with the uniform reader:
+
+```
+Metric                          Value
+twist recall at reveal - 1      yes
+twist recall at reveal - 5      yes
+twist recall at reveal - 20     yes
+lead time                       20 beats (first held at t = 2)
+coverage: beats filling a step  50% (12 of 24)
+coverage: beats quarantined     0% (0 of 24)
+voiced agreement (top 5)        100% (1 of 1)
+retrospective fit               0% (0 of 10)
+largest surprise                n/a
+calibration (Brier score)       0.047
+```
+
+The uniform reader believes nothing in particular, so no beat fits the truth better than its rival
+and the belief in the truth never rises; a language model gives these rows meaning. The rows:
 
 | Metric | Means |
 |---|---|
@@ -27,7 +44,7 @@ row per metric:
 | coverage: beats quarantined | share of beats whose predicate the vocabulary did not know |
 | voiced agreement (top 5) | share of players' theories that matched one of the engine's five strongest readings when voiced |
 | retrospective fit | share of beats in the dormant window that fit the truth better than the strongest rival |
-| largest surprise | the beat at which the reader's belief in the truth rose most, next to the reveal |
+| largest surprise | the beat at which the reader's belief in the truth rose most, next to the reveal (`n/a` if it never rose) |
 | calibration (Brier score) | how far the reader's answers are from the annotated beliefs (0 is perfect) |
 
 ## A metric without inputs

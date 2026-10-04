@@ -155,11 +155,11 @@ def surprise_curve(run: Run) -> list[tuple[int, float]]:
 
 
 def largest_surprise_t(run: Run) -> int | None:
-    """The t of the largest rise in belief in the truth (ties: the earliest)."""
-    curve = surprise_curve(run)
-    if not curve:
+    """The t of the largest rise in belief in the truth (ties: the earliest); None if it never rose."""
+    rises = [(t, change) for t, change in surprise_curve(run) if change > 0]
+    if not rises:
         return None
-    return max(curve, key=lambda point: (point[1], -point[0]))[0]
+    return max(rises, key=lambda point: (point[1], -point[0]))[0]
 
 
 def calibration(run: Run) -> float | None:

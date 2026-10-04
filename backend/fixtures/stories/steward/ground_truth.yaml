@@ -1,0 +1,11 @@
+# Aldric betrays Mira: he learns where she hides the seal (t=7), steals it (t=13) and is paid by
+# the raider (t=15). The table sees only part of it; Edda tells Mira at t=22. The seal is left out
+# of the binding: the table never hears of it, so it could not be asked about a truth naming it.
+reveal_t: 22
+true_hypothesis:
+  schema: betrayal
+  binding: {T: aldric, V: mira}
+dormant_window: [8, 21]
+reader_beliefs:
+  # After the slap (t=14) and the purse of gold (t=15), a reader at the table is torn.
+  - {t: 16, question: "Who will harm Mira?", answer: {aldric: 0.5, edda: 0.3, none: 0.2}}

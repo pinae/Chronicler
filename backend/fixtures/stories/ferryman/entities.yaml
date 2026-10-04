@@ -1,0 +1,6 @@
+oskar: {kind: character, name: Oskar, aliases: [the ferryman]}
+tilde: {kind: character, name: Tilde, aliases: [the apprentice]}
+bram: {kind: character, name: Bram, aliases: [the rival ferryman]}
+stranger: {kind: character, name: The stranger}
+key: {kind: secret, name: The ledger key}
+boathouse: {kind: place, name: The boathouse}

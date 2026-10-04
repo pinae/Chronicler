@@ -10,6 +10,9 @@ ledger in the cellar. Aldric learns where the seal is hidden and steals it at ni
 pays him kills Ronan at the gate. Edda, who knows where the ledger is, slaps Mira in public. At t=22
 Edda tells Mira that she saw Aldric take the seal (the reveal); at t=24 the raider kills Aldric.
 
+Ground truth (`ground_truth.yaml`): Aldric betrays Mira, revealed at t=22, dormant window 8–21, one
+annotated reader belief at t=16. It is one of the two evaluation stories (WP-043).
+
 Matcher events the story is built to exercise (with `MATCHER_MAX_LIVE_PER_SCHEMA = 4`):
 
 | t | event |

@@ -1,0 +1,71 @@
+title: The Ferryman's Ledger
+kind: literature
+utterances:
+  - order: 1
+    speaker: narrator
+    text: >-
+      Oskar the ferryman kept his ledger in the boathouse, and he trusted his apprentice Tilde
+      with the oars as if she were his own daughter.
+    source: {chapter: 1}
+  - order: 2
+    speaker: narrator
+    text: Bram, who ran the rival ferry, sneered at Oskar whenever their boats passed.
+    source: {chapter: 1}
+  - order: 3
+    speaker: narrator
+    text: Still, when the storm came, Oskar trusted Bram to carry the mail across.
+    source: {chapter: 1}
+  - order: 4
+    speaker: narrator
+    text: Tilde mended Oskar's nets without being asked.
+    source: {chapter: 1}
+  - order: 5
+    speaker: narrator
+    text: That night Oskar hid the key to his ledger box under a loose plank.
+    source: {chapter: 2}
+  - order: 6
+    speaker: narrator
+    text: Tilde, sweeping the boathouse at dusk, had seen which plank was loose.
+    source: {chapter: 2}
+  - order: 7
+    speaker: narrator
+    text: Bram asked around the harbour where Oskar kept the key to his ledger.
+    source: {chapter: 2}
+  - order: 8
+    speaker: narrator
+    text: Bram helped Oskar haul the ferry ashore, grumbling the whole time.
+    source: {chapter: 2}
+  - order: 9
+    speaker: narrator
+    text: Oskar muttered to himself that Bram could not be trusted.
+    source: {chapter: 2}
+  - order: 10
+    speaker: narrator
+    text: In the grey hour before dawn, Tilde lifted the plank and took the key.
+    source: {chapter: 3}
+  - order: 11
+    speaker: narrator
+    text: At the tavern door a stranger pressed a silver coin into Tilde's hand.
+    source: {chapter: 3}
+  - order: 12
+    speaker: narrator
+    text: Bram was seen near the boathouse at dawn.
+    source: {chapter: 3}
+  - order: 13
+    speaker: narrator
+    text: Oskar found the plank loose and the key gone. He was furious, and he blamed Bram.
+    source: {chapter: 4}
+  - order: 14
+    speaker: narrator
+    text: Tilde comforted Oskar and helped him search the boathouse.
+    source: {chapter: 4}
+  - order: 15
+    speaker: narrator
+    text: >-
+      The harbour watch caught the stranger with the ledger, and he confessed to Oskar that
+      Tilde had sold him the key.
+    source: {chapter: 5}
+  - order: 16
+    speaker: narrator
+    text: Oskar sent Tilde away from the boathouse for good.
+    source: {chapter: 5}

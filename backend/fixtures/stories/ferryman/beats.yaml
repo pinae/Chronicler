@@ -1,0 +1,54 @@
+- utterance: 1
+  beats:
+    - {t: 1, pred: is_at, args: {who: "@oskar", where: "@boathouse"}, present: [oskar, tilde], text: Oskar keeps his ledger in the boathouse.}
+    - {t: 2, pred: trusts, args: {who: "@oskar", whom: "@tilde"}, present: [oskar, tilde], text: Oskar trusts Tilde.}
+- utterance: 2
+  beats:
+    - {t: 3, pred: opposes, args: {who: "@bram", whom: "@oskar"}, present: [bram, oskar], text: Bram sneers at Oskar.}
+- utterance: 3
+  beats:
+    - {t: 4, pred: trusts, args: {who: "@oskar", whom: "@bram"}, present: [oskar, bram], text: Oskar trusts Bram with the mail.}
+- utterance: 4
+  beats:
+    - {t: 5, pred: helps, args: {who: "@tilde", whom: "@oskar"}, present: [tilde, oskar], text: Tilde mends Oskar's nets.}
+- utterance: 5
+  beats:
+    - {t: 6, pred: hides, args: {who: "@oskar", what: "@key"}, present: [oskar], text: Oskar hides the ledger key under a plank.}
+- utterance: 6
+  beats:
+    - t: 7
+      pred: learns
+      args: {who: "@tilde", what: {pred: hides, args: {who: "@oskar", what: "@key"}}}
+      present: [tilde]
+      text: Tilde sees where the key is hidden.
+- utterance: 7
+  beats:
+    - {t: 8, pred: seeks, args: {who: "@bram", what: "@key"}, present: [bram], text: Bram asks where Oskar keeps the key.}
+- utterance: 8
+  beats:
+    - {t: 9, pred: helps, args: {who: "@bram", whom: "@oskar"}, present: [bram, oskar], text: Bram helps Oskar haul the ferry ashore.}
+- utterance: 9
+  beats:
+    - {t: 10, pred: distrusts, args: {who: "@oskar", whom: "@bram"}, present: [oskar], text: Oskar distrusts Bram.}
+- utterance: 10
+  beats:
+    - {t: 11, pred: steals, kind: action, args: {who: "@tilde", what: "@key", from: "@oskar"}, present: [tilde], text: Tilde steals the key from Oskar.}
+- utterance: 11
+  beats:
+    - {t: 12, pred: gives, kind: action, args: {who: "@stranger", what: a silver coin, to: "@tilde"}, present: [stranger, tilde], text: A stranger gives Tilde a silver coin.}
+- utterance: 12
+  beats:
+    - {t: 13, pred: is_at, args: {who: "@bram", where: "@boathouse"}, present: [bram], text: Bram is seen near the boathouse at dawn.}
+- utterance: 13
+  beats:
+    - {t: 14, pred: is, args: {who: "@oskar", trait: furious}, present: [oskar], text: Oskar is furious that the key is gone.}
+    - {t: 15, pred: distrusts, args: {who: "@oskar", whom: "@bram"}, present: [oskar], text: Oskar blames Bram.}
+- utterance: 14
+  beats:
+    - {t: 16, pred: helps, args: {who: "@tilde", whom: "@oskar"}, present: [tilde, oskar], text: Tilde helps Oskar search the boathouse.}
+- utterance: 15
+  beats:
+    - {t: 17, pred: learns, args: {who: "@oskar", what: "#11", from: "@stranger"}, present: [oskar, stranger], text: Oskar learns that Tilde stole the key.}
+- utterance: 16
+  beats:
+    - {t: 18, pred: distrusts, args: {who: "@oskar", whom: "@tilde"}, present: [oskar, tilde], text: Oskar no longer trusts Tilde.}

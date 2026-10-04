@@ -26,6 +26,14 @@ candidates (`"reader": "UniformReader"`).
 **Result:** the same message; the run file contains the lattice at every `t` and no expectations
 (`"reader": null`).
 
+## Replay a story with a ground truth
+1. Run `uv run python manage.py replay ferryman --reader uniform`.
+
+**Result:** `Replayed 18 beats of ferryman; …`. Because `ferryman` has a `ground_truth.yaml`, the
+run file also holds a `truth` record: the reader's belief in the true hypothesis at every beat, the
+Bayes factors of the dormant window and the annotated belief questions (see
+`docs/run-file-format.md`). `docs/usage/evaluate.md` turns it into metrics.
+
 ## Replay part of a story
 1. Run `uv run python manage.py replay steward --reader none --until 10`.
 
