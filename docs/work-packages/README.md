@@ -80,3 +80,11 @@ Each package's status is kept in its own file, not here.
 | [WP-062](WP-062-django-6.md) | Upgrade to Django 6.1 | M0 | 001 |
 | [WP-063](WP-063-real-token-probabilities.md) | Readouts read the model's real answer probabilities | M6 | 003, 024, 028 |
 | [WP-064](WP-064-yarn-and-stack-update.md) | Yarn 4 workspaces and an updated frontend stack | M8 | 034 |
+| [WP-065](WP-065-visualization-research.md) | Research visualizations of story structure | M8 | 037, 038 |
+| [WP-066](WP-066-steampunk-theme-and-shell.md) | Steampunk theme and app shell | M8 | 034, 064 |
+| [WP-067](WP-067-story-river-timeline.md) | Story river timeline API | M8 | 021, 059 |
+| [WP-068](WP-068-story-map-river.md) | Story map with the story river | M8 | 066, 067 |
+| [WP-069](WP-069-thread-arcs.md) | Thread arcs and open threads | M8 | 068 |
+| [WP-070](WP-070-knowledge-map.md) | Knowledge map | M8 | 068 |
+| [WP-071](WP-071-tension-and-surprise.md) | Tension and surprise strip | M8 | 067, 068 |
+| [WP-072](WP-072-evidence-matrix-and-clue-ledger.md) | Evidence matrix and clue ledger | M8 | 068 |

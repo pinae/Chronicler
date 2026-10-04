@@ -3,6 +3,11 @@
 Reports written by `manage.py report` (see `docs/usage/report.md`) from replays of the fixture
 stories. They are regenerated, not edited; notes on them belong here.
 
+Design notes, written by hand:
+
+- [visualizations.md](visualizations.md) (2026-10-04): which views help a game master see the
+  story's structure and how it moves; the basis of the story map (WP-065 to WP-072).
+
 ## rq1-baseline.md (2026-10-04)
 
 The two evaluation stories (`steward`, `ferryman`) replayed with the fixture ingester and the
