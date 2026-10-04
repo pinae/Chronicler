@@ -2,7 +2,6 @@
 (concept §8.3). No constrained decoding: masking would renormalize the distribution and hide how
 much probability the model put outside the candidates, which is itself a signal."""
 
-import math
 from collections.abc import Mapping, Sequence
 from typing import Any
 
@@ -10,11 +9,11 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
 from llm.cache import CachedOllama
+from llm.next_token import label_masses, next_token_request
 from llm.transport import HttpOllamaTransport, OllamaTransport
 from reader.interfaces import ContextBeat, Question, ReaderContext, Readout
 
 MAX_TOP_LOGPROBS = 20  # the native API's maximum (see docs/llm-smoke.md)
-LABEL_DECORATIONS = " )].:"
 
 
 class ReaderError(Exception):
@@ -30,11 +29,12 @@ class OllamaChoiceReader:
 
     def readout(self, context: ReaderContext, question: Question) -> Readout:
         request = {
-            "model": self.model,
-            "prompt": choice_prompt(context, question),
-            "logprobs": True,
-            "top_logprobs": min(MAX_TOP_LOGPROBS, max(len(question.candidates), 10)),
-            "options": {"num_predict": 1, "temperature": 0, "num_ctx": settings.OLLAMA_NUM_CTX},
+            **next_token_request(
+                self.model,
+                choice_prompt(context, question),
+                top_logprobs=min(MAX_TOP_LOGPROBS, max(len(question.candidates), 10)),
+                num_ctx=settings.OLLAMA_NUM_CTX,
+            ),
             "keep_alive": settings.OLLAMA_KEEP_ALIVE,
         }
         metadata = {
@@ -77,15 +77,14 @@ def choice_prompt(context: ReaderContext, question: Question) -> str:
 def label_distribution(response: Mapping[str, Any], labels: Sequence[str]) -> tuple[dict[str, float], float]:
     """Probabilities per label from the first generated token's alternatives, renormalized over the
     labels, and the probability mass that fell on anything else."""
-    token_logprobs = response.get("logprobs")
-    if not token_logprobs:
+    if response.get("thinking"):
+        raise ReaderError(
+            "the model was thinking instead of answering, although the request said think: false; "
+            "check the model with the smoke check (llm.smoke)"
+        )
+    mass = label_masses(response, labels)
+    if mass is None:
         raise ReaderError("the server returned no logprobs; check the model with the smoke check (llm.smoke)")
-    mass = dict.fromkeys(labels, 0.0)
-    for alternative in token_logprobs[0].get("top_logprobs") or []:
-        # Case-sensitive on purpose: a lowercase "a" is as likely the article as the label.
-        label = alternative["token"].strip(LABEL_DECORATIONS)
-        if label in mass:
-            mass[label] += math.exp(alternative["logprob"])
     total = sum(mass.values())
     if total == 0:
         return mass, 1.0

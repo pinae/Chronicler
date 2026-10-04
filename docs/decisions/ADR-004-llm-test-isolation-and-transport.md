@@ -1,6 +1,7 @@
 # ADR-004: Keeping tests away from the language model
 
-**Status:** accepted (2026-10-03) · **Work package:** WP-003
+**Status:** accepted (2026-10-03) · **Work package:** WP-003 · **Amended:** 2026-10-04 (WP-063), the
+transport posts to the native API itself, see *Amendment* below.
 
 ## Context
 Concept §8.5: no test in the default run may reach the network; integration tests that call the
@@ -48,3 +49,15 @@ package and its native API. We need (1) a guarantee, not a convention, that test
 - The smoke check and later readers/ingesters receive a transport, so tests drive them with fakes.
 - The `top_logprobs` maximum of the native API is 20 per the client's documentation; the smoke check
   reports what the deployed server actually returns.
+
+## Amendment (2026-10-04, WP-063): the transport posts to the native API itself
+`HttpOllamaTransport` no longer wraps the official `ollama` client; it posts the request dict as it
+is to `/api/generate` (with `stream: false`), `/api/show` and `/api/version` over `httpx`, and the
+`ollama` package is no longer a dependency. Readouts must send `truncate: false` (fail instead of
+silently cutting an over-long prompt), and the official client (0.6.3, the latest on PyPI on
+2026-10-04) has no such parameter; its `generate()` rejects unknown keywords. The server accepts
+the field ([`api/types.go`](https://github.com/ollama/ollama/blob/main/api/types.go): `Truncate`,
+`Shift`, `Think`, `Logprobs`, `TopLogprobs` on `GenerateRequest`). Posting the dict also keeps the
+logged request identical to what the server received. Everything else above stands: the seam is
+still `OllamaTransport`, unit tests still run against `httpx.MockTransport`, and only the `llm`
+app talks to the server (now checked for `httpx` as well as `ollama` imports).

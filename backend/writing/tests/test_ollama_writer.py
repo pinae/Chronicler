@@ -190,3 +190,12 @@ def test_a_real_model_continues_the_steward_story_with_a_valid_beat(settings):
 
     assert continuation.prose.strip()
     assert continuation.intended is not None
+
+
+@pytest.mark.django_db
+def test_a_prompt_too_long_for_the_context_is_an_error_not_silently_cut():
+    server = ScriptedServer({"prose": "At night Aldric slipped into the cellar.", "beat": THEFT})
+
+    OllamaStoryWriter(transport=server).continue_story(REQUEST)
+
+    assert server.requests[0]["truncate"] is False

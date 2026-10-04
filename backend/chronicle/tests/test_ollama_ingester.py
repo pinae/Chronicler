@@ -271,3 +271,13 @@ def test_three_sentences_yield_valid_beats_and_small_talk_yields_none(court, set
 
     assert ingester.ingest(chronicle, story).beats
     assert ingester.ingest(chronicle, small_talk).beats == ()
+
+
+def test_a_prompt_too_long_for_the_context_is_an_error_not_silently_cut(court):
+    chronicle, utterance = court
+    server = ScriptedServer(answer([TRUST]))
+
+    OllamaIngester(transport=server).ingest(chronicle, utterance)
+
+    [request] = server.requests
+    assert request["truncate"] is False

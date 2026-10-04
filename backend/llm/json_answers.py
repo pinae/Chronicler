@@ -16,7 +16,9 @@ class JsonAnswers:
         self.structured_output = True
 
     def ask(self, request: Mapping[str, Any]) -> dict[str, Any]:
-        """The model's JSON object; an empty one if the answer holds none."""
+        """The model's JSON object; an empty one if the answer holds none. A prompt too long for the
+        context fails instead of losing its beginning."""
+        request = {**request, "truncate": False}
         if self.structured_output:
             try:
                 return json_object(self.client.generate({**request, "format": self.schema}).response)

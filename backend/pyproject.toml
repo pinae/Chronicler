@@ -8,7 +8,6 @@ dependencies = [
     "django-environ>=0.14",
     "django-ninja>=1.7,<2",
     "httpx>=0.28",
-    "ollama==0.6.3",
     "psycopg[binary]>=3.3",
     "pyyaml>=6.0",
     "whitenoise>=6.12",

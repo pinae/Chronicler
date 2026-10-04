@@ -315,17 +315,29 @@ You will see these in the two stories; they are known limits, not bugs:
 The matcher does not use a language model: the lattice of a story is the same with any reader. The
 model answers the expectation questions and the reader rows of `evaluate`.
 
-1. Replay with your model: `uv run python manage.py replay broken-jug --reader configured
+1. Check the model first: `uv run python -m llm.smoke` (see `ollama-smoke-check.md`).
+
+**Result:** **answer-letter mass, thinking off** is close to 100%. If it is low, the model does not
+answer multiple-choice questions with a letter, and the percentages below mean little.
+
+2. Replay with your model: `uv run python manage.py replay broken-jug --reader configured
    --per-player` (it uses `OLLAMA_BASE_URL` and `OLLAMA_READER_MODEL` from `backend/.env`).
-2. Open the expectations of Ben's **C = Judge Adam, V = ?, I = Licht** at beat `19` again (see
+3. Open the expectations of Ben's **C = Judge Adam, V = ?, I = Licht** at beat `19` again (see
    *Ask what Ben expects the judge to have done*).
 
 **Result:** the percentages are no longer equal. A useful model puts more on **Frau Marthe**, whose
 jug was broken, than on bystanders such as **Walter**.
 
-3. Run `uv run python manage.py evaluate broken-jug`.
+4. See the raw token probabilities behind them: `uv run python manage.py inspect_readouts
+   broken-jug --t 19 --audience Ben` (see `inspect-readouts.md`).
 
-**Result:** **retrospective fit**, **largest surprise** and **calibration** now have values. A good
-reader finds the clues in the dormant window (fit above 0%), its belief in the truth rises most at
-the confession (largest surprise at t = 26) and its answer to "Who broke Frau Marthe's jug?" at t=23
-lies close to the annotated one (calibration near 0).
+**Result:** the block for **Hidden crime: C = Judge Adam, V = ?, I = Licht** lists the model's first
+token, its top alternatives with their probabilities, and the answers read from them, with the share
+that fell **outside the letters**.
+
+5. Run `uv run python manage.py evaluate broken-jug`.
+
+**Result:** **largest surprise** and **calibration** now have values. A good reader's belief in the
+truth rises most at the confession (largest surprise at t = 26), and its answer to "Who broke Frau
+Marthe's jug?" at t=23 lies close to the annotated one (calibration near 0). **Retrospective fit**
+needs Bayes factors (WP-044).

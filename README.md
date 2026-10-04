@@ -79,6 +79,10 @@ each audience saw them (`chronicle.md`), the lattice of hypotheses at any beat (
 the audience expects next (`expectations.md`), who knows what (`knowledge.md`) and trying a beat
 before narrating it (`try-a-beat.md`). The Django admin is at `/admin/` (`admin.md`).
 
+With a language model: check it with `uv run python -m llm.smoke` (`ollama-smoke-check.md`), replay
+with `--reader configured`, and look at the raw token probabilities behind every expectation with
+`manage.py inspect_readouts` (`inspect-readouts.md`).
+
 More commands, all documented in `docs/usage/`: importing books, sessions and news coverage
 (`import-prose.md`, `import-session.md`, `import-media.md`), drafting their beats with the language
 model (`draft-beats.md`), writing stories toward a twist and comparing writers (`generate.md`,

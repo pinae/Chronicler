@@ -111,14 +111,14 @@ def test_server_version_is_asked_once_per_client():
     assert server.version_requests == 1
 
 
-def test_only_the_llm_app_imports_the_ollama_client():
+def test_only_the_llm_app_talks_to_the_server():
     offenders = [
         path.relative_to(BACKEND_DIR)
         for path in BACKEND_DIR.rglob("*.py")
         if ".venv" not in path.parts
         and path.relative_to(BACKEND_DIR).parts[0] != "llm"
         and any(
-            line.strip().startswith(("import ollama", "from ollama"))
+            line.strip().startswith(("import ollama", "from ollama", "import httpx", "from httpx"))
             for line in path.read_text(encoding="utf-8").splitlines()
         )
     ]

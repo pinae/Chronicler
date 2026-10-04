@@ -63,3 +63,41 @@ def test_unreachable_server_raises_ollama_unreachable():
         transport_answering(handler).server_version()
     with pytest.raises(OllamaUnreachable):
         transport_answering(handler).generate({"model": "reader", "prompt": "Hi"})
+
+
+def test_generate_sends_every_field_of_the_request_as_is_without_streaming():
+    received = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.url.path == "/api/generate"
+        received.update(json.loads(request.content))
+        return httpx.Response(200, json={"model": "reader", "response": "A", "done": True})
+
+    transport_answering(handler).generate(
+        {"model": "reader", "prompt": "Pick A or B.", "think": False, "truncate": False}
+    )
+
+    assert received == {
+        "model": "reader",
+        "prompt": "Pick A or B.",
+        "think": False,
+        "truncate": False,
+        "stream": False,
+    }
+
+
+def test_show_returns_what_the_server_knows_about_a_model():
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.url.path == "/api/show"
+        assert json.loads(request.content) == {"model": "reader"}
+        return httpx.Response(200, json={"capabilities": ["completion", "thinking"]})
+
+    assert transport_answering(handler).show("reader") == {"capabilities": ["completion", "thinking"]}
+
+
+def test_an_unknown_model_raises_ollama_error_with_the_server_message():
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(404, json={"error": "model 'reader' not found"})
+
+    with pytest.raises(OllamaError, match="model 'reader' not found"):
+        transport_answering(handler).show("reader")

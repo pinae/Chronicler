@@ -80,8 +80,44 @@ def test_request_asks_for_one_token_with_enough_logprobs_and_no_constrained_deco
     assert request["logprobs"] is True
     assert request["top_logprobs"] >= len(QUESTION.candidates)
     assert request["options"]["num_predict"] == 1
-    assert request["options"]["temperature"] == 0
     assert "format" not in request
+
+
+@pytest.mark.django_db
+def test_request_reads_the_models_own_distribution_over_the_answer(settings):
+    """A thinking model would spend its one token on its reasoning; a repeat penalty would lower the
+    labels, which all appear in the prompt; temperature 1 leaves the logits unscaled."""
+    reader, server = reader_answering(first_token(("A", 0.9)), settings)
+
+    reader.readout(CONTEXT, QUESTION)
+
+    [request] = server.requests
+    assert request["think"] is False
+    assert request["options"]["temperature"] == 1.0
+    assert request["options"]["repeat_penalty"] == 1.0
+    assert request["options"]["presence_penalty"] == 0.0
+    assert request["options"]["frequency_penalty"] == 0.0
+
+
+@pytest.mark.django_db
+def test_a_prompt_too_long_for_the_context_is_an_error_not_silently_cut(settings):
+    reader, server = reader_answering(first_token(("A", 0.9)), settings)
+    settings.OLLAMA_NUM_CTX = 8192
+
+    reader.readout(CONTEXT, QUESTION)
+
+    [request] = server.requests
+    assert request["truncate"] is False
+    assert request["options"]["num_ctx"] == 8192
+
+
+@pytest.mark.django_db
+def test_a_model_that_thinks_anyway_is_an_error_that_says_so(settings):
+    thinking = {**first_token(("The", 0.5), ("A", 0.1)), "response": "", "thinking": "The"}
+    reader, _ = reader_answering(thinking, settings)
+
+    with pytest.raises(ReaderError, match="thinking"):
+        reader.readout(CONTEXT, QUESTION)
 
 
 @pytest.mark.django_db
