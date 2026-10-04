@@ -1,9 +1,7 @@
 import json
-import shutil
 from io import StringIO
 
 import pytest
-import yaml
 from django.core.management import call_command
 
 from evaluation.replay import RUN_FORMAT, build_run, replay_story, write_run
@@ -158,23 +156,6 @@ def test_replay_can_build_a_lattice_for_every_player(tmp_path):
     # Only Ben saw how Aldric learned where the seal is hidden.
     assert any(hypothesis["binding"]["S"] == seal for hypothesis in lattices["Ben"])
     assert not any(hypothesis["binding"]["S"] == seal for hypothesis in lattices["Anna"])
-
-
-@pytest.fixture
-def steward_with_ground_truth(tmp_path, settings):
-    stories_dir = tmp_path / "stories"
-    shutil.copytree(settings.FIXTURE_STORIES_DIR / "steward", stories_dir / "steward")
-    (stories_dir / "steward" / "ground_truth.yaml").write_text(
-        yaml.safe_dump(
-            {
-                "reveal_t": 22,
-                "true_hypothesis": {"schema": "betrayal", "binding": {"T": "aldric", "V": "mira"}},
-                "dormant_window": [8, 21],
-            }
-        )
-    )
-    settings.FIXTURE_STORIES_DIR = stories_dir
-    return tmp_path / "runs"
 
 
 def replayed_run(output_dir, *options):

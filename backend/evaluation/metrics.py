@@ -48,18 +48,17 @@ def last_t(run: Run) -> int:
 
 
 def twist_recall(run: Run, truth: GroundTruth, k: int, audience: str = ALL) -> bool | None:
-    """Did the lattice hold the true hypothesis k beats before the reveal? None before the story."""
+    """Did the lattice hold the true hypothesis k beats before the reveal? None outside the run."""
     t = truth.reveal_t - k
-    if t < 0:
+    if not 0 <= t <= last_t(run):
         return None
     return holds_truth(run, truth.true_hypothesis, t, audience)
 
 
 def first_held_t(run: Run, truth: GroundTruth, audience: str = ALL) -> int | None:
     """The first t, up to the reveal, at which the lattice held the true hypothesis."""
-    return next(
-        (t for t in range(truth.reveal_t + 1) if holds_truth(run, truth.true_hypothesis, t, audience)), None
-    )
+    until_t = min(truth.reveal_t, last_t(run))
+    return next((t for t in range(until_t + 1) if holds_truth(run, truth.true_hypothesis, t, audience)), None)
 
 
 def lead_time(run: Run, truth: GroundTruth, audience: str = ALL) -> int | None:

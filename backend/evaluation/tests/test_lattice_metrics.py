@@ -43,6 +43,12 @@ class TestTwistRecall:
 
         assert twist_recall(run, TRUTH, k=20) is None
 
+    def test_recall_after_the_run_ended_is_not_available(self):
+        run = run_file(6, [(range(3, 7), hypothesis(1, ALDRIC, MIRA))])
+
+        assert twist_recall(run, TRUTH, k=1) is None
+        assert twist_recall(run, TRUTH, k=5) is True
+
     def test_a_more_specific_hypothesis_holds_the_truth(self):
         run = run_file(10, [(range(0, 11), hypothesis(1, ALDRIC, MIRA, SEAL))])
 
@@ -87,6 +93,11 @@ class TestLeadTime:
         )
 
         assert first_held_t(run, TRUTH) == 3
+        assert lead_time(run, TRUTH) == 7
+
+    def test_lead_time_of_a_run_that_ends_before_the_reveal_counts_the_beats_it_has(self):
+        run = run_file(6, [(range(3, 7), hypothesis(1, ALDRIC, MIRA))])
+
         assert lead_time(run, TRUTH) == 7
 
     def test_a_truth_never_held_before_the_reveal_has_no_lead_time(self):
