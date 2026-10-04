@@ -31,7 +31,9 @@ class LatticeHypothesis:
     refuted_by_t: int | None = None
     refines_id: int | None = None
     merged_into_id: int | None = None
-    voiced_by: int | None = None
+    voiced_by: int | None = None  # set from voiced_at_t on
+    voiced_in: int | None = None
+    voiced_at_t: int | None = None
 
     @property
     def is_live(self) -> bool:
@@ -77,6 +79,7 @@ def hypothesis_at(
     row: Hypothesis, t: int, definition: SchemaDefinition, fills: tuple[Fill, ...]
 ) -> LatticeHypothesis:
     changed_by_t = row.status_changed_at_t is not None and row.status_changed_at_t <= t
+    voiced_by_t = row.voiced_at_t is not None and row.voiced_at_t <= t
     return LatticeHypothesis(
         id=row.pk,
         schema=row.schema.slug,
@@ -89,5 +92,7 @@ def hypothesis_at(
         refuted_by_t=row.refuted_by.t if changed_by_t and row.refuted_by else None,
         refines_id=row.refines_id,
         merged_into_id=row.merged_into_id if changed_by_t else None,
-        voiced_by=row.voiced_by_id,
+        voiced_by=row.voiced_by_id if voiced_by_t else None,
+        voiced_in=row.voiced_in_id if voiced_by_t else None,
+        voiced_at_t=row.voiced_at_t if voiced_by_t else None,
     )

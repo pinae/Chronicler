@@ -135,6 +135,8 @@ def lattice_entry(hypothesis: LatticeHypothesis) -> dict[str, Any]:
         "merged_into": hypothesis.merged_into_id,
         "refuted_by_t": hypothesis.refuted_by_t,
         "voiced_by": hypothesis.voiced_by,
+        "voiced_in": hypothesis.voiced_in,
+        "voiced_at_t": hypothesis.voiced_at_t,
     }
 
 

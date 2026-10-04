@@ -32,6 +32,17 @@ def test_theory_matching_an_engine_hypothesis_marks_it_as_voiced_instead_of_dupl
     assert len(matcher.hypotheses) == 1
 
 
+def test_voicing_records_when_the_theory_was_voiced():
+    engine_hypothesis = HypothesisState(
+        schema=betrayal(), binding={"T": ALDRIC, "V": MIRA, "S": None}, created_at_t=2
+    )
+    matcher = IncrementalMatcher([betrayal()], [engine_hypothesis])
+
+    matcher.voice("betrayal", {"T": ALDRIC, "V": MIRA}, voiced_by=ANNA, voiced_in=UTTERANCE, t=4)
+
+    assert (engine_hypothesis.created_at_t, engine_hypothesis.voiced_at_t) == (2, 4)
+
+
 def test_voiced_hypothesis_takes_part_in_fill():
     matcher = IncrementalMatcher([betrayal()])
     voiced = matcher.voice("betrayal", {"T": ALDRIC, "V": MIRA}, voiced_by=ANNA, voiced_in=UTTERANCE, t=1)

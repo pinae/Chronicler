@@ -94,6 +94,7 @@ class StoredMatcher:
             refuted_by_t=row.refuted_by.t if row.refuted_by else None,
             voiced_by=row.voiced_by_id,
             voiced_in=row.voiced_in_id,
+            voiced_at_t=row.voiced_at_t,
             record_id=row.pk,
         )
 
@@ -132,6 +133,7 @@ class StoredMatcher:
             merged_into_id=state.merged_into.record_id if state.merged_into else None,
             voiced_by_id=state.voiced_by,
             voiced_in_id=state.voiced_in,
+            voiced_at_t=state.voiced_at_t,
         )
 
     def save_new_fills(self, record_id: int, state: HypothesisState) -> None:

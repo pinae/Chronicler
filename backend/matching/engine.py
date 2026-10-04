@@ -38,6 +38,7 @@ class HypothesisState:
     merged_into: "HypothesisState | None" = None
     voiced_by: int | None = None  # player id
     voiced_in: int | None = None  # utterance id
+    voiced_at_t: int | None = None
     record_id: int | None = None  # primary key once stored
 
     @property
@@ -148,7 +149,7 @@ class IncrementalMatcher:
             (h for h in self.live() if h.schema.slug == schema.slug and h.binding == full_binding), None
         )
         voiced = existing or HypothesisState(schema=schema, binding=full_binding, created_at_t=t)
-        voiced.voiced_by, voiced.voiced_in = voiced_by, voiced_in
+        voiced.voiced_by, voiced.voiced_in, voiced.voiced_at_t = voiced_by, voiced_in, t
         if existing is None:
             self.hypotheses.append(voiced)
         return voiced
@@ -218,8 +219,10 @@ class IncrementalMatcher:
             survivor = survivors.setdefault(hypothesis.identity(), hypothesis)
             if survivor is hypothesis:
                 continue
-            survivor.voiced_by = survivor.voiced_by or hypothesis.voiced_by
-            survivor.voiced_in = survivor.voiced_in or hypothesis.voiced_in
+            if survivor.voiced_by is None and hypothesis.voiced_by is not None:
+                # From now on the survivor carries the theory the merged hypothesis was voiced as.
+                survivor.voiced_by, survivor.voiced_in = hypothesis.voiced_by, hypothesis.voiced_in
+                survivor.voiced_at_t = beat.t
             hypothesis.change_status(MERGED, beat.t)
             hypothesis.merged_into = survivor
             merged.append(hypothesis)

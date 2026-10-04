@@ -1,6 +1,7 @@
 import pytest
 
 from matching.lattice import Lattice
+from matching.store import StoredMatcher
 from matching.tests.story_runs import matched_story
 
 pytestmark = pytest.mark.django_db
@@ -131,3 +132,18 @@ def test_live_hypotheses_are_those_live_at_t():
     live = Lattice.at(chronicle, 20).live()
 
     assert sorted(hypothesis.created_at_t for hypothesis in live) == [2, 4, 7]
+
+
+def test_a_hypothesis_is_voiced_in_the_lattice_only_from_the_t_it_was_voiced():
+    """Regression (steward, t=11): voicing an older hypothesis showed it as voiced from its creation."""
+    chronicle = matched_story("steward", until_t=11)
+    ben = chronicle.players.get(name="Ben")
+    utterance = chronicle.utterances.get(order=13)
+    edda, mira = (chronicle.entities.get(slug=slug).pk for slug in ("edda", "mira"))
+    StoredMatcher(chronicle).voice("betrayal", {"T": edda, "V": mira}, ben, utterance, t=11)
+
+    before = find(Lattice.at(chronicle, 10), chronicle, T="edda", V="mira", S=None)
+    after = find(Lattice.at(chronicle, 11), chronicle, T="edda", V="mira", S=None)
+
+    assert before.created_at_t == 4
+    assert (before.voiced_by, after.voiced_by) == (None, ben.pk)

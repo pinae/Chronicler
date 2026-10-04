@@ -54,14 +54,15 @@ class TestMerging:
 
         assert first.status == second.status == "live"
 
-    def test_survivor_keeps_who_voiced_the_merged_hypothesis(self):
+    def test_survivor_carries_the_voicing_of_the_merged_hypothesis_from_the_merge_on(self):
         older = betrays(ALDRIC, fills=[Fill("trust", 1)], created_at_t=1)
         voiced = betrays(ALDRIC, fills=[Fill("trust", 1)], created_at_t=2, voiced_by=7)
+        voiced.voiced_at_t = 2
         matcher = IncrementalMatcher([betrayal()], [older, voiced])
 
         matcher.step(unrelated_beat(4), WORLD)
 
-        assert older.voiced_by == 7
+        assert (older.voiced_by, older.voiced_at_t) == (7, 4)
 
     def test_merged_hypothesis_takes_no_further_fills(self):
         older = betrays(ALDRIC, fills=[Fill("trust", 1)], created_at_t=1)

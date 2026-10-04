@@ -27,7 +27,8 @@
             "weight": 1.0,                             // recomputed from the fills up to this t
             "created_at_t": 7, "status_changed_at_t": null,
             "fills": [["trust", 2], ["access", 7], ["harm", 13]],   // [step, beat t]
-            "refines": 38, "merged_into": null, "refuted_by_t": null, "voiced_by": null
+            "refines": 38, "merged_into": null, "refuted_by_t": null,
+            "voiced_by": null, "voiced_in": null, "voiced_at_t": null   // player id, utterance id, t; set from voiced_at_t on
           }
         ]
       },

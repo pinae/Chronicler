@@ -28,6 +28,7 @@ class Hypothesis(models.Model):
     voiced_in = models.ForeignKey(
         Utterance, null=True, blank=True, related_name="+", on_delete=models.SET_NULL
     )
+    voiced_at_t = models.PositiveIntegerField(null=True, blank=True)
     refines = models.ForeignKey(
         "self", null=True, blank=True, related_name="refinements", on_delete=models.SET_NULL
     )
