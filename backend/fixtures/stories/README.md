@@ -67,6 +67,13 @@ Argument values use a compact notation:
 Beats are appended in file order, so `t` counts up from 1 across all utterances. Utterances
 without beats can be listed with `beats: []` or left out.
 
+### Review marks
+
+`manage.py draft_beats` (WP-047) writes drafted beats with a `review` mark wherever a human has to
+decide: a beat whose predicate is not in the vocabulary, an utterance whose drafts the ingester had
+to drop, or one whose beats could not be appended. A story with any `review` key left does not
+load; fix the entry (or accept it, e.g. keep the beat quarantined) and delete the mark.
+
 ### Theories
 
 A player utterance can carry the theories the player voiced:

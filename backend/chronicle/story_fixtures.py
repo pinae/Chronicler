@@ -66,6 +66,14 @@ class TheorySpec:
 
 
 @dataclass(frozen=True)
+class Transcript:
+    title: str
+    kind: str
+    players: list[str]
+    utterances: list[UtteranceSpec]
+
+
+@dataclass(frozen=True)
 class StoryFixture:
     slug: str
     title: str
@@ -77,16 +85,28 @@ class StoryFixture:
     theories: list[TheorySpec]
 
 
-def read_story(slug: str, stories_dir: Path = STORIES_DIR) -> StoryFixture:
-    directory = stories_dir / slug
-    transcript = read_yaml(directory / "transcript.yaml")
-    beat_entries = read_yaml(directory / "beats.yaml") or []
-    story = StoryFixture(
-        slug=slug,
+def read_transcript(slug: str, stories_dir: Path = STORIES_DIR) -> Transcript:
+    """The transcript alone, as a story has it before its beats are drafted."""
+    transcript = read_yaml(stories_dir / slug / "transcript.yaml")
+    return Transcript(
         title=transcript["title"],
         kind=transcript["kind"],
         players=list(transcript.get("players", [])),
         utterances=[read_utterance(entry) for entry in transcript["utterances"]],
+    )
+
+
+def read_story(slug: str, stories_dir: Path = STORIES_DIR) -> StoryFixture:
+    directory = stories_dir / slug
+    transcript = read_transcript(slug, stories_dir)
+    beat_entries = read_yaml(directory / "beats.yaml") or []
+    reject_review_marks(beat_entries)
+    story = StoryFixture(
+        slug=slug,
+        title=transcript.title,
+        kind=transcript.kind,
+        players=transcript.players,
+        utterances=transcript.utterances,
         entities=[read_entity(slug, entry) for slug, entry in read_yaml(directory / "entities.yaml").items()],
         beats=list(read_beats(beat_entries)),
         theories=list(read_theories(beat_entries)),
@@ -94,6 +114,19 @@ def read_story(slug: str, stories_dir: Path = STORIES_DIR) -> StoryFixture:
     check_entity_mentions(story)
     check_theories(story)
     return story
+
+
+def reject_review_marks(utterance_entries: list[Mapping[str, Any]]) -> None:
+    """Drafted beats carry `review` marks (WP-047) until a human has checked them."""
+    for utterance_entry in utterance_entries:
+        location = f"beats.yaml, utterance {utterance_entry['utterance']}"
+        if "review" in utterance_entry:
+            raise StoryFixtureError(f"{location}: still marked for review: {utterance_entry['review']}")
+        for position, entry in enumerate(utterance_entry.get("beats", []), start=1):
+            if "review" in entry:
+                raise StoryFixtureError(
+                    f"{location}, beat {position}: still marked for review: {entry['review']}"
+                )
 
 
 def read_yaml(path: Path) -> Any:
