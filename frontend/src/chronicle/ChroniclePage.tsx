@@ -33,7 +33,8 @@ function ChronicleView({ chronicle }: { chronicle: ChronicleDetail }) {
       <p>{chronicle.kind}</p>
       <p>
         <Link to={`/chronicles/${chronicle.id}/lattice`}>Lattice</Link> ·{" "}
-        <Link to={`/chronicles/${chronicle.id}/knowledge`}>Who knows what</Link>
+        <Link to={`/chronicles/${chronicle.id}/knowledge`}>Who knows what</Link> ·{" "}
+        <Link to={`/chronicles/${chronicle.id}/try`}>Try a beat</Link>
       </p>
       <AudienceSelect players={chronicle.players} value={view.audience} onChange={view.chooseAudience} />
       <TimeSlider t={view.t} lastT={chronicle.last_t} onChange={view.chooseT} />

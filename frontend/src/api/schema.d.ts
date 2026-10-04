@@ -135,6 +135,43 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/chronicles/{chronicle_id}/dry-run": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Dry Run Beat
+     * @description What narrating the candidate as the next beat would do to a lattice. Nothing is kept.
+     */
+    post: operations["gm_ui_dry_run_api_dry_run_beat"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/vocabulary": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get Vocabulary */
+    get: operations["gm_ui_dry_run_api_get_vocabulary"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -289,6 +326,81 @@ export interface components {
       kind: string;
       /** Introduced At T */
       introduced_at_t: number;
+    };
+    /** DryRunOut */
+    DryRunOut: {
+      /** T */
+      t: number;
+      /** Effects */
+      effects: components["schemas"]["EffectOut"][];
+    };
+    /** EffectOut */
+    EffectOut: {
+      /** Hypothesis Id */
+      hypothesis_id: number | null;
+      /** Schema Slug */
+      schema_slug: string;
+      /** Schema Name */
+      schema_name: string;
+      /** Binding */
+      binding: components["schemas"]["BindingEntry"][];
+      /** Changes */
+      changes: string[];
+      /** Status */
+      status: string;
+      /** Filled Step */
+      filled_step: string | null;
+      /** Weight Before */
+      weight_before: number | null;
+      /** Weight After */
+      weight_after: number;
+      /** Refines */
+      refines: number | null;
+    };
+    /** CandidateBeatIn */
+    CandidateBeatIn: {
+      /** Pred */
+      pred: string;
+      /** Args */
+      args: {
+        [key: string]: unknown;
+      };
+      /**
+       * Text
+       * @default
+       */
+      text: string;
+      /**
+       * Characters Present
+       * @default []
+       */
+      characters_present: number[];
+      /**
+       * Players Present
+       * @default []
+       */
+      players_present: number[];
+      /**
+       * Audience
+       * @default all
+       */
+      audience: string;
+    };
+    /** PredicateOut */
+    PredicateOut: {
+      /** Name */
+      name: string;
+      /** Roles */
+      roles: components["schemas"]["RoleOut"][];
+    };
+    /** RoleOut */
+    RoleOut: {
+      /** Name */
+      name: string;
+      /** Kinds */
+      kinds: string[];
+      /** Optional */
+      optional: boolean;
     };
   };
   responses: never;
@@ -462,6 +574,52 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["EntityOut"][];
+        };
+      };
+    };
+  };
+  gm_ui_dry_run_api_dry_run_beat: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        chronicle_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CandidateBeatIn"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["DryRunOut"];
+        };
+      };
+    };
+  };
+  gm_ui_dry_run_api_get_vocabulary: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PredicateOut"][];
         };
       };
     };

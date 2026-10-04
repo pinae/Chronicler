@@ -9,3 +9,9 @@ export type LatticeHypothesis = components["schemas"]["LatticeHypothesisOut"];
 export type Expectation = components["schemas"]["ExpectationOut"];
 export type KnownBeat = components["schemas"]["KnownBeat"];
 export type EntitySummary = components["schemas"]["EntityOut"];
+export type Predicate = components["schemas"]["PredicateOut"];
+export type Role = components["schemas"]["RoleOut"];
+export type DryRun = components["schemas"]["DryRunOut"];
+export type Effect = components["schemas"]["EffectOut"];
+/** A beat to try before narrating it; the dry run has no use for its text. */
+export type CandidateBeat = Omit<components["schemas"]["CandidateBeatIn"], "text">;

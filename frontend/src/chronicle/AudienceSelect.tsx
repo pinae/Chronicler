@@ -8,13 +8,14 @@ type Props = {
   value: string;
   onChange: (audience: string) => void;
   includeTable?: boolean;
+  label?: string;
 };
 
 /** Whose view to show: every beat (the GM's), the table's common knowledge, or one player's. */
-export function AudienceSelect({ players, value, onChange, includeTable = true }: Props) {
+export function AudienceSelect({ players, value, onChange, includeTable = true, label = "Seen by" }: Props) {
   return (
     <label>
-      Seen by{" "}
+      {label}{" "}
       <select value={value} onChange={(event) => onChange(event.target.value)}>
         <option value={ALL_BEATS}>All beats</option>
         {includeTable && <option value={TABLE}>The table</option>}

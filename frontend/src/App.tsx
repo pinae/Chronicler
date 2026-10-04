@@ -4,6 +4,7 @@ import { ChroniclePage } from "./chronicle/ChroniclePage";
 import { ChroniclesPage } from "./chronicles/ChroniclesPage";
 import { KnowledgePage } from "./knowledge/KnowledgePage";
 import { LatticePage } from "./lattice/LatticePage";
+import { TryBeatPage } from "./tryBeat/TryBeatPage";
 
 export function App() {
   return (
@@ -13,6 +14,7 @@ export function App() {
         <Route path="/chronicles/:chronicleId" element={<ChroniclePage />} />
         <Route path="/chronicles/:chronicleId/lattice" element={<LatticePage />} />
         <Route path="/chronicles/:chronicleId/knowledge" element={<KnowledgePage />} />
+        <Route path="/chronicles/:chronicleId/try" element={<TryBeatPage />} />
       </Routes>
     </BrowserRouter>
   );

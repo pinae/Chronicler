@@ -363,6 +363,69 @@
           }
         }
       }
+    },
+    "/api/chronicles/{chronicle_id}/dry-run": {
+      "post": {
+        "operationId": "gm_ui_dry_run_api_dry_run_beat",
+        "summary": "Dry Run Beat",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "chronicle_id",
+            "schema": {
+              "title": "Chronicle Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DryRunOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "What narrating the candidate as the next beat would do to a lattice. Nothing is kept.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CandidateBeatIn"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/vocabulary": {
+      "get": {
+        "operationId": "gm_ui_dry_run_api_get_vocabulary",
+        "summary": "Get Vocabulary",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PredicateOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -756,6 +819,198 @@
         },
         "required": ["id", "name", "kind", "introduced_at_t"],
         "title": "EntityOut",
+        "type": "object"
+      },
+      "DryRunOut": {
+        "properties": {
+          "t": {
+            "title": "T",
+            "type": "integer"
+          },
+          "effects": {
+            "items": {
+              "$ref": "#/components/schemas/EffectOut"
+            },
+            "title": "Effects",
+            "type": "array"
+          }
+        },
+        "required": ["t", "effects"],
+        "title": "DryRunOut",
+        "type": "object"
+      },
+      "EffectOut": {
+        "properties": {
+          "hypothesis_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hypothesis Id"
+          },
+          "schema_slug": {
+            "title": "Schema Slug",
+            "type": "string"
+          },
+          "schema_name": {
+            "title": "Schema Name",
+            "type": "string"
+          },
+          "binding": {
+            "items": {
+              "$ref": "#/components/schemas/BindingEntry"
+            },
+            "title": "Binding",
+            "type": "array"
+          },
+          "changes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Changes",
+            "type": "array"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "filled_step": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Filled Step"
+          },
+          "weight_before": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weight Before"
+          },
+          "weight_after": {
+            "title": "Weight After",
+            "type": "number"
+          },
+          "refines": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Refines"
+          }
+        },
+        "required": [
+          "hypothesis_id",
+          "schema_slug",
+          "schema_name",
+          "binding",
+          "changes",
+          "status",
+          "filled_step",
+          "weight_before",
+          "weight_after",
+          "refines"
+        ],
+        "title": "EffectOut",
+        "type": "object"
+      },
+      "CandidateBeatIn": {
+        "properties": {
+          "pred": {
+            "title": "Pred",
+            "type": "string"
+          },
+          "args": {
+            "additionalProperties": true,
+            "title": "Args",
+            "type": "object"
+          },
+          "text": {
+            "default": "",
+            "title": "Text",
+            "type": "string"
+          },
+          "characters_present": {
+            "default": [],
+            "items": {
+              "type": "integer"
+            },
+            "title": "Characters Present",
+            "type": "array"
+          },
+          "players_present": {
+            "default": [],
+            "items": {
+              "type": "integer"
+            },
+            "title": "Players Present",
+            "type": "array"
+          },
+          "audience": {
+            "default": "all",
+            "title": "Audience",
+            "type": "string"
+          }
+        },
+        "required": ["pred", "args"],
+        "title": "CandidateBeatIn",
+        "type": "object"
+      },
+      "PredicateOut": {
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "roles": {
+            "items": {
+              "$ref": "#/components/schemas/RoleOut"
+            },
+            "title": "Roles",
+            "type": "array"
+          }
+        },
+        "required": ["name", "roles"],
+        "title": "PredicateOut",
+        "type": "object"
+      },
+      "RoleOut": {
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "kinds": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Kinds",
+            "type": "array"
+          },
+          "optional": {
+            "title": "Optional",
+            "type": "boolean"
+          }
+        },
+        "required": ["name", "kinds", "optional"],
+        "title": "RoleOut",
         "type": "object"
       }
     }
