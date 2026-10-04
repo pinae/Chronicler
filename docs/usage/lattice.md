@@ -25,9 +25,18 @@ now has status **live** and lists **reveal** among its open steps.
 
 ## See a player's lattice
 1. On the lattice page of **The Steward of Wend**, choose **Anna** in **Seen by**.
+2. Set **Up to beat** to `21`.
 
 **Result:** the table shows only what Anna could have pieced together: there is no row with
-**S = The family seal**, because Anna never saw how Aldric learned where the seal was hidden.
+**S = The family seal**, because Anna saw neither how Aldric learned where the seal was hidden nor
+the theft.
+
+3. Set **Up to beat** to `22`.
+
+**Result:** a row **T = Aldric, V = Mira, S = The family seal** appears: at t=22 Anna hears Edda tell
+Mira about the theft, and her lattice takes the theft up then. It stays **live**, with **access**
+among its open steps, because Anna never learned how Aldric got to the seal. In Ben's lattice, who
+saw that (t=7), the same betrayal is **complete**.
 
 ## Spot a theory a player voiced
 1. On the lattice page of **The Steward of Wend**, set **Up to beat** to `10`.

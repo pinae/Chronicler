@@ -46,9 +46,20 @@ test("See a player's lattice", async ({ page }) => {
   await openLattice(page);
 
   await page.getByLabel("Seen by").selectOption({ label: "Anna" });
+  await page.getByLabel("Up to beat").fill("21");
 
   await expect(page.getByText("T = Aldric, V = Mira, S = ?").first()).toBeVisible();
   await expect(page.getByText("S = The family seal")).toHaveCount(0);
+
+  await page.getByLabel("Up to beat").fill("22");
+
+  const annasSealBetrayal = row(page, "T = Aldric, V = Mira, S = The family seal");
+  await expect(annasSealBetrayal).toContainText("live");
+  await expect(annasSealBetrayal.getByRole("cell").nth(4)).toContainText("access");
+
+  await page.getByLabel("Seen by").selectOption({ label: "Ben" });
+
+  await expect(row(page, "T = Aldric, V = Mira, S = The family seal")).toContainText("complete");
 });
 
 test("Spot a theory a player voiced", async ({ page }) => {

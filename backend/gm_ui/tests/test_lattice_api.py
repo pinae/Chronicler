@@ -72,10 +72,13 @@ def test_moving_t_back_shows_the_lattice_as_it_was(client, steward):
 def test_a_players_lattice_holds_only_what_they_saw(client, steward):
     anna = steward.players.get(name="Anna")
 
-    names = by_binding(lattice(client, steward, audience=str(anna.pk))["hypotheses"])
+    before_reveal = by_binding(lattice(client, steward, audience=str(anna.pk), t=21)["hypotheses"])
+    after_reveal = by_binding(lattice(client, steward, audience=str(anna.pk), t=22)["hypotheses"])
 
-    assert ("Aldric", "Mira", "The family seal") not in names
-    assert ("Aldric", "Mira", None) in names
+    assert ("Aldric", "Mira", "The family seal") not in before_reveal
+    assert ("Aldric", "Mira", None) in before_reveal
+    # At t=22 Anna hears of the theft (t=13): her lattice takes it up then.
+    assert ("Aldric", "Mira", "The family seal") in after_reveal
 
 
 def test_the_table_has_no_lattice_of_its_own(client, steward):

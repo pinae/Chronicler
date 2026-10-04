@@ -17,10 +17,17 @@ The slider **Up to beat** shows **t = 24 of 24**, and **Seen by** shows **All be
 
 ## See what the table saw
 1. On the page of **The Steward of Wend**, choose **The table** in **Seen by**.
+2. Set **Up to beat** to `21`.
 
 **Result:** the table keeps **Mira trusts Aldric.** but no longer shows the beats only the game master
 or a single player knows, such as **Aldric steals the seal from Mira.** or
 **Aldric learns where Mira hides the seal.**
+
+3. Set **Up to beat** to `22`.
+
+**Result:** **Aldric steals the seal from Mira.** appears: at t=22 everyone at the table hears Edda
+tell Mira about the theft, so the table now knows that beat, although it happened at t=13.
+**Aldric learns where Mira hides the seal.** stays hidden.
 
 ## See one player's view
 1. On the page of **The Steward of Wend**, choose **Ben** in **Seen by**.

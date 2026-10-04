@@ -51,14 +51,17 @@ class Hypothesis(models.Model):
 
 
 class StepFill(models.Model):
-    """Which beat filled which step of which hypothesis. Time-indexed via beat.t."""
+    """Which beat filled which step of which hypothesis, and when. Usually at the beat's own t; in a
+    player's lattice later, if the player learned of the beat later."""
 
     hypothesis = models.ForeignKey(Hypothesis, related_name="fills", on_delete=models.CASCADE)
     step = models.ForeignKey(Step, on_delete=models.PROTECT)
     beat = models.ForeignKey(Beat, related_name="+", on_delete=models.CASCADE)
+    filled_at_t = models.PositiveIntegerField()
 
     def __str__(self) -> str:
-        return f"{self.step} filled at t={self.beat.t}"
+        learned = f", learned at t={self.filled_at_t}" if self.filled_at_t != self.beat.t else ""
+        return f"{self.step} filled at t={self.beat.t}{learned}"
 
 
 class Expectation(models.Model):

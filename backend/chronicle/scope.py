@@ -20,15 +20,21 @@ def grant_initial_scope(beat: Beat, character_ids: Sequence[int], player_ids: Se
 
 
 def grant_learned_beat(learns_beat: Beat) -> None:
-    """`learns(who, what={beat: n})` grants beat n to `who` from the learns beat's t on."""
+    """`learns(who, what={beat: n})` grants beat n to `who` from the learns beat's t on, and to the
+    players who witness the learning and did not know beat n yet."""
     if learns_beat.pred != "learns":
         return
-    learned = learns_beat.args["what"]
-    if "beat" not in learned:
+    learned_ref = learns_beat.args["what"]
+    if "beat" not in learned_ref:
         return
-    ScopeGrant.objects.create(
-        beat=learns_beat.chronicle.beats.get(t=learned["beat"]),
-        character_id=learns_beat.args["who"]["entity"],
-        t=learns_beat.t,
-        via_beat=learns_beat,
-    )
+    learned = learns_beat.chronicle.beats.get(t=learned_ref["beat"])
+    witnesses = set(learns_beat.grants.filter(player__isnull=False).values_list("player_id", flat=True))
+    already_knowing = set(learned.grants.filter(player_id__in=witnesses).values_list("player_id", flat=True))
+    grants = [ScopeGrant(beat=learned, character_id=learns_beat.args["who"]["entity"], t=learns_beat.t)]
+    grants += [
+        ScopeGrant(beat=learned, player_id=player_id, t=learns_beat.t)
+        for player_id in sorted(witnesses - already_knowing)
+    ]
+    for grant in grants:
+        grant.via_beat = learns_beat
+    ScopeGrant.objects.bulk_create(grants)

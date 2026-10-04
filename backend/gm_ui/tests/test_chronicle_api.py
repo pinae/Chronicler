@@ -56,9 +56,17 @@ def test_beats_can_be_listed_up_to_t(client, steward):
 
 
 def test_the_table_sees_only_what_every_player_saw(client, steward):
+    table_ts = [beat["t"] for beat in beats(client, steward, audience="table", t=21)]
+
+    assert table_ts == [t for t in range(1, 22) if t not in {5, 6, 7, 10, 12, 13, 16}]
+
+
+def test_the_table_knows_a_secret_once_it_hears_a_character_learn_it(client, steward):
+    """At t=22 everyone hears Edda tell Mira of the theft (t=13)."""
     table_ts = [beat["t"] for beat in beats(client, steward, audience="table")]
 
-    assert table_ts == [t for t in range(1, 25) if t not in {5, 6, 7, 10, 12, 13, 16}]
+    assert 13 in table_ts
+    assert 12 not in table_ts
 
 
 def test_a_player_sees_their_private_beats_too(client, steward):

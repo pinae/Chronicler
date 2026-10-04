@@ -29,9 +29,16 @@ test("See what the table saw", async ({ page }) => {
   await openSteward(page);
 
   await page.getByLabel("Seen by").selectOption({ label: "The table" });
+  await page.getByLabel("Up to beat").fill("21");
 
+  await expect(page.getByText("t = 21 of 24")).toBeVisible();
   await expect(page.getByText("Mira trusts Aldric.")).toBeVisible();
   await expect(page.getByText("Aldric steals the seal from Mira.")).toHaveCount(0);
+  await expect(page.getByText("Aldric learns where Mira hides the seal.")).toHaveCount(0);
+
+  await page.getByLabel("Up to beat").fill("22");
+
+  await expect(page.getByText("Aldric steals the seal from Mira.")).toBeVisible();
   await expect(page.getByText("Aldric learns where Mira hides the seal.")).toHaveCount(0);
 });
 

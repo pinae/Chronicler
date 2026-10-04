@@ -21,11 +21,13 @@ class PlainBeat:
         return QUARANTINE_TAG in self.tags
 
     @classmethod
-    def from_model(cls, beat: Beat) -> "PlainBeat":
+    def from_model(cls, beat: Beat, as_of: int | None = None) -> "PlainBeat":
+        """`as_of`: who knows the beat at that t (default: at the beat's own t)."""
+        known_until = beat.t if as_of is None else as_of
         known_by_players = frozenset(
             grant.player_id
             for grant in beat.grants.all()
-            if grant.player_id is not None and grant.t <= beat.t
+            if grant.player_id is not None and grant.t <= known_until
         )
         return cls(
             t=beat.t, pred=beat.pred, args=beat.args, tags=tuple(beat.tags), known_by_players=known_by_players

@@ -36,12 +36,28 @@ class StoredMatcher:
         )
 
     def step(self, beat: Beat) -> StepResult:
+        """Match the beat. A player's lattice also takes up the earlier beats the player learns of
+        at this t; they are matched together with the beat, before it."""
+        known_now = [PlainBeat.from_model(learned, as_of=beat.t) for learned in self.learned_at(beat.t)]
         plain_beat = PlainBeat.from_model(beat)
-        if self.for_player is not None and self.for_player.pk not in plain_beat.known_by_players:
+        if self.for_player is None or self.for_player.pk in plain_beat.known_by_players:
+            known_now.append(plain_beat)
+        if not known_now:
             return StepResult()
-        result = self.engine.step(plain_beat, self.world())
+        result = self.engine.step_together(known_now, self.world(), now=beat.t)
         self.save([*result.new, *result.changed])
         return result
+
+    def learned_at(self, t: int) -> list[Beat]:
+        """Earlier beats this lattice's player comes to know at t, in story order (none for the
+        unfiltered lattice, which knows every beat from its own t)."""
+        if self.for_player is None:
+            return []
+        return list(
+            self.chronicle.beats.filter(grants__player=self.for_player, grants__t=t, t__lt=t)
+            .distinct()
+            .order_by("t")
+        )
 
     def voice(
         self, schema_slug: str, binding: Mapping[str, int], player: Player, utterance: Utterance, t: int
@@ -79,7 +95,11 @@ class StoredMatcher:
         fills_by_hypothesis: dict[int, list[Fill]] = {}
         for fill in fills.order_by("beat__t", "pk"):
             fills_by_hypothesis.setdefault(fill.hypothesis_id, []).append(
-                Fill(fill.step.step_id, fill.beat.t)
+                Fill(
+                    fill.step.step_id,
+                    fill.beat.t,
+                    at_t=None if fill.filled_at_t == fill.beat.t else fill.filled_at_t,
+                )
             )
         return fills_by_hypothesis
 
@@ -144,7 +164,12 @@ class StoredMatcher:
             beat.t: beat for beat in self.chronicle.beats.filter(t__in=[fill.beat_t for fill in state.fills])
         }
         StepFill.objects.bulk_create(
-            StepFill(hypothesis_id=record_id, step=steps[fill.step_id], beat=beats[fill.beat_t])
+            StepFill(
+                hypothesis_id=record_id,
+                step=steps[fill.step_id],
+                beat=beats[fill.beat_t],
+                filled_at_t=fill.filled_at_t,
+            )
             for fill in state.fills
             if (fill.step_id, fill.beat_t) not in stored
         )

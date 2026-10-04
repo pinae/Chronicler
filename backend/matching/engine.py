@@ -19,8 +19,20 @@ PRUNED = "pruned"
 
 @dataclass(frozen=True)
 class Fill:
+    """The beat at `beat_t` filled the step. A player can learn of a beat after it happened; then
+    the fill is made later, at `at_t`. Fills are the same fill whenever they were made."""
+
     step_id: str
     beat_t: int
+    at_t: int | None = field(default=None, compare=False)
+
+    @property
+    def filled_at_t(self) -> int:
+        return self.beat_t if self.at_t is None else self.at_t
+
+
+def fill_by(step_id: str, beat: PlainBeat, now: int) -> Fill:
+    return Fill(step_id, beat.t, at_t=None if now == beat.t else now)
 
 
 @dataclass(eq=False)
@@ -166,32 +178,42 @@ class IncrementalMatcher:
     def step(self, beat: PlainBeat, world: World) -> StepResult:
         """Fill: the beat goes to every live hypothesis that can take it under its binding. Hypotheses
         whose binding it would extend get a refined child instead, and trigger steps seed new
-        hypotheses; both only when no live hypothesis of the schema already holds the beat."""
-        filled = self.fill(beat, world)
-        refined = self.refine(beat, world, filled)
-        self.hypotheses += refined
-        seeded = self.seed(beat, world)
-        self.hypotheses += seeded
-        new = refined + seeded
-        refuted = self.refute(beat, world)
-        self.complete(beat, [*filled, *new])
-        merged = self.merge(beat)
-        pruned = self.prune(beat)
+        hypotheses; both only when no live hypothesis of the schema already holds the beat. Then
+        Maintain: refute, complete, merge, prune."""
+        return self.step_together([beat], world, now=beat.t)
+
+    def step_together(self, beats: Sequence[PlainBeat], world: World, now: int) -> StepResult:
+        """Beats that become known at the same moment `now`, in story order: e.g. a beat a player
+        learns of only now, and the beat through which they learn it. All are filled before Maintain,
+        so a reveal is matched together with what it reveals. Every change is made at `now`."""
+        filled: list[HypothesisState] = []
+        new: list[HypothesisState] = []
+        for beat in beats:
+            filled_by_beat = self.fill(beat, world, now)
+            refined = self.refine(beat, world, filled_by_beat, now)
+            self.hypotheses += refined
+            seeded = self.seed(beat, world, now)
+            self.hypotheses += seeded
+            filled += filled_by_beat
+            new += refined + seeded
+        refuted = self.refute(beats, world, now)
+        self.complete(now, [*filled, *new])
+        merged = self.merge(now)
+        pruned = self.prune(now)
         status_changed = [*refuted, *merged, *pruned]
-        changed = list(dict.fromkeys([*filled, *(h for h in status_changed if h not in new)]))
+        changed = list(dict.fromkeys(h for h in [*filled, *status_changed] if h not in new))
         return StepResult(new=new, changed=changed)
 
-    def refute(self, beat: PlainBeat, world: World) -> list[HypothesisState]:
-        """Maintain: refute live hypotheses the beat contradicts or whose constraints no longer hold."""
-        refuted = [
-            hypothesis
-            for hypothesis in self.live()
-            if self.contradicted(hypothesis, beat, world)
-            or self.violates_constraints(hypothesis, world, beat.t)
-        ]
-        for hypothesis in refuted:
-            hypothesis.change_status(REFUTED, beat.t)
-            hypothesis.refuted_by_t = beat.t
+    def refute(self, beats: Sequence[PlainBeat], world: World, now: int) -> list[HypothesisState]:
+        """Maintain: refute live hypotheses a beat contradicts or whose constraints no longer hold."""
+        refuted = []
+        for hypothesis in self.live():
+            contradicting = next((beat for beat in beats if self.contradicted(hypothesis, beat, world)), None)
+            if contradicting is None and not self.violates_constraints(hypothesis, world, now):
+                continue
+            hypothesis.change_status(REFUTED, now)
+            hypothesis.refuted_by_t = contradicting.t if contradicting else beats[-1].t
+            refuted.append(hypothesis)
         return refuted
 
     def contradicted(self, hypothesis: HypothesisState, beat: PlainBeat, world: World) -> bool:
@@ -211,7 +233,7 @@ class IncrementalMatcher:
             constraint.check(hypothesis, world.facts, t) for constraint in hypothesis.schema.constraints
         )
 
-    def merge(self, beat: PlainBeat) -> list[HypothesisState]:
+    def merge(self, now: int) -> list[HypothesisState]:
         """Maintain: a live hypothesis identical to an older one is merged into it."""
         survivors: dict[tuple[object, ...], HypothesisState] = {}
         merged = []
@@ -222,13 +244,13 @@ class IncrementalMatcher:
             if survivor.voiced_by is None and hypothesis.voiced_by is not None:
                 # From now on the survivor carries the theory the merged hypothesis was voiced as.
                 survivor.voiced_by, survivor.voiced_in = hypothesis.voiced_by, hypothesis.voiced_in
-                survivor.voiced_at_t = beat.t
-            hypothesis.change_status(MERGED, beat.t)
+                survivor.voiced_at_t = now
+            hypothesis.change_status(MERGED, now)
             hypothesis.merged_into = survivor
             merged.append(hypothesis)
         return merged
 
-    def prune(self, beat: PlainBeat) -> list[HypothesisState]:
+    def prune(self, now: int) -> list[HypothesisState]:
         """Maintain: prune hypotheses below the weight floor, then the weakest beyond the maximum per
         schema (ties: newest first). Voiced hypotheses record what the table believes and are kept."""
         prunable = [hypothesis for hypothesis in self.live() if hypothesis.voiced_by is None]
@@ -240,15 +262,15 @@ class IncrementalMatcher:
             )
             pruned += ranked[self.config.max_live_per_schema :]
         for hypothesis in pruned:
-            hypothesis.change_status(PRUNED, beat.t)
+            hypothesis.change_status(PRUNED, now)
         return pruned
 
-    def complete(self, beat: PlainBeat, touched: Sequence[HypothesisState]) -> None:
+    def complete(self, now: int, touched: Sequence[HypothesisState]) -> None:
         for hypothesis in touched:
             if hypothesis.is_live and is_complete(hypothesis):
-                hypothesis.change_status(COMPLETE, beat.t)
+                hypothesis.change_status(COMPLETE, now)
 
-    def fill(self, beat: PlainBeat, world: World) -> list[HypothesisState]:
+    def fill(self, beat: PlainBeat, world: World, now: int) -> list[HypothesisState]:
         filled = []
         for hypothesis in self.live():
             step = next(
@@ -260,12 +282,12 @@ class IncrementalMatcher:
                 None,
             )
             if step is not None:
-                hypothesis.fills.append(Fill(step.step_id, beat.t))
+                hypothesis.fills.append(fill_by(step.step_id, beat, now))
                 filled.append(hypothesis)
         return filled
 
     def refine(
-        self, beat: PlainBeat, world: World, filled: Sequence[HypothesisState]
+        self, beat: PlainBeat, world: World, filled: Sequence[HypothesisState], now: int
     ) -> list[HypothesisState]:
         children: list[HypothesisState] = []
         for parent in self.live():
@@ -278,8 +300,8 @@ class IncrementalMatcher:
                     HypothesisState(
                         schema=parent.schema,
                         binding=binding,
-                        created_at_t=beat.t,
-                        fills=[*parent.fills, Fill(step.step_id, beat.t)],
+                        created_at_t=now,
+                        fills=[*parent.fills, fill_by(step.step_id, beat, now)],
                         refines=parent,
                     )
                 )
@@ -299,7 +321,7 @@ class IncrementalMatcher:
                 if binding is not None:
                     yield step, binding
 
-    def seed(self, beat: PlainBeat, world: World) -> list[HypothesisState]:
+    def seed(self, beat: PlainBeat, world: World, now: int) -> list[HypothesisState]:
         seeded: list[HypothesisState] = []
         for schema in self.schemas:
             for step, binding in self.trigger_matches(schema, beat, world):
@@ -309,8 +331,8 @@ class IncrementalMatcher:
                     HypothesisState(
                         schema=schema,
                         binding=binding,
-                        created_at_t=beat.t,
-                        fills=[Fill(step.step_id, beat.t)],
+                        created_at_t=now,
+                        fills=[fill_by(step.step_id, beat, now)],
                     )
                 )
         return seeded

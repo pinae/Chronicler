@@ -67,11 +67,12 @@ class Lattice:
 
 def fills_up_to(chronicle: Chronicle, t: int) -> dict[int, tuple[Fill, ...]]:
     fills: dict[int, list[Fill]] = {}
-    rows = StepFill.objects.filter(hypothesis__chronicle=chronicle, beat__t__lte=t).select_related(
+    rows = StepFill.objects.filter(hypothesis__chronicle=chronicle, filled_at_t__lte=t).select_related(
         "step", "beat"
     )
     for fill in rows.order_by("beat__t", "pk"):
-        fills.setdefault(fill.hypothesis_id, []).append(Fill(fill.step.step_id, fill.beat.t))
+        at_t = None if fill.filled_at_t == fill.beat.t else fill.filled_at_t
+        fills.setdefault(fill.hypothesis_id, []).append(Fill(fill.step.step_id, fill.beat.t, at_t=at_t))
     return {hypothesis_id: tuple(hypothesis_fills) for hypothesis_id, hypothesis_fills in fills.items()}
 
 

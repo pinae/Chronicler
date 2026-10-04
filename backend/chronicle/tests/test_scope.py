@@ -88,6 +88,27 @@ def test_learning_a_beat_grants_it_to_the_learner_via_the_learns_beat():
     assert grants(secret) == {(mira.id, None, 1, None), (aldric.id, None, 3, learns.id)}
 
 
+def test_players_who_witness_a_beat_being_learned_learn_that_beat_too():
+    """At the table, hearing Edda tell Mira about the theft is hearing about the theft."""
+    table = Table()
+    anna, ben = table.player("Anna"), table.player("Ben")
+    mira, aldric = table.character("Mira"), table.character("Aldric")
+    theft = table.append(
+        "harms", characters=[aldric], players=[ben], who=entity(aldric.id), whom=entity(mira.id)
+    )
+
+    learns = table.append(
+        "learns", characters=[mira], players=[anna, ben], who=entity(mira.id), what={"beat": theft.t}
+    )
+
+    assert grants(theft) == {
+        (aldric.id, None, 1, None),
+        (None, ben.id, 1, None),
+        (mira.id, None, 2, learns.id),
+        (None, anna.id, 2, learns.id),
+    }
+
+
 def test_learning_a_proposition_grants_no_beat():
     table = Table()
     mira, aldric = table.character("Mira"), table.character("Aldric")
