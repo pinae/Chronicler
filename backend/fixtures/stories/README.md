@@ -79,3 +79,25 @@ A player utterance can carry the theories the player voiced:
 
 A theory is voiced at the `t` of the last beat before its utterance. It marks the live hypothesis
 with exactly that binding as voiced, or becomes a hypothesis of its own (WP-022).
+
+## ground_truth.yaml
+
+The twist the engine should see coming, for the evaluation metrics (concept §9.1, §9.2):
+
+```yaml
+reveal_t: 22                      # the beat that reveals the twist
+true_hypothesis:
+  schema: betrayal
+  binding: {T: aldric, V: mira}   # role -> entity slug; roles left out may be bound to anyone
+dormant_window: [8, 21]           # where the true hypothesis should be live but not dominant
+reader_beliefs:                   # optional: annotated beliefs, for calibration
+  - {t: 16, question: "Who will harm Mira?", answer: {aldric: 0.4, edda: 0.4, none: 0.2}}
+```
+
+`evaluation.ground_truth.read_ground_truth(slug)` checks it against the story and the schema
+library: the schema and its roles exist, every slug is an entity of the story of the kind the role
+needs, `reveal_t` and the window lie within the story, the window ends before the reveal, and each
+answer's probabilities add up to 1 (`none`: nothing like this).
+
+A lattice holds the true hypothesis at `t` when one of its live or complete hypotheses is of the
+true schema and binds every role of `binding` the same way.
