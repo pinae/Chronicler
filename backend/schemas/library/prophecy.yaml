@@ -1,0 +1,30 @@
+# Prophecy: someone foretells that another will have something; the promise tempts them, and it
+# comes true. Whether it was fate or the temptation that made it come true is for the reader.
+slug: prophecy
+name: Prophecy
+roles: {S: character, H: character, X: object}
+prior: -1.5
+payoff_steps: [fulfilment]
+constraints:
+  - {type: distinct, roles: [S, H]}
+  - {type: before, steps: [foretelling, fulfilment]}
+steps:
+  - step_id: foretelling
+    phase: setup
+    trigger: true
+    patterns:
+      - {pred: says, args: {who: $S, what: {pred: has, args: {who: $H, what: $X}}}}
+    weight: 1.0
+  - step_id: temptation
+    phase: development
+    required: false
+    patterns:
+      - {pred: wants, args: {who: $H, what: $X}}
+      - {pred: fears, args: {who: $H, what: {pred: has, args: {who: "*", what: $X}}}}
+    weight: 0.5
+  - step_id: fulfilment
+    phase: payoff
+    patterns:
+      - {pred: has, args: {who: $H, what: $X}}
+      - {pred: gives, args: {who: "*", what: $X, to: $H}}
+    weight: 2.0

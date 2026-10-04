@@ -97,6 +97,9 @@ MATCHER_REPEATABLE_FILL_CAP = 3  # fills of a repeatable step that add weight
 MATCHER_WEIGHT_FLOOR = -6.0  # live hypotheses below this weight are pruned
 MATCHER_MAX_LIVE_PER_SCHEMA = 50  # beyond this, the lowest-weighted live hypotheses are pruned
 
+# The schemas of schemas/library/ to load; None: every file.
+SCHEMA_LIBRARY_SLUGS: list[str] | None = None
+
 # Implementations of the injected interfaces (narrative_engine/di.py).
 INJECTED = {
     "ReaderModel": "reader.ollama.OllamaChoiceReader",

@@ -107,3 +107,21 @@ def test_stored_roles_keep_their_order_on_any_database():
 
     assert stored == [["T", "character"], ["V", "character"], ["S", "secret"]]
     assert list(definition_of(Schema.objects.get(slug="betrayal")).roles) == ["T", "V", "S"]
+
+
+def test_the_library_can_be_limited_to_some_schemas(settings):
+    settings.SCHEMA_LIBRARY_SLUGS = ["blame"]
+
+    assert [definition.slug for definition in read_library()] == ["blame"]
+
+
+def test_every_schema_file_in_the_library_parses(settings):
+    settings.SCHEMA_LIBRARY_SLUGS = None
+
+    assert [definition.slug for definition in read_library()] == [
+        "betrayal",
+        "blame",
+        "hidden_crime",
+        "prophecy",
+        "usurpation",
+    ]

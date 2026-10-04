@@ -10,8 +10,22 @@ and loading again.
 ## Load the library
 1. In `backend/`, run `uv run python manage.py load_schemas`.
 
-**Result:** the command prints `Loaded 2 schemas: betrayal, blame` (one name per file in the library).
-Running it again changes nothing: schemas are updated in place, not duplicated.
+**Result:** the command prints `Loaded 5 schemas: betrayal, blame, hidden_crime, prophecy, usurpation`
+(one name per file in the library). Running it again changes nothing: schemas are updated in place,
+not duplicated.
+
+## What the library reads
+
+| Schema | Roles | The plot | Starts from | Payoff |
+|---|---|---|---|---|
+| `betrayal` | T(raitor), V(ictim), S(ecret) | V trusts T; T gets access to V's secret and harms (or kills) V | trust | V learns of the harm |
+| `blame` | O (a source), A(ccused), V(ictim) | a news outlet claims that A harmed V, had a motive, and that people turn against A (media chronicles) | the accusation | the claimed condemnation |
+| `hidden_crime` | C(ulprit), V(ictim), I(nvestigator) | C harms, kills or robs V and covers it up (e.g. blames someone else); I grows suspicious | the crime, or I's suspicion of C | I learns of the crime |
+| `usurpation` | U(surper), R(uler), P(ower) | R favours U; U wants P, kills R and takes P | a favour or trust R grants | U has P |
+| `prophecy` | S(eer), H(older), X (the thing foretold) | S foretells that H will have X; H wants or fears it | the foretelling | H has X, or is given it |
+
+To load only some files (the test suite does this, so that its expectations do not change whenever
+the library grows), set `SCHEMA_LIBRARY_SLUGS = ["betrayal", "blame"]` in the settings module.
 
 ## Write a schema
 Create `backend/schemas/library/rivalry.yaml`:
@@ -43,7 +57,7 @@ Optional pattern keys: `tags_any`, `tags_all`, `scope: {players_know: true}` and
 
 Run `uv run python manage.py load_schemas`.
 
-**Result:** `Loaded 3 schemas: betrayal, blame, rivalry`.
+**Result:** `Loaded 6 schemas: betrayal, blame, hidden_crime, prophecy, rivalry, usurpation`.
 
 ## Constraints
 A schema may list constraints that every match must satisfy; a hypothesis that violates one is

@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+from django.conf import settings
 from django.db import transaction
 
 from schemas.definitions import SchemaDefinition, StepDefinition, parse_schema
@@ -13,10 +14,13 @@ LIBRARY_DIR = Path(__file__).with_name("library")
 
 
 def read_library(directory: Path = LIBRARY_DIR) -> list[SchemaDefinition]:
-    return [
+    """Every schema file of the directory, or those settings.SCHEMA_LIBRARY_SLUGS names."""
+    definitions = [
         parse_schema(yaml.safe_load(path.read_text()), source=path.name)
         for path in sorted(directory.glob("*.yaml"))
     ]
+    wanted = settings.SCHEMA_LIBRARY_SLUGS
+    return [definition for definition in definitions if wanted is None or definition.slug in wanted]
 
 
 def load_library(directory: Path = LIBRARY_DIR) -> list[Schema]:

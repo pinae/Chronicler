@@ -1,0 +1,46 @@
+# Hidden crime (a whodunit): someone harms a victim and keeps it hidden, perhaps blaming others,
+# while an investigator grows suspicious, until the investigator learns what happened. Readings
+# start from the crime (when it is seen) or from suspicion (when only that is).
+slug: hidden_crime
+name: Hidden crime
+roles: {C: character, V: character, I: character}
+prior: -2.0
+payoff_steps: [discovery]
+constraints:
+  - {type: distinct, roles: [C, V]}
+  - {type: distinct, roles: [C, I]}
+  - {type: knows, role: C, step: crime}
+  - {type: not_knows, role: I, step: crime, until: discovery}
+steps:
+  - step_id: crime
+    phase: setup
+    trigger: true
+    patterns:
+      - {pred: harms, args: {who: $C, whom: $V}}
+      - {pred: kills, args: {who: $C, whom: $V}}
+      - {pred: steals, args: {who: $C, what: "*", from: $V}}
+    weight: 1.0
+  - step_id: suspicion
+    phase: development
+    trigger: true
+    required: false
+    patterns:
+      - {pred: distrusts, args: {who: $I, whom: $C}}
+      - {pred: learns, args: {who: $I, what: {pred: is_at, args: {who: $C, where: "*"}}}}
+    weight: 0.5
+  - step_id: cover_up
+    phase: development
+    required: false
+    repeatable: true
+    patterns:
+      - {pred: says, args: {who: $C, what: {pred: harms, args: {who: "*", whom: $V}}}}
+      - {pred: says, args: {who: $C, what: {pred: kills, args: {who: "*", whom: $V}}}}
+      - {pred: hides, args: {who: $C, what: $crime}}
+    weight: 0.5
+  - step_id: discovery
+    phase: payoff
+    patterns:
+      - {pred: learns, args: {who: $I, what: $crime}}
+    contradicts:
+      - {pred: kills, args: {who: "*", whom: $I}}
+    weight: 2.0

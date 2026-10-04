@@ -1,0 +1,42 @@
+# Usurpation: a ruler favours someone, who wants the ruler's power, kills the ruler and takes the
+# power. Readings start from a favour the ruler grants (a title, a gift).
+slug: usurpation
+name: Usurpation
+roles: {U: character, R: character, P: object}
+prior: -2.0
+payoff_steps: [seizure]
+constraints:
+  - {type: distinct, roles: [U, R]}
+  - {type: before, steps: [favour, murder]}
+steps:
+  - step_id: favour
+    phase: setup
+    trigger: true
+    repeatable: true
+    patterns:
+      - {pred: gives, args: {who: $R, what: "*", to: $U}}
+      - {pred: trusts, args: {who: $R, whom: $U}}
+    weight: 0.5
+  - step_id: reign
+    phase: setup
+    required: false
+    patterns:
+      - {pred: has, args: {who: $R, what: $P}}
+    weight: 0.5
+  - step_id: ambition
+    phase: development
+    patterns:
+      - {pred: wants, args: {who: $U, what: $P}}
+    weight: 1.0
+  - step_id: murder
+    phase: development
+    patterns:
+      - {pred: kills, args: {who: $U, whom: $R}}
+    contradicts:
+      - {pred: kills, args: {who: "*", whom: $U}}
+    weight: 2.0
+  - step_id: seizure
+    phase: payoff
+    patterns:
+      - {pred: has, args: {who: $U, what: $P}}
+    weight: 1.5

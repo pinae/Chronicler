@@ -24,3 +24,7 @@ INJECTED = {
 
 # Tests never run collectstatic; without a root WhiteNoise has nothing to scan.
 STATIC_ROOT = None
+
+# The matcher's tests were written against these schemas; their expectations must not change
+# whenever the library grows. Tests about other schemas set this to None (the whole library).
+SCHEMA_LIBRARY_SLUGS = ["betrayal", "blame"]

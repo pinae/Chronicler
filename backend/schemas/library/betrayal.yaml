@@ -30,6 +30,7 @@ steps:
     patterns:
       - {pred: harms, args: {who: $T, whom: $V}}
       - {pred: steals, args: {who: $T, what: $S, from: $V}}
+      - {pred: kills, args: {who: $T, whom: $V}}
     weight: 1.5
     contradicts:
       - {pred: kills, args: {who: "*", whom: $T}}
