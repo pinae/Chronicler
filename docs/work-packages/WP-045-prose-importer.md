@@ -18,4 +18,12 @@ WP-029.
 Producing beats (WP-047); input formats other than plain text.
 
 ## Status
-open
+done
+
+## Summary
+`manage.py import_prose <text file> <slug> [--title] [--stories-dir] [--force]` strips the Project
+Gutenberg header and footer, takes title and eBook number from the header, and writes one narrator
+utterance per paragraph with `source: {chapter}` plus a README skeleton (provenance filled for
+Gutenberg books, licence `TODO`). Chapters are counted from `CHAPTER I.` / `Chapter 2: …` headings
+followed by text, so a table of contents adds none; text before the first heading is front matter
+and dropped, and decorations and `[...]` notes are skipped. Usage doc: `docs/usage/import-prose.md`.

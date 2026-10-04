@@ -20,4 +20,10 @@ WP-003, WP-028, WP-043.
 Weight calibration (deferred, §13).
 
 ## Status
-open
+blocked
+
+Waiting for the Ollama smoke result (`docs/llm-smoke.md` is still pending): the development
+environment cannot reach the GPU server. Until then `OllamaChoiceReader.beat_log_likelihood`
+raises `NotImplementedError`, and replays record `bayes_factors: null`, which `evaluate` shows as
+`n/a` (WP-041, WP-042). To unblock: run `uv run python -m llm.smoke` against the deployed server
+and commit its output to `docs/llm-smoke.md`.
