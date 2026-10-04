@@ -19,4 +19,14 @@ WP-023, WP-049.
 Comparing the two variants (WP-051).
 
 ## Status
-open
+done
+
+## Summary
+`OllamaStoryWriter` prompts with the last 20 paragraphs, the five strongest held readings (with
+their fills), the table's current expectations, the target and the vocabulary, and asks for a
+paragraph plus the beat it conveys; a beat draft that does not fit the vocabulary or names an
+unknown entity is dropped, the prose kept. `OllamaProseWriter` prompts with the prose alone. Both
+use `OLLAMA_WRITER_MODEL` at temperature 0.7, go through the LLM call cache, and share the new
+`llm.json_answers.JsonAnswers` (schema-constrained JSON with a prompt fallback) with the ingester,
+which now uses it too. Bound as `StoryWriter` and `ProseOnlyStoryWriter`; usage doc
+`docs/usage/generate.md`; the `--llm` integration test continues `steward` at t=12.

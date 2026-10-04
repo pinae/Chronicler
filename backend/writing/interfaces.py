@@ -12,11 +12,20 @@ from matching.models import Expectation
 
 
 @dataclass(frozen=True)
+class StoryEntity:
+    id: int
+    slug: str
+    name: str
+    kind: str
+
+
+@dataclass(frozen=True)
 class WritingRequest:
     prefix: tuple[str, ...]  # the story so far, one text per utterance
     lattice: Lattice  # the unfiltered lattice at the last beat
     target: TrueHypothesis  # the twist to write toward (entities as slugs)
     expectations: tuple[Expectation, ...]  # the table's readouts at the last beat
+    entities: tuple[StoryEntity, ...] = ()  # who and what the story knows so far
 
 
 @dataclass(frozen=True)

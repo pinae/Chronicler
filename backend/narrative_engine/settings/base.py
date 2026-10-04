@@ -87,6 +87,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 OLLAMA_BASE_URL = env.str("OLLAMA_BASE_URL", default=None)
 OLLAMA_READER_MODEL = env.str("OLLAMA_READER_MODEL", default=None)
 OLLAMA_INGEST_MODEL = env.str("OLLAMA_INGEST_MODEL", default=None)
+OLLAMA_WRITER_MODEL = env.str("OLLAMA_WRITER_MODEL", default=None)
 OLLAMA_NUM_CTX = env.int("OLLAMA_NUM_CTX", default=16384)
 OLLAMA_KEEP_ALIVE = env.str("OLLAMA_KEEP_ALIVE", default="30m")
 OLLAMA_TIMEOUT_S = env.int("OLLAMA_TIMEOUT_S", default=120)
@@ -101,6 +102,8 @@ INJECTED = {
     "ReaderModel": "reader.ollama.OllamaChoiceReader",
     "ContextBuilder": "reader.context.RecentAndSupportingBeats",
     "Ingester": "chronicle.ingest.ollama.OllamaIngester",
+    "StoryWriter": "writing.ollama.OllamaStoryWriter",
+    "ProseOnlyStoryWriter": "writing.ollama.OllamaProseWriter",
 }
 
 # Reader model context (concept §9.3): recent beats plus beats supporting the strongest hypotheses.

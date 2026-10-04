@@ -14,6 +14,7 @@ PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
 OLLAMA_BASE_URL = None
 OLLAMA_READER_MODEL = None
 OLLAMA_INGEST_MODEL = None
+OLLAMA_WRITER_MODEL = None
 
 INJECTED = {
     "ReaderModel": "reader.table.TableReader",

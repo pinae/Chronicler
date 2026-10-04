@@ -11,7 +11,7 @@ server or model change and commit the output to `docs/llm-smoke.md`.
 
 ## Check the server
 1. In `backend/`, set `OLLAMA_BASE_URL=http://gpu-box:11434` and `OLLAMA_READER_MODEL=qwen3:32b`
-   (and `OLLAMA_INGEST_MODEL` if it differs) in `.env` or the environment.
+   (and `OLLAMA_INGEST_MODEL` and `OLLAMA_WRITER_MODEL` if they differ) in `.env` or the environment.
 2. Run `uv run python -m llm.smoke`.
 
 **Result:** the command prints `server version: …`, then for each model a block such as

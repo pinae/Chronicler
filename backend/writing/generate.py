@@ -15,7 +15,7 @@ from matching.models import Expectation
 from narrative_engine.pipeline import Pipeline
 from reader.context import ContextBuilder, RecentAndSupportingBeats
 from reader.interfaces import ReaderModel
-from writing.interfaces import Continuation, StoryWriter, WritingRequest
+from writing.interfaces import Continuation, StoryEntity, StoryWriter, WritingRequest
 
 
 def generate_story(
@@ -48,6 +48,10 @@ def writing_request(chronicle: Chronicle, target: TrueHypothesis) -> WritingRequ
         lattice=Lattice.at(chronicle, t),
         target=target,
         expectations=tuple(expectations),
+        entities=tuple(
+            StoryEntity(id=entity.pk, slug=entity.slug, name=entity.canonical_name, kind=entity.kind)
+            for entity in chronicle.entities.exclude(slug="").order_by("introduced_at_t", "pk")
+        ),
     )
 
 

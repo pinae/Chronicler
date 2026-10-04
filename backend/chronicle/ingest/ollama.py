@@ -20,7 +20,8 @@ from chronicle.ingest.interfaces import IngestedBeat, IngestResult, NewEntity
 from chronicle.models import Chronicle, EntityKind, SourceKind, Utterance
 from chronicle.story_fixtures import expand_args
 from llm.cache import CachedOllama
-from llm.transport import HttpOllamaTransport, OllamaError, OllamaTransport, OllamaUnreachable
+from llm.json_answers import JsonAnswers
+from llm.transport import HttpOllamaTransport, OllamaTransport
 from schemas.vocabulary import InvalidBeatArgs, UnknownPredicate, ValueKind, Vocabulary, default_vocabulary
 
 RECENT_BEATS_IN_PROMPT = 10
@@ -79,8 +80,7 @@ class OllamaIngester:
         if not settings.OLLAMA_INGEST_MODEL:
             raise ImproperlyConfigured("OLLAMA_INGEST_MODEL is not set; ingest needs a model name")
         self.model = settings.OLLAMA_INGEST_MODEL
-        self.client = CachedOllama(transport or transport_from_settings())
-        self.structured_output = True
+        self.answers = JsonAnswers(CachedOllama(transport or transport_from_settings()), ANSWER_SCHEMA)
         self.vocabulary = default_vocabulary()
 
     def ingest(self, chronicle: Chronicle, utterance: Utterance) -> IngestResult:
@@ -99,22 +99,14 @@ class OllamaIngester:
         )
 
     def ask(self, prompt: str) -> dict[str, Any]:
-        request: dict[str, Any] = {
-            "model": self.model,
-            "prompt": prompt,
-            "options": {"temperature": 0, "num_ctx": settings.OLLAMA_NUM_CTX},
-            "keep_alive": settings.OLLAMA_KEEP_ALIVE,
-        }
-        if self.structured_output:
-            try:
-                return parse_answer(self.client.generate({**request, "format": ANSWER_SCHEMA}).response)
-            except OllamaUnreachable:
-                raise
-            except OllamaError:
-                self.structured_output = (
-                    False  # the server cannot constrain output: ask for JSON in the prompt
-                )
-        return parse_answer(self.client.generate(request).response)
+        return self.answers.ask(
+            {
+                "model": self.model,
+                "prompt": prompt,
+                "options": {"temperature": 0, "num_ctx": settings.OLLAMA_NUM_CTX},
+                "keep_alive": settings.OLLAMA_KEEP_ALIVE,
+            }
+        )
 
 
 def transport_from_settings() -> OllamaTransport:
@@ -207,18 +199,6 @@ def repair_prompt(prompt: str, answer: Mapping[str, Any], problems: Sequence[str
             "Reply with the corrected JSON.",
         ]
     )
-
-
-def parse_answer(response: Mapping[str, Any]) -> dict[str, Any]:
-    text = str(response.get("response", ""))
-    start, end = text.find("{"), text.rfind("}")
-    if start == -1 or end < start:
-        return {"entities": [], "beats": []}
-    try:
-        answer = json.loads(text[start : end + 1])
-    except json.JSONDecodeError:
-        return {"entities": [], "beats": []}
-    return answer if isinstance(answer, dict) else {"entities": [], "beats": []}
 
 
 # Checking what the model proposed
