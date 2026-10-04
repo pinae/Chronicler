@@ -11,6 +11,7 @@ from chronicle.beat_log import AppendError
 from chronicle.models import Chronicle
 from gm_ui.audiences import ALL, resolve_audience
 from gm_ui.lattice_api import BindingEntry
+from gm_ui.middleware import USAGE_T_ATTRIBUTE
 from matching.dry_run import CandidateBeat, Effect, dry_run
 from schemas.models import Schema as SchemaRow
 from schemas.vocabulary import BeatArgsError, default_vocabulary
@@ -58,8 +59,10 @@ def dry_run_beat(request: HttpRequest, chronicle_id: int, candidate: CandidateBe
         raise HttpError(422, str(error)) from error
     names = dict(chronicle.entities.values_list("pk", "canonical_name"))
     schema_names = dict(SchemaRow.objects.values_list("slug", "name"))
+    next_t = chronicle.beats.count() + 1
+    setattr(request, USAGE_T_ATTRIBUTE, next_t)
     return DryRunOut(
-        t=chronicle.beats.count() + 1,
+        t=next_t,
         effects=[effect_out(effect, schema_names[effect.schema_slug], names) for effect in effects],
     )
 

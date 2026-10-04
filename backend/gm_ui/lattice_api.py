@@ -9,6 +9,7 @@ from chronicle.models import Chronicle
 from gm_ui.audiences import ALL, resolve_audience
 from matching.lattice import Lattice, LatticeHypothesis
 from matching.models import Hypothesis
+from reader.expectations import latest_expectations
 from schemas.definitions import SchemaDefinition
 from schemas.library import definition_of
 from schemas.models import Schema as SchemaRow
@@ -127,14 +128,6 @@ def list_expectations(
 ) -> list[ExpectationOut]:
     """Per open step, the latest readout at or before t (default: the latest) about this hypothesis."""
     hypothesis = get_object_or_404(Hypothesis, pk=hypothesis_id, chronicle_id=chronicle_id)
-    rows = list(hypothesis.expectations.select_related("step").order_by("step__order", "pk"))
-    if t is not None:
-        rows = [row for row in rows if row.computed_at_t <= t]
-    latest_t_per_step: dict[str, int] = {}
-    for row in rows:
-        latest_t_per_step[row.step.step_id] = max(
-            row.computed_at_t, latest_t_per_step.get(row.step.step_id, 0)
-        )
     return [
         ExpectationOut(
             step_id=row.step.step_id,
@@ -144,6 +137,5 @@ def list_expectations(
             outside_mass=row.outside_mass,
             for_player=row.for_player_id,
         )
-        for row in rows
-        if row.computed_at_t == latest_t_per_step[row.step.step_id]
+        for row in latest_expectations(hypothesis, t)
     ]

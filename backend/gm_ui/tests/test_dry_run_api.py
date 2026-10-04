@@ -108,11 +108,14 @@ def test_a_candidate_beat_naming_another_chronicles_entity_returns_the_validatio
     assert "is not part of this chronicle" in response.json()["detail"]
 
 
-def test_a_dry_run_is_recorded_as_a_usage_event(client, steward):
-    post_dry_run(client, steward, steal_the_seal(steward))
+def test_a_dry_run_is_recorded_as_a_usage_event_with_the_candidate_and_its_t(client, steward):
+    candidate = steal_the_seal(steward)
+
+    post_dry_run(client, steward, candidate)
 
     event = UsageEvent.objects.get(view="dry_run_beat")
-    assert event.chronicle == steward
+    assert (event.chronicle, event.t) == (steward, 12)
+    assert event.params["body"] == candidate
 
 
 def test_the_vocabulary_lists_each_predicate_with_its_roles(client):

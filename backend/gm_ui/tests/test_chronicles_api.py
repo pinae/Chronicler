@@ -34,7 +34,7 @@ def test_every_api_request_is_recorded_as_a_usage_event(client):
         "list_chronicles",
         None,
         None,
-        {"kind": "session"},
+        {"kind": "session", "status": 200},
     )
     assert event.created_at is not None
 
@@ -56,4 +56,4 @@ def test_a_request_for_a_missing_chronicle_is_recorded_without_a_link(client):
     client.get(reverse("api:get_chronicle", args=[999]))
 
     [event] = UsageEvent.objects.all()
-    assert (event.chronicle, event.params) == (None, {"chronicle_id": "999"})
+    assert (event.chronicle, event.params) == (None, {"chronicle_id": "999", "status": 404})

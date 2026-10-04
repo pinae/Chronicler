@@ -15,7 +15,7 @@ from django.conf import settings
 from chronicle.models import Chronicle, Player
 from matching.engine import Fill
 from matching.lattice import Lattice, LatticeHypothesis
-from matching.models import Expectation
+from matching.models import Expectation, Hypothesis
 from reader.context import ContextBuilder, Supporting
 from reader.interfaces import Question, ReaderModel, Readout
 from reader.questions import build_questions, entities_in_view, next_open_step
@@ -117,3 +117,16 @@ def candidate_record(
         record["binding_delta"] = dict(binding_delta)
     record["p"] = readout.probabilities.get(label, 0.0)
     return record
+
+
+def latest_expectations(hypothesis: Hypothesis, t: int | None = None) -> list[Expectation]:
+    """Per step, the latest readouts about the hypothesis at or before t (default: the latest)."""
+    rows = list(hypothesis.expectations.select_related("step").order_by("step__order", "pk"))
+    if t is not None:
+        rows = [row for row in rows if row.computed_at_t <= t]
+    latest_t_per_step: dict[str, int] = {}
+    for row in rows:
+        latest_t_per_step[row.step.step_id] = max(
+            row.computed_at_t, latest_t_per_step.get(row.step.step_id, 0)
+        )
+    return [row for row in rows if row.computed_at_t == latest_t_per_step[row.step.step_id]]
