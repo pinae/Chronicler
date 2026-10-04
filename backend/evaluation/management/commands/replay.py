@@ -6,12 +6,11 @@ from django.core.management.base import BaseCommand, CommandParser
 
 from chronicle.models import Chronicle
 from evaluation.ground_truth import read_ground_truth
+from evaluation.readers import READER_CHOICES, READER_HELP, choose_reader
 from evaluation.replay import build_run, replay_story, write_run
 from evaluation.truth_readouts import read_truth
-from narrative_engine import di
 from reader.context import RecentAndSupportingBeats
 from reader.interfaces import ReaderModel
-from reader.uniform import UniformReader
 
 
 class Command(BaseCommand):
@@ -21,10 +20,9 @@ class Command(BaseCommand):
         parser.add_argument("story", help="slug of a story under fixtures/stories/")
         parser.add_argument(
             "--reader",
-            choices=["configured", "uniform", "none"],
+            choices=READER_CHOICES,
             default="configured",
-            help="configured: settings.INJECTED['ReaderModel']; uniform: the know-nothing baseline; "
-            "none: no readouts (lattice only)",
+            help=READER_HELP,
         )
         parser.add_argument("--until", type=int, default=None, help="stop after this t")
         parser.add_argument(
@@ -54,12 +52,3 @@ def truth_readouts(chronicle: Chronicle, story: str, reader: ReaderModel) -> dic
     if ground_truth is None:
         return None
     return read_truth(chronicle, ground_truth, reader, RecentAndSupportingBeats())
-
-
-def choose_reader(choice: str) -> ReaderModel | None:
-    if choice == "none":
-        return None
-    if choice == "uniform":
-        return UniformReader()
-    reader: ReaderModel = di.make("ReaderModel")
-    return reader

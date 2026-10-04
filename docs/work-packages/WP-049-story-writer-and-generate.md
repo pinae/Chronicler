@@ -19,4 +19,15 @@ WP-029, WP-042.
 LLM-backed writing (WP-050); the rater export (WP-051).
 
 ## Status
-open
+done
+
+## Summary
+New app `writing`: `StoryWriter.continue_story(WritingRequest(prefix, lattice, target,
+expectations)) -> Continuation(prose, intended beat or None)` and `FixtureStoryWriter` (scripted).
+`generate_story` replays the seed as a `literature` chronicle and appends each continuation's prose
+as an utterance that the configured ingester re-ingests, so the next request and the evaluation
+rest on what the prose conveys; the intended beat is kept in `utterance.source` for comparison.
+`manage.py generate <seed> --target "betrayal T=aldric V=mira" --beats N [--reader]` checks the
+target against the seed, writes a run (`<seed>-generated`) with the target as ground truth
+(revealed at the last beat, dormant over the generated beats before) and prints the metric table.
+No writer is configured in settings until WP-050, so the usage doc comes with it.

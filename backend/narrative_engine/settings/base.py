@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     "reader",
     "llm",
     "evaluation",
+    "writing",
     "gm_ui",
 ]
 

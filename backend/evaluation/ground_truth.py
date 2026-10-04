@@ -19,8 +19,9 @@ PROBABILITY_TOLERANCE = 0.01
 
 
 class GroundTruthError(ValueError):
-    def __init__(self, message: str) -> None:
-        super().__init__(f"{GROUND_TRUTH_FILE}: {message}")
+    def __init__(self, reason: str) -> None:
+        super().__init__(f"{GROUND_TRUTH_FILE}: {reason}")
+        self.reason = reason
 
 
 @dataclass(frozen=True)
