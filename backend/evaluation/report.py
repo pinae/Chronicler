@@ -1,5 +1,7 @@
 """The metrics table the evaluate command prints: every §9.2 metric of one run, as text."""
 
+from collections.abc import Sequence
+
 from evaluation.ground_truth import GroundTruth
 from evaluation.metrics import (
     ALL,
@@ -67,13 +69,14 @@ def calibration_text(run: Run) -> str:
     return NOT_AVAILABLE if score is None else f"{score:.3f}"
 
 
-def table(rows: list[tuple[str, str]]) -> str:
-    width = max(len(metric) for metric, _ in [("Metric", ""), *rows])
-    lines = [
-        f"{'Metric'.ljust(width)}  Value",
-        *(f"{metric.ljust(width)}  {value}" for metric, value in rows),
-    ]
-    return "\n".join(lines)
+def table(rows: Sequence[Sequence[str]], headers: Sequence[str] = ("Metric", "Value")) -> str:
+    """A plain-text table, each column as wide as its widest cell."""
+    widths = [max(len(row[column]) for row in [headers, *rows]) for column in range(len(headers))]
+
+    def line(cells: Sequence[str]) -> str:
+        return "  ".join(cell.ljust(width) for cell, width in zip(cells, widths, strict=True)).rstrip()
+
+    return "\n".join([line(headers), *(line(row) for row in rows)])
 
 
 def story_section(story: str, run: Run, truth: GroundTruth | None, run_name: str) -> str:

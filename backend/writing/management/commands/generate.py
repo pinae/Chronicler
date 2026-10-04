@@ -7,17 +7,15 @@ from django.core.management.base import BaseCommand, CommandError, CommandParser
 from chronicle.ingest.interfaces import Ingester
 from chronicle.story_fixtures import read_story
 from evaluation.ground_truth import GroundTruthError, TrueHypothesis, check_true_hypothesis
-from evaluation.metrics import ALL
 from evaluation.readers import READER_CHOICES, READER_HELP, choose_reader
-from evaluation.replay import build_run, write_run
-from evaluation.report import DEFAULT_TOP_K, metric_rows, table
-from evaluation.truth_readouts import read_truth
+from evaluation.replay import write_run
+from evaluation.report import table
 from narrative_engine import di
-from reader.context import RecentAndSupportingBeats
 from schemas.library import read_library
-from writing.generate import generate_story, generated_truth
+from writing.comparison import generate_variant
 from writing.interfaces import StoryWriter
 
+GENERATED = "generated"
 TARGET_FORMAT = "a target is a schema and its binding, e.g. 'betrayal T=aldric V=mira'"
 
 
@@ -38,30 +36,26 @@ class Command(BaseCommand):
 
     def handle(self, *args: Any, **options: Any) -> None:
         seed = options["seed"]
-        story = read_story(seed)
-        target = parse_target(options["target"])
-        try:
-            check_true_hypothesis(
-                target, {entity.slug: entity.kind for entity in story.entities}, read_library()
-            )
-        except GroundTruthError as error:
-            raise CommandError(f"--target: {error.reason}") from error
+        target = checked_target(seed, options["target"])
         writer: StoryWriter = di.make("StoryWriter")
         ingester: Ingester = di.make("Ingester")
         reader = choose_reader(options["reader"])
-        chronicle = generate_story(
-            seed, target, options["beats"], writer=writer, ingester=ingester, reader=reader
-        )
-        truth = generated_truth(target, len(story.beats), chronicle.beats.count())
-        truth_record = (
-            read_truth(chronicle, truth, reader, RecentAndSupportingBeats()) if truth and reader else None
-        )
-        reader_name = type(reader).__name__ if reader else None
-        run = build_run(chronicle, f"{seed}-generated", reader=reader_name, truth=truth_record)
-        path = write_run(run, Path(options["output_dir"]))
+        variant = generate_variant(seed, target, options["beats"], GENERATED, writer, ingester, reader)
+        path = write_run(variant.run, Path(options["output_dir"]))
         generated = f"Generated {options['beats']} continuations of {seed} toward {describe(target)}"
         self.stdout.write(f"{generated}; run file: {path}\n")
-        self.stdout.write(table(metric_rows(run, truth, ALL, DEFAULT_TOP_K)))
+        self.stdout.write(table(variant.metrics))
+
+
+def checked_target(seed: str, text: str) -> TrueHypothesis:
+    """The target, checked against the seed story's entities and the schema library."""
+    target = parse_target(text)
+    entity_kinds = {entity.slug: entity.kind for entity in read_story(seed).entities}
+    try:
+        check_true_hypothesis(target, entity_kinds, read_library())
+    except GroundTruthError as error:
+        raise CommandError(f"--target: {error.reason}") from error
+    return target
 
 
 def parse_target(text: str) -> TrueHypothesis:
