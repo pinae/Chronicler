@@ -22,4 +22,13 @@ Audio transcription; producing beats (WP-047).
   this package starts.
 
 ## Status
-open
+done
+
+## Summary
+No sample transcript was available, so the importer reads the common denominator of chat logs and
+diarized transcriptions: one turn per line, `Speaker: text`, optionally after a `[hh:mm:ss]`
+timestamp, continuation lines appended to the previous turn. `manage.py import_session <file>
+<slug> --title … [--gm NAME …]` makes every non-GM speaker a player (order of first appearance),
+writes the GM's turns as `gm` with `source: {line}`, and a README skeleton. When real transcripts
+arrive in another format, add a parser that produces the same `SessionTranscript`. Usage doc:
+`docs/usage/import-session.md`.
