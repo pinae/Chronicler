@@ -1,0 +1,8 @@
+.chart {
+  display: block;
+  overflow: visible;
+}
+
+.mark:hover {
+  filter: brightness(1.25);
+}

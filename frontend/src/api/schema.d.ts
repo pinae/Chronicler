@@ -118,6 +118,26 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/chronicles/{chronicle_id}/knowledge_map": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get Knowledge Map
+     * @description For each player at the table, every beat they came to know and since when.
+     */
+    get: operations["gm_ui_knowledge_api_get_knowledge_map"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/chronicles/{chronicle_id}/entities": {
     parameters: {
       query?: never;
@@ -335,6 +355,31 @@ export interface components {
       known_since_t: number;
       /** Learned Via T */
       learned_via_t: number | null;
+    };
+    /** KnowledgeCell */
+    KnowledgeCell: {
+      /** T */
+      t: number;
+      /** Known Since T */
+      known_since_t: number;
+      /** Learned Via T */
+      learned_via_t: number | null;
+    };
+    /** KnowledgeColumn */
+    KnowledgeColumn: {
+      /** Player */
+      player: number;
+      /** Name */
+      name: string;
+      /** Known */
+      known: components["schemas"]["KnowledgeCell"][];
+    };
+    /** KnowledgeMapOut */
+    KnowledgeMapOut: {
+      /** Last T */
+      last_t: number;
+      /** Columns */
+      columns: components["schemas"]["KnowledgeColumn"][];
     };
     /** EntityOut */
     EntityOut: {
@@ -636,6 +681,28 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["KnownBeat"][];
+        };
+      };
+    };
+  };
+  gm_ui_knowledge_api_get_knowledge_map: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        chronicle_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["KnowledgeMapOut"];
         };
       };
     };

@@ -16,6 +16,7 @@ export function App() {
           <Route path="/" element={<ChroniclesPage />} />
           <Route path="/chronicles/:chronicleId" element={<ChroniclePage />} />
           <Route path="/chronicles/:chronicleId/map" element={<StoryMapPage />} />
+          <Route path="/chronicles/:chronicleId/map/knowledge" element={<StoryMapPage view="knowledge" />} />
           <Route path="/chronicles/:chronicleId/lattice" element={<LatticePage />} />
           <Route path="/chronicles/:chronicleId/knowledge" element={<KnowledgePage />} />
           <Route path="/chronicles/:chronicleId/try" element={<TryBeatPage />} />

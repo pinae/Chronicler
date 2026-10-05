@@ -143,14 +143,18 @@ test("List the open threads", async ({ page }) => {
     "Prophecy: S = The three witches, H = Fleance, X = The crown of Scotland";
   await openStoryMap(page, "Macbeth (a session)");
 
-  const open = page.getByRole("list", { name: "Open threads seen by All beats" });
+  const open = page.getByRole("list", {
+    name: "Open threads seen by All beats",
+  });
   await expect(open.getByRole("listitem").first()).toHaveText(
     `${fleance} · open: fulfilment · waiting since t = 4`,
   );
 
   await open.getByRole("button", { name: fleance }).click();
 
-  const arcs = page.getByRole("img", { name: `Steps of ${fleance} (All beats)` });
+  const arcs = page.getByRole("img", {
+    name: `Steps of ${fleance} (All beats)`,
+  });
   await expect(arcs.getByText("foretelling", { exact: true })).toBeVisible();
   await expect(arcs.getByText("to come: fulfilment")).toBeVisible();
 

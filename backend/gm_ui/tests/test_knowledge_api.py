@@ -84,3 +84,54 @@ def test_asking_what_someone_knows_is_recorded_as_a_usage_event(client, steward)
     event = UsageEvent.objects.get(view="get_knowledge")
     assert (event.chronicle, event.t) == (steward, 21)
     assert event.params["character"] == str(mira.pk)
+
+
+@pytest.fixture
+def broken_jug(load_story):
+    return load_story("broken-jug")
+
+
+def knowledge_map(client, chronicle):
+    response = client.get(reverse("api:get_knowledge_map", args=[chronicle.pk]))
+    assert response.status_code == 200, response.content
+    return response.json()
+
+
+def known_by(result, name):
+    column = next(column for column in result["columns"] if column["name"] == name)
+    return {cell["t"]: cell for cell in column["known"]}
+
+
+def test_the_knowledge_map_has_a_column_per_player_at_the_table(client, broken_jug):
+    result = knowledge_map(client, broken_jug)
+
+    anna, ben, clara = broken_jug.players.filter(implicit=False).order_by("pk")
+    assert result["last_t"] == 32
+    assert [(column["player"], column["name"]) for column in result["columns"]] == [
+        (anna.pk, "Anna"),
+        (ben.pk, "Ben"),
+        (clara.pk, "Clara"),
+    ]
+
+
+def test_the_game_masters_notes_reach_the_players_only_when_they_are_learned(client, broken_jug):
+    result = knowledge_map(client, broken_jug)
+
+    for name in ("Anna", "Ben", "Clara"):
+        known = known_by(result, name)
+        assert known[3] == {"t": 3, "known_since_t": 26, "learned_via_t": 26}  # the judge broke the jug
+        assert known[2] == {"t": 2, "known_since_t": 30, "learned_via_t": 30}  # how he threatened Eve
+        assert 1 not in known  # his visit to Eve's room stays the game master's
+
+
+def test_a_beat_a_player_witnessed_is_known_from_its_own_row(client, broken_jug):
+    known = known_by(knowledge_map(client, broken_jug), "Ben")
+
+    assert known[19] == {"t": 19, "known_since_t": 19, "learned_via_t": None}  # Licht suspects the judge
+    assert 20 not in known  # Adam hides that he broke the jug
+
+
+def test_the_knowledge_map_of_an_unknown_chronicle_is_not_found(client):
+    response = client.get(reverse("api:get_knowledge_map", args=[999]))
+
+    assert response.status_code == 404

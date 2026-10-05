@@ -1,0 +1,23 @@
+.known {
+  fill: var(--ink-muted);
+}
+
+.learned {
+  fill: var(--surface-panel);
+  stroke: var(--ink-muted);
+  stroke-width: 1.5;
+}
+
+.cord {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 2;
+}
+
+.spark {
+  fill: var(--accent);
+  stroke: var(--surface-panel);
+  stroke-width: 2;
+  paint-order: stroke;
+}

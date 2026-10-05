@@ -1,21 +1,23 @@
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useState } from "react";
 
 import type { BeatSummary, River, RiverColumn, RiverThread } from "../api/types";
 import { ArcLane } from "./ArcLane";
+import { BeatRows, ROW_HEIGHT } from "./BeatRows";
 import { Legend } from "./Legend";
+import { MapColumn } from "./MapColumn";
+import { MapToolbar } from "./MapToolbar";
 import { OpenThreads } from "./OpenThreads";
 import { RiverChart } from "./RiverChart";
 import { RiverTables } from "./RiverTables";
-import styles from "./StoryMap.module.css";
 
-export const ROW_HEIGHT = 32;
 const COLUMN_WIDTH = 140;
 const ARC_LANE_WIDTH = 110;
 
 type Selection = { audience: string; threadId: number };
 
-/** The beats down the left, one river per audience beside them, every beat one row. */
-export function StoryMap({ beats, river }: { beats: BeatSummary[]; river: River }) {
+/** The story river beside the beats: one river per audience, the selected thread's arcs, the open
+ * threads below. */
+export function RiverView({ beats, river }: { beats: BeatSummary[]; river: River }) {
   const [asTable, setAsTable] = useState(false);
   const [pointed, setPointed] = useState<RiverThread | null>(null);
   const [selection, setSelection] = useState<Selection | null>(null);
@@ -37,36 +39,19 @@ export function StoryMap({ beats, river }: { beats: BeatSummary[]; river: River 
 
   return (
     <section>
-      <div className={styles.toolbar}>
-        <Legend river={river} />
-        <button type="button" onClick={() => setAsTable(!asTable)}>
-          {asTable ? "Show as river" : "Show as table"}
-        </button>
-      </div>
+      <MapToolbar
+        legend={<Legend river={river} />}
+        asTable={asTable}
+        onToggle={() => setAsTable(!asTable)}
+        chartName="river"
+      />
       {asTable ? (
         <RiverTables river={river} />
       ) : (
-        <div className={styles.map} style={{ "--row-height": `${ROW_HEIGHT}px` } as CSSProperties}>
-          <table aria-label="Beats" className={styles.beats}>
-            <thead>
-              <tr>
-                <th scope="col">t</th>
-                <th scope="col">Beat</th>
-              </tr>
-            </thead>
-            <tbody>
-              {beats.map((beat) => (
-                <tr key={beat.t}>
-                  <td>{beat.t}</td>
-                  <td title={beat.text}>{beat.text}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <BeatRows beats={beats}>
           <ArcLane selected={selected} width={ARC_LANE_WIDTH} rowHeight={ROW_HEIGHT} lastT={river.last_t} />
           {river.columns.map((column) => (
-            <div key={column.audience} className={styles.column}>
-              <div className={styles.columnName}>{column.name}</div>
+            <MapColumn key={column.audience} name={column.name}>
               <RiverChart
                 column={column}
                 width={COLUMN_WIDTH}
@@ -75,9 +60,9 @@ export function StoryMap({ beats, river }: { beats: BeatSummary[]; river: River 
                 onHighlight={setPointed}
                 onSelect={(thread) => select(column, thread)}
               />
-            </div>
+            </MapColumn>
           ))}
-        </div>
+        </BeatRows>
       )}
       <OpenThreads river={river} onSelect={select} />
     </section>

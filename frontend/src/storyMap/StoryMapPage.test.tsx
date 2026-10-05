@@ -4,7 +4,7 @@ import { MemoryRouter, Route, Routes } from "react-router";
 import { describe, expect, it } from "vitest";
 
 import { fakeApi } from "../test/fakeApi";
-import { ROW_HEIGHT } from "./StoryMap";
+import { ROW_HEIGHT } from "./BeatRows";
 import { StoryMapPage } from "./StoryMapPage";
 
 const JUG = {
@@ -83,19 +83,40 @@ const RIVER = {
   ],
 };
 
-function showStoryMap() {
+// Anna learns at t = 3 that Adam came to Eve's room, sees Marthe accuse Ruprecht and never learns of the jug.
+const KNOWLEDGE_MAP = {
+  last_t: 3,
+  columns: [
+    {
+      player: 5,
+      name: "Anna",
+      known: [
+        { t: 1, known_since_t: 3, learned_via_t: 3 },
+        { t: 3, known_since_t: 3, learned_via_t: null },
+      ],
+    },
+  ],
+};
+
+function showStoryMap(path = "/chronicles/3/map", knowledgeMap: unknown = KNOWLEDGE_MAP) {
   fakeApi({
     "/api/chronicles/3": JUG,
     "/api/chronicles/3/beats?audience=all": BEATS,
     "/api/chronicles/3/river": RIVER,
+    "/api/chronicles/3/knowledge_map": knowledgeMap,
   });
   render(
-    <MemoryRouter initialEntries={["/chronicles/3/map"]}>
+    <MemoryRouter initialEntries={[path]}>
       <Routes>
         <Route path="/chronicles/:chronicleId/map" element={<StoryMapPage />} />
+        <Route path="/chronicles/:chronicleId/map/knowledge" element={<StoryMapPage view="knowledge" />} />
       </Routes>
     </MemoryRouter>,
   );
+}
+
+function showKnowledgeMap(knowledgeMap: unknown = KNOWLEDGE_MAP) {
+  showStoryMap("/chronicles/3/map/knowledge", knowledgeMap);
 }
 
 describe("StoryMapPage", () => {
@@ -209,5 +230,77 @@ describe("StoryMapPage", () => {
       ["3", "100%", ""],
     ]);
     expect(screen.getByRole("button", { name: "Show as river" })).toBeInTheDocument();
+  });
+
+  it("switches between the story river and the knowledge map", async () => {
+    showStoryMap();
+    const views = await screen.findByRole("navigation", { name: "Story map views" });
+
+    await userEvent.click(within(views).getByRole("link", { name: "Knowledge map" }));
+
+    expect(await screen.findByRole("img", { name: "Knowledge of Anna" })).toBeInTheDocument();
+    expect(within(views).getByRole("link", { name: "Knowledge map" })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+
+    await userEvent.click(within(views).getByRole("link", { name: "Story river" }));
+
+    expect(await screen.findByRole("img", { name: "Story river: Anna" })).toBeInTheDocument();
+  });
+
+  it("marks the beats a player knew when they happened and burns a fuse down to where one was learned", async () => {
+    showKnowledgeMap();
+
+    const anna = await screen.findByRole("img", { name: "Knowledge of Anna" });
+
+    // Each mark's tooltip
+    expect(within(anna).getByText("Beat 3, Anna: when it happened")).toBeInTheDocument();
+    expect(within(anna).getByText("Beat 1, Anna: learned at t = 3 via beat 3")).toBeInTheDocument();
+    expect(within(anna).getByTestId("fuse-1")).toBeInTheDocument();
+    expect(within(anna).queryByText(/^Beat 2,/)).not.toBeInTheDocument();
+  });
+
+  it("names the knowledge marks in a legend", async () => {
+    showKnowledgeMap();
+
+    const legend = await screen.findByRole("list", { name: "Legend" });
+    const entries = within(legend)
+      .getAllByRole("listitem")
+      .map((item) => item.textContent);
+    expect(entries).toEqual([
+      "Knew it when it happened",
+      "Learned it later, where the fuse ends",
+      "Never learned it",
+    ]);
+  });
+
+  it("shows who knew what as a table", async () => {
+    showKnowledgeMap();
+
+    await userEvent.click(await screen.findByRole("button", { name: "Show as table" }));
+
+    const table = screen.getByRole("table", { name: "Who knew what" });
+    const rows = within(table)
+      .getAllByRole("row")
+      .map((row) => [...row.querySelectorAll("th, td")].map((cell) => cell.textContent));
+    expect(rows).toEqual([
+      ["t", "Beat", "Anna"],
+      ["1", "Adam comes to Eve's room.", "learned at t = 3 via beat 3"],
+      ["2", "Adam breaks the jug.", "not learned"],
+      ["3", "Marthe accuses Ruprecht.", "when it happened"],
+    ]);
+
+    await userEvent.click(screen.getByRole("button", { name: "Show as map" }));
+
+    expect(screen.getByRole("img", { name: "Knowledge of Anna" })).toBeInTheDocument();
+  });
+
+  it("says so when nobody plays at the table", async () => {
+    showKnowledgeMap({ last_t: 3, columns: [] });
+
+    expect(
+      await screen.findByText("Nobody plays at this table, so there is no knowledge to map."),
+    ).toBeInTheDocument();
   });
 });

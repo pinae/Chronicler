@@ -20,3 +20,6 @@ export type RiverColumn = components["schemas"]["ColumnOut"];
 export type RiverThread = components["schemas"]["ThreadOut"];
 export type RiverMoment = components["schemas"]["MomentOut"];
 export type RiverEvent = components["schemas"]["EventOut"];
+export type KnowledgeMap = components["schemas"]["KnowledgeMapOut"];
+export type KnowledgeColumn = components["schemas"]["KnowledgeColumn"];
+export type KnowledgeCell = components["schemas"]["KnowledgeCell"];

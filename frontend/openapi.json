@@ -315,6 +315,36 @@
         "description": "The beats one character (in the story) or one player (at the table) knew at t (default: latest)."
       }
     },
+    "/api/chronicles/{chronicle_id}/knowledge_map": {
+      "get": {
+        "operationId": "gm_ui_knowledge_api_get_knowledge_map",
+        "summary": "Get Knowledge Map",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "chronicle_id",
+            "schema": {
+              "title": "Chronicle Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KnowledgeMapOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "For each player at the table, every beat they came to know and since when."
+      }
+    },
     "/api/chronicles/{chronicle_id}/entities": {
       "get": {
         "operationId": "gm_ui_knowledge_api_list_entities",
@@ -826,6 +856,72 @@
         },
         "required": ["t", "pred", "text", "known_since_t", "learned_via_t"],
         "title": "KnownBeat",
+        "type": "object"
+      },
+      "KnowledgeCell": {
+        "properties": {
+          "t": {
+            "title": "T",
+            "type": "integer"
+          },
+          "known_since_t": {
+            "title": "Known Since T",
+            "type": "integer"
+          },
+          "learned_via_t": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Learned Via T"
+          }
+        },
+        "required": ["t", "known_since_t", "learned_via_t"],
+        "title": "KnowledgeCell",
+        "type": "object"
+      },
+      "KnowledgeColumn": {
+        "properties": {
+          "player": {
+            "title": "Player",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "known": {
+            "items": {
+              "$ref": "#/components/schemas/KnowledgeCell"
+            },
+            "title": "Known",
+            "type": "array"
+          }
+        },
+        "required": ["player", "name", "known"],
+        "title": "KnowledgeColumn",
+        "type": "object"
+      },
+      "KnowledgeMapOut": {
+        "properties": {
+          "last_t": {
+            "title": "Last T",
+            "type": "integer"
+          },
+          "columns": {
+            "items": {
+              "$ref": "#/components/schemas/KnowledgeColumn"
+            },
+            "title": "Columns",
+            "type": "array"
+          }
+        },
+        "required": ["last_t", "columns"],
+        "title": "KnowledgeMapOut",
         "type": "object"
       },
       "EntityOut": {
