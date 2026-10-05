@@ -36,13 +36,19 @@ const JUDGE = {
   schema_slug: "hidden_crime",
   schema_name: "Hidden crime",
   binding: binding(["C", "Judge Adam"], ["V", "Frau Marthe"], ["I", null]),
+  open_steps: ["discovery"],
+  waiting_since: 2,
 };
 const RUPRECHT = {
   id: 12,
   schema_slug: "hidden_crime",
   schema_name: "Hidden crime",
   binding: binding(["C", "Ruprecht"], ["V", "Frau Marthe"], ["I", null]),
+  open_steps: ["crime", "discovery"],
+  waiting_since: null,
 };
+
+const JUDGE_LABEL = "Hidden crime: C = Judge Adam, V = Frau Marthe, I = ?";
 
 const RIVER = {
   last_t: 3,
@@ -57,7 +63,10 @@ const RIVER = {
         { t: 2, shares: [{ thread: 11, share: 0.75, status: "live", secret: true }], other: 0.25 },
         { t: 3, shares: [{ thread: 11, share: 1, status: "live", secret: false }], other: 0 },
       ],
-      events: [{ t: 2, thread: 11, kind: "filled", step: "crime" }],
+      events: [
+        { t: 2, thread: 11, kind: "filled", step: "crime" },
+        { t: 3, thread: 11, kind: "filled", step: "cover_up" },
+      ],
     },
     {
       audience: "5",
@@ -136,6 +145,37 @@ describe("StoryMapPage", () => {
     expect(tooltip).toHaveTextContent("Hidden crime: C = Judge Adam, V = Frau Marthe, I = ?");
     expect(tooltip).toHaveTextContent("live · only the game master holds it");
     expect(tooltip).toHaveTextContent("This beat: crime filled");
+  });
+
+  it("draws the steps of a band clicked on as arcs between the beats that filled them", async () => {
+    showStoryMap();
+    const river = await screen.findByRole("img", { name: "Story river: All beats" });
+
+    await userEvent.click(within(river).getByTestId("band-11"));
+
+    const arcs = screen.getByRole("img", { name: `Steps of ${JUDGE_LABEL} (All beats)` });
+    expect(within(arcs).getByText("crime")).toBeInTheDocument();
+    expect(within(arcs).getByText("cover_up")).toBeInTheDocument();
+    expect(within(arcs).getByText("to come: discovery")).toBeInTheDocument();
+
+    await userEvent.keyboard("{Escape}");
+
+    expect(screen.queryByRole("img", { name: /^Steps of/ })).not.toBeInTheDocument();
+  });
+
+  it("lists the open threads of an audience, the longest waiting first", async () => {
+    showStoryMap();
+
+    const open = await screen.findByRole("list", { name: "Open threads seen by All beats" });
+    expect(within(open).getByRole("listitem")).toHaveTextContent(
+      `${JUDGE_LABEL} · open: discovery · waiting since t = 2`,
+    );
+
+    await userEvent.selectOptions(screen.getByLabelText("Open threads seen by"), "Anna");
+
+    expect(screen.getByRole("list", { name: "Open threads seen by Anna" })).toHaveTextContent(
+      "Hidden crime: C = Ruprecht, V = Frau Marthe, I = ? · open: crime, discovery · no beat supports it yet",
+    );
   });
 
   it("brings out the compatible readings in every column while a band is pointed at", async () => {

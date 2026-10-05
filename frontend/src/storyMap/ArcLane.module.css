@@ -1,0 +1,33 @@
+.lane {
+  flex: 0 0 auto;
+  margin-top: var(--row-height);
+  border-right: 1px dashed var(--rule);
+}
+
+.lane svg {
+  display: block;
+  overflow: visible;
+}
+
+.hint {
+  margin: var(--space-2) var(--space-2) 0 0;
+  font-size: 0.8rem;
+  font-style: italic;
+  line-height: 1.3;
+  text-align: right;
+  color: var(--ink-faint);
+}
+
+.step,
+.toCome {
+  font-family: var(--font-text);
+  font-size: 12px;
+  fill: var(--ink-muted);
+  paint-order: stroke;
+  stroke: var(--surface-panel);
+  stroke-width: 3px;
+}
+
+.toCome {
+  font-style: italic;
+}

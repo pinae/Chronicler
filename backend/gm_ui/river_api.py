@@ -20,6 +20,8 @@ class ThreadOut(Schema):
     schema_slug: str
     schema_name: str
     binding: list[BindingEntry]
+    open_steps: list[str]  # required steps its strongest reading has not filled when last held
+    waiting_since: int | None  # the t of that reading's first fill
 
 
 class ShareOut(Schema):
@@ -86,6 +88,8 @@ def thread_out(thread: Thread, names: Mapping[int, str], schema_names: Mapping[s
             BindingEntry(role=role, entity_id=entity, entity_name=names.get(entity) if entity else None)
             for role, entity in thread.binding.items()
         ],
+        open_steps=list(thread.open_steps),
+        waiting_since=thread.waiting_since,
     )
 
 

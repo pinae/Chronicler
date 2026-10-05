@@ -8,6 +8,8 @@ function thread(schema: string, ...ids: (number | null)[]) {
     schema_slug: schema,
     schema_name: schema,
     binding: ids.map((id, index) => ({ role: "CVI"[index] ?? "X", entity_id: id, entity_name: null })),
+    open_steps: [],
+    waiting_since: null,
   };
 }
 

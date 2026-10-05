@@ -14,6 +14,9 @@ from dataclasses import dataclass
 from chronicle.models import Chronicle, Player
 from matching.engine import COMPLETE, LIVE, REFUTED
 from matching.lattice import Lattice, LatticeHypothesis
+from schemas.definitions import SchemaDefinition
+from schemas.library import definition_of
+from schemas.models import Schema
 
 MAX_THREADS = 7
 GAME_MASTER = "All beats"
@@ -26,6 +29,10 @@ class Thread:
     schema: str
     binding: Mapping[str, int | None]
     members: frozenset[int]
+    # Of the thread's strongest reading when last held: the required steps still open, and the t of
+    # its first fill (None: no beat supports it yet).
+    open_steps: tuple[str, ...] = ()
+    waiting_since: int | None = None
 
 
 @dataclass(frozen=True)
@@ -91,13 +98,9 @@ def audience_river(
     core_of = cores(every_reading.values())
     shares_by_t = [thread_shares(held(lattice), core_of) for lattice in lattices]
     chosen = strongest_threads(shares_by_t, every_reading)
+    definitions = schema_definitions({every_reading[core].schema for core in chosen})
     threads = tuple(
-        Thread(
-            id=core,
-            schema=every_reading[core].schema,
-            binding=every_reading[core].binding,
-            members=frozenset(reading for reading, its_core in core_of.items() if its_core == core),
-        )
+        thread_of(core, every_reading, core_of, last_strongest(core, shares_by_t), definitions)
         for core in chosen
     )
     moments = tuple(
@@ -105,6 +108,34 @@ def audience_river(
         for t in range(len(lattices))
     )
     return AudienceRiver(name, player, threads, moments, events_of(threads, every_reading))
+
+
+def thread_of(
+    core: int,
+    every_reading: Mapping[int, LatticeHypothesis],
+    core_of: Mapping[int, int],
+    strongest: LatticeHypothesis,
+    definitions: Mapping[str, SchemaDefinition],
+) -> Thread:
+    filled = {fill.step_id for fill in strongest.fills}
+    required = [step.step_id for step in definitions[strongest.schema].steps if step.required]
+    return Thread(
+        id=core,
+        schema=every_reading[core].schema,
+        binding=every_reading[core].binding,
+        members=frozenset(reading for reading, its_core in core_of.items() if its_core == core),
+        open_steps=tuple(step for step in required if step not in filled),
+        waiting_since=min((fill.filled_at_t for fill in strongest.fills), default=None),
+    )
+
+
+def last_strongest(core: int, shares_by_t: Sequence[Mapping[int, "FamilyShare"]]) -> LatticeHypothesis:
+    """The thread's strongest reading at the last t the audience held it."""
+    return next(shares[core].strongest for shares in reversed(shares_by_t) if core in shares)
+
+
+def schema_definitions(slugs: Iterable[str]) -> dict[str, SchemaDefinition]:
+    return {row.slug: definition_of(row) for row in Schema.objects.filter(slug__in=set(slugs))}
 
 
 def cores(readings: Iterable[LatticeHypothesis]) -> dict[int, int]:

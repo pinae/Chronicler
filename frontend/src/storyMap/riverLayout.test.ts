@@ -6,7 +6,7 @@ import { GAP, bandLayouts, glyphs, rowCenter, secretRows } from "./riverLayout";
 const PLOT_WIDTH = 100 + GAP;
 
 function thread(id: number, schema: string) {
-  return { id, schema_slug: schema, schema_name: schema, binding: [] };
+  return { id, schema_slug: schema, schema_name: schema, binding: [], open_steps: [], waiting_since: null };
 }
 
 function share(threadId: number, value: number, secret = false) {

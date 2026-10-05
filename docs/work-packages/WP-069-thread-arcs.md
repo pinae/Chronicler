@@ -16,4 +16,11 @@ open steps of every live reading, oldest setup first (§2 of the research note).
 WP-068.
 
 ## Status
-open
+done (2026-10-05). Each river thread now carries the required steps its strongest reading still
+lacks (`open_steps`) and the beat of its first fill (`waiting_since`); a thread nothing supports
+waits since no beat. Clicking a band selects its thread: a lane between the beats and the rivers
+draws an arc from each filled step to the next, labelled with the step names, and a dashed line
+labelled *to come* for the open steps; clicking again or Escape clears it. **Open threads** lists,
+per chosen audience, the threads with open steps, the longest waiting first, and selects one on
+click. Usage: `docs/usage/story-map.md` (*See a thread's steps*, *List the open threads*), covered
+by e2e tests.

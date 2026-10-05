@@ -1192,9 +1192,27 @@
             },
             "title": "Binding",
             "type": "array"
+          },
+          "open_steps": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Open Steps",
+            "type": "array"
+          },
+          "waiting_since": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Waiting Since"
           }
         },
-        "required": ["id", "schema_slug", "schema_name", "binding"],
+        "required": ["id", "schema_slug", "schema_name", "binding", "open_steps", "waiting_since"],
         "title": "ThreadOut",
         "type": "object"
       }

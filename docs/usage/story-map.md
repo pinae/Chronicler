@@ -14,6 +14,9 @@ How to read it:
 - **Hatching** (game master's column) marks what no player holds yet: the game master's secrets.
 - **Marks** on a band: a dot where a beat fills a step, a star where the reading completes, a cross
   where it is refuted, a diamond where a player voices it.
+- **Arcs** (between the beats and the rivers, once you click a band): the beats that filled the
+  thread's steps, each joined to the next; a dashed line below the last one names the required
+  steps still to come.
 
 ## Before you start
 - The app runs (see `browse-chronicles.md`) and the example stories have been replayed with player
@@ -56,6 +59,40 @@ it at this beat (**This beat: cover_up filled**).
 **Result:** in every column, the bands that could be the same story (the same schema, and the same
 characters wherever both cast a role) stay bright; the others fade. In **Anna**'s column, her own
 theory **C = Ruprecht** fades, while Walter's suspicion of the judge stays bright.
+
+## See a thread's steps
+1. On the story map of **The Broken Jug (an adventure)**, click the middle of the **All beats**
+   column in the row of beat 20 (the band of *Read a band*).
+
+**Result:** next to the beats, the arcs **Steps of Hidden crime: C = Judge Adam, V = Frau Marthe,
+I = ? (All beats)** join the beats that filled the reading's steps: **crime** at beat 3,
+**cover_up** at beat 16, **suspicion** at beat 19 and so on down to **discovery** at beat 29. The
+bands that could be the same story stay bright in every column, as in *Compare the players*.
+
+2. Press **Escape** (or click the band again).
+
+**Result:** the arcs are gone and the lane says **Click a band to see its steps**.
+
+## List the open threads
+1. Open **Macbeth (a session)** and click **Story map**.
+2. Look at **Open threads** below the rivers.
+
+**Result:** **Open threads seen by** is set to **All beats**, and the list names every reading of
+the game master's column whose required steps are not all filled, the longest waiting first. The
+first is **Prophecy: S = The three witches, H = Fleance, X = The crown of Scotland · open:
+fulfilment · waiting since t = 4**: the witches' promise to Banquo's son is still a loaded gun.
+
+3. Click **Prophecy: S = The three witches, H = Fleance, X = The crown of Scotland**.
+
+**Result:** the arcs show its one filled step, **foretelling** at beat 4, and a dashed line down to
+the last beat labelled **to come: fulfilment**.
+
+4. Open **The Broken Jug (an adventure)**, click **Story map** and choose **Anna** in **Open threads
+   seen by**.
+
+**Result:** the list **Open threads seen by Anna** holds **Hidden crime: C = Ruprecht, V = Frau
+Marthe, I = ? · open: crime, discovery · no beat supports it yet**: Anna's theory, which no beat has
+backed.
 
 ## Show the river as a table
 1. On the story map, click **Show as table**.

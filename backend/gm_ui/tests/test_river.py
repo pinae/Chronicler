@@ -137,3 +137,22 @@ def test_events_mark_fills_completion_refutation_and_voicing(broken_jug):
     assert Event(t=19, thread=judge_broke_the_jug.id, kind="voiced", step=None) in events
     assert Event(t=26, thread=judge_broke_the_jug.id, kind="completed", step=None) in events
     assert len([event for event in events if (event.t, event.kind) == (3, "filled")]) == 1
+
+
+def test_a_thread_knows_its_open_steps_and_since_when_it_waits(macbeth):
+    entity_ids, rivers = macbeth
+    game_master = column(rivers, "All beats")
+
+    fleance = thread(entity_ids, game_master, "prophecy", S="witches", H="fleance", X="crown")
+    usurpation = thread(entity_ids, game_master, "usurpation", U="macbeth", R="duncan")
+
+    assert (fleance.open_steps, fleance.waiting_since) == (("fulfilment",), 4)
+    assert usurpation.open_steps == ()  # its strongest reading, with the crown, is complete
+
+
+def test_a_theory_nothing_supports_waits_for_every_step_since_no_beat(broken_jug):
+    entity_ids, rivers = broken_jug
+
+    ruprecht_did_it = thread(entity_ids, column(rivers, "Anna"), "hidden_crime", C="ruprecht", V="marthe")
+
+    assert (ruprecht_did_it.open_steps, ruprecht_did_it.waiting_since) == (("crime", "discovery"), None)

@@ -15,12 +15,14 @@ type Props = {
   /** The thread pointed at in any column; bands that cannot be the same story are dimmed. */
   highlighted: RiverThread | null;
   onHighlight: (thread: RiverThread | null) => void;
+  /** A band clicked on selects its thread (the other readings' band selects nothing). */
+  onSelect: (thread: RiverThread | null) => void;
 };
 
 type Pointed = { band: Band; t: number; y: number };
 
 /** One audience's story river: its threads as bands down the beats, hatched where secret. */
-export function RiverChart({ column, width, rowHeight, highlighted, onHighlight }: Props) {
+export function RiverChart({ column, width, rowHeight, highlighted, onHighlight, onSelect }: Props) {
   const id = useId();
   const [pointed, setPointed] = useState<Pointed | null>(null);
   const bands = bandLayouts(column, width);
@@ -87,6 +89,7 @@ export function RiverChart({ column, width, rowHeight, highlighted, onHighlight 
                 data-dimmed={dimmed(band) || undefined}
                 className={styles.band}
                 onPointerMove={(event) => point(band, event)}
+                onClick={() => onSelect(column.threads.find((thread) => thread.id === band.threadId) ?? null)}
               />
               {secretRows(band).length > 0 && (
                 <path

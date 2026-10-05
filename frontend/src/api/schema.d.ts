@@ -483,6 +483,10 @@ export interface components {
       schema_name: string;
       /** Binding */
       binding: components["schemas"]["BindingEntry"][];
+      /** Open Steps */
+      open_steps: string[];
+      /** Waiting Since */
+      waiting_since: number | null;
     };
   };
   responses: never;

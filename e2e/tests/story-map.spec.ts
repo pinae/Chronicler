@@ -46,13 +46,23 @@ async function sharesRow(
   );
 }
 
-async function pointAtRow(page: Page, audience: string, t: number) {
-  const chart = river(page, audience);
-  const box = await chart.boundingBox();
+/** The middle of a river in the row of beat t. */
+async function middleOfRow(page: Page, audience: string, t: number) {
+  const box = await river(page, audience).boundingBox();
   if (!box) {
     throw new Error(`no river for ${audience}`);
   }
-  await chart.hover({ position: { x: box.width / 2, y: (t - 0.5) * ROW_HEIGHT } });
+  return { x: box.width / 2, y: (t - 0.5) * ROW_HEIGHT };
+}
+
+async function pointAtRow(page: Page, audience: string, t: number) {
+  const position = await middleOfRow(page, audience, t);
+  await river(page, audience).hover({ position });
+}
+
+async function clickRow(page: Page, audience: string, t: number) {
+  const position = await middleOfRow(page, audience, t);
+  await river(page, audience).click({ position });
 }
 
 test("Open the story map", async ({ page }) => {
@@ -108,6 +118,52 @@ test("Compare the players", async ({ page }) => {
   await expect(
     anna.locator("path[data-testid^=band]:not([data-dimmed])"),
   ).toHaveCount(2);
+});
+
+test("See a thread's steps", async ({ page }) => {
+  await openStoryMap(page, JUG);
+
+  await clickRow(page, "All beats", 20);
+
+  const arcs = page.getByRole("img", {
+    name: `Steps of ${JUDGE_HARMED_MARTHE} (All beats)`,
+  });
+  for (const step of ["crime", "cover_up", "suspicion", "discovery"]) {
+    await expect(arcs.getByText(step, { exact: true }).first()).toBeVisible();
+  }
+
+  await page.keyboard.press("Escape");
+
+  await expect(arcs).toHaveCount(0);
+  await expect(page.getByText("Click a band to see its steps")).toBeVisible();
+});
+
+test("List the open threads", async ({ page }) => {
+  const fleance =
+    "Prophecy: S = The three witches, H = Fleance, X = The crown of Scotland";
+  await openStoryMap(page, "Macbeth (a session)");
+
+  const open = page.getByRole("list", { name: "Open threads seen by All beats" });
+  await expect(open.getByRole("listitem").first()).toHaveText(
+    `${fleance} · open: fulfilment · waiting since t = 4`,
+  );
+
+  await open.getByRole("button", { name: fleance }).click();
+
+  const arcs = page.getByRole("img", { name: `Steps of ${fleance} (All beats)` });
+  await expect(arcs.getByText("foretelling", { exact: true })).toBeVisible();
+  await expect(arcs.getByText("to come: fulfilment")).toBeVisible();
+
+  await openStoryMap(page, JUG);
+  await page
+    .getByRole("combobox", { name: "Open threads seen by" })
+    .selectOption("Anna");
+
+  await expect(
+    page.getByRole("list", { name: "Open threads seen by Anna" }),
+  ).toContainText(
+    "Hidden crime: C = Ruprecht, V = Frau Marthe, I = ? · open: crime, discovery · no beat supports it yet",
+  );
 });
 
 test("Show the river as a table", async ({ page }) => {

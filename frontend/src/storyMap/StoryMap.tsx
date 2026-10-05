@@ -1,18 +1,39 @@
-import { useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 
-import type { BeatSummary, River, RiverThread } from "../api/types";
+import type { BeatSummary, River, RiverColumn, RiverThread } from "../api/types";
+import { ArcLane } from "./ArcLane";
 import { Legend } from "./Legend";
+import { OpenThreads } from "./OpenThreads";
 import { RiverChart } from "./RiverChart";
 import { RiverTables } from "./RiverTables";
 import styles from "./StoryMap.module.css";
 
 export const ROW_HEIGHT = 32;
 const COLUMN_WIDTH = 140;
+const ARC_LANE_WIDTH = 110;
+
+type Selection = { audience: string; threadId: number };
 
 /** The beats down the left, one river per audience beside them, every beat one row. */
 export function StoryMap({ beats, river }: { beats: BeatSummary[]; river: River }) {
   const [asTable, setAsTable] = useState(false);
-  const [highlighted, setHighlighted] = useState<RiverThread | null>(null);
+  const [pointed, setPointed] = useState<RiverThread | null>(null);
+  const [selection, setSelection] = useState<Selection | null>(null);
+  const selected = selectedThread(river, selection);
+
+  useEffect(() => {
+    if (selection === null) {
+      return;
+    }
+    const clear = (event: KeyboardEvent) => event.key === "Escape" && setSelection(null);
+    document.addEventListener("keydown", clear);
+    return () => document.removeEventListener("keydown", clear);
+  }, [selection]);
+
+  function select(column: RiverColumn, thread: RiverThread | null) {
+    const same = selection?.audience === column.audience && selection.threadId === thread?.id;
+    setSelection(thread === null || same ? null : { audience: column.audience, threadId: thread.id });
+  }
 
   return (
     <section>
@@ -25,7 +46,7 @@ export function StoryMap({ beats, river }: { beats: BeatSummary[]; river: River 
       {asTable ? (
         <RiverTables river={river} />
       ) : (
-        <div className={styles.map} style={{ "--row-height": `${ROW_HEIGHT}px` } as React.CSSProperties}>
+        <div className={styles.map} style={{ "--row-height": `${ROW_HEIGHT}px` } as CSSProperties}>
           <table aria-label="Beats" className={styles.beats}>
             <thead>
               <tr>
@@ -42,6 +63,7 @@ export function StoryMap({ beats, river }: { beats: BeatSummary[]; river: River 
               ))}
             </tbody>
           </table>
+          <ArcLane selected={selected} width={ARC_LANE_WIDTH} rowHeight={ROW_HEIGHT} lastT={river.last_t} />
           {river.columns.map((column) => (
             <div key={column.audience} className={styles.column}>
               <div className={styles.columnName}>{column.name}</div>
@@ -49,13 +71,21 @@ export function StoryMap({ beats, river }: { beats: BeatSummary[]; river: River 
                 column={column}
                 width={COLUMN_WIDTH}
                 rowHeight={ROW_HEIGHT}
-                highlighted={highlighted}
-                onHighlight={setHighlighted}
+                highlighted={pointed ?? selected?.thread ?? null}
+                onHighlight={setPointed}
+                onSelect={(thread) => select(column, thread)}
               />
             </div>
           ))}
         </div>
       )}
+      <OpenThreads river={river} onSelect={select} />
     </section>
   );
+}
+
+function selectedThread(river: River, selection: Selection | null) {
+  const column = river.columns.find((candidate) => candidate.audience === selection?.audience);
+  const thread = column?.threads.find((candidate) => candidate.id === selection?.threadId);
+  return column && thread ? { column, thread } : null;
 }
