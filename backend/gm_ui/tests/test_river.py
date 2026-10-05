@@ -151,6 +151,16 @@ def test_a_thread_knows_its_open_steps_and_since_when_it_waits(macbeth):
     assert usurpation.open_steps == ()  # its strongest reading, with the crown, is complete
 
 
+def test_a_thread_knows_which_of_its_steps_pay_it_off(macbeth):
+    entity_ids, rivers = macbeth
+    game_master = column(rivers, "All beats")
+
+    murder = thread(entity_ids, game_master, "hidden_crime", C="macbeth", V="duncan")
+    usurpation = thread(entity_ids, game_master, "usurpation", U="macbeth", R="duncan")
+
+    assert (murder.payoff_steps, usurpation.payoff_steps) == (("discovery",), ("seizure",))
+
+
 def test_a_theory_nothing_supports_waits_for_every_step_since_no_beat(broken_jug):
     entity_ids, rivers = broken_jug
 

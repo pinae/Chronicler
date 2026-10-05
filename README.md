@@ -76,7 +76,8 @@ uv run python manage.py runserver                             # then open http:/
 
 In the browser: the **story map** with a river of readings per audience (`docs/usage/story-map.md`),
 who knew which beat from when (`knowledge-map.md`), the pacing of surprise and tension
-(`pacing.md`) and the evidence for each reading (`evidence.md`); the chronicle list (`docs/usage/browse-chronicles.md`), a chronicle's beats as
+(`pacing.md`), the evidence for each reading (`evidence.md`) and the clues each player had
+(`clues.md`); the chronicle list (`docs/usage/browse-chronicles.md`), a chronicle's beats as
 each audience saw them (`chronicle.md`), the lattice of hypotheses at any beat (`lattice.md`), what
 the audience expects next (`expectations.md`), who knows what (`knowledge.md`) and trying a beat
 before narrating it (`try-a-beat.md`). The Django admin is at `/admin/` (`admin.md`).

@@ -1314,9 +1314,24 @@
               }
             ],
             "title": "Waiting Since"
+          },
+          "payoff_steps": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Payoff Steps",
+            "type": "array"
           }
         },
-        "required": ["id", "schema_slug", "schema_name", "binding", "open_steps", "waiting_since"],
+        "required": [
+          "id",
+          "schema_slug",
+          "schema_name",
+          "binding",
+          "open_steps",
+          "waiting_since",
+          "payoff_steps"
+        ],
         "title": "ThreadOut",
         "type": "object"
       }

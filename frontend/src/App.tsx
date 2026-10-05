@@ -19,6 +19,7 @@ export function App() {
           <Route path="/chronicles/:chronicleId/map/knowledge" element={<StoryMapPage view="knowledge" />} />
           <Route path="/chronicles/:chronicleId/map/pacing" element={<StoryMapPage view="pacing" />} />
           <Route path="/chronicles/:chronicleId/map/evidence" element={<StoryMapPage view="evidence" />} />
+          <Route path="/chronicles/:chronicleId/map/clues" element={<StoryMapPage view="clues" />} />
           <Route path="/chronicles/:chronicleId/lattice" element={<LatticePage />} />
           <Route path="/chronicles/:chronicleId/knowledge" element={<KnowledgePage />} />
           <Route path="/chronicles/:chronicleId/try" element={<TryBeatPage />} />

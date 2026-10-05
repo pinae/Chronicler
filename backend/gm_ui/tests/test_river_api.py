@@ -44,6 +44,7 @@ def test_threads_are_named_by_schema_and_core_reading(client, steward):
     ]
     assert (seal_thread["schema_slug"], seal_thread["schema_name"]) == ("betrayal", "Betrayal")
     assert (seal_thread["open_steps"], seal_thread["waiting_since"]) == ([], 2)
+    assert seal_thread["payoff_steps"] == ["reveal"]
     assert seal_thread["binding"][0] == {
         "role": "T",
         "entity_id": steward.entities.get(slug="aldric").pk,

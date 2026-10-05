@@ -20,6 +20,7 @@ function thread(id: number, culprit: string) {
     binding: [{ role: "C", entity_id: id, entity_name: culprit }],
     open_steps: [],
     waiting_since: null,
+    payoff_steps: ["discovery"],
   };
 }
 

@@ -2,13 +2,14 @@ import { Link } from "react-router";
 
 import styles from "./StoryMapViews.module.css";
 
-export type StoryMapViewName = "river" | "knowledge" | "pacing" | "evidence";
+export type StoryMapViewName = "river" | "knowledge" | "pacing" | "evidence" | "clues";
 
 const VIEWS: { view: StoryMapViewName; label: string; path: string }[] = [
   { view: "river", label: "Story river", path: "/map" },
   { view: "knowledge", label: "Knowledge map", path: "/map/knowledge" },
   { view: "pacing", label: "Pacing", path: "/map/pacing" },
   { view: "evidence", label: "Evidence", path: "/map/evidence" },
+  { view: "clues", label: "Clues", path: "/map/clues" },
 ];
 
 /** The story map's views share the beat rows; this switches between them. */

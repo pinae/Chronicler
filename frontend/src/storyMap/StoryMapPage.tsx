@@ -4,6 +4,7 @@ import { useParams } from "react-router";
 import type { BeatSummary, ChronicleDetail, KnowledgeMap, River } from "../api/types";
 import { useApi } from "../api/useApi";
 import { ChronicleFrame } from "../shell/ChronicleFrame";
+import { ClueView } from "./ClueView";
 import { EvidenceView } from "./EvidenceView";
 import { KnowledgeView } from "./KnowledgeView";
 import { PacingView } from "./PacingView";
@@ -49,8 +50,13 @@ function ViewSection({ view, ...props }: SectionProps & { view: StoryMapViewName
       return <PacingSection {...props} />;
     case "evidence":
       return <EvidenceSection {...props} />;
+    case "clues":
+      return <CluesSection {...props} />;
   }
 }
+
+const riverOf = (chronicleId: number) => `/api/chronicles/${chronicleId}/river`;
+const knowledgeMapOf = (chronicleId: number) => `/api/chronicles/${chronicleId}/knowledge_map`;
 
 function RiverSection({ chronicleId, beats }: SectionProps) {
   return (
@@ -60,24 +66,23 @@ function RiverSection({ chronicleId, beats }: SectionProps) {
         engine&apos;s belief that reading holds at that beat. One column for all beats (the game master&apos;s
         view), one for each player.
       </p>
-      <WithRiver chronicleId={chronicleId} name="story river">
+      <Loaded<River> path={riverOf(chronicleId)} name="story river">
         {(river) => <RiverView beats={beats} river={river} />}
-      </WithRiver>
+      </Loaded>
     </>
   );
 }
 
 function KnowledgeSection({ chronicleId, beats }: SectionProps) {
-  const knowledgeMap = useApi<KnowledgeMap>(`/api/chronicles/${chronicleId}/knowledge_map`);
   return (
     <>
       <p>
         Who knew which beat from when. A long fuse is a reveal of the past; an empty cell is something a
         player does not know, a secret of the game master or the table&apos;s dramatic irony.
       </p>
-      {knowledgeMap.status === "loading" && <p>Loading…</p>}
-      {knowledgeMap.status === "error" && <p role="alert">Could not load the knowledge map.</p>}
-      {knowledgeMap.status === "ready" && <KnowledgeView beats={beats} knowledgeMap={knowledgeMap.data} />}
+      <Loaded<KnowledgeMap> path={knowledgeMapOf(chronicleId)} name="knowledge map">
+        {(knowledgeMap) => <KnowledgeView beats={beats} knowledgeMap={knowledgeMap} />}
+      </Loaded>
     </>
   );
 }
@@ -90,9 +95,9 @@ function PacingSection({ chronicleId, beats }: SectionProps) {
         beat; tension is how much of it rests on stories that are building up, with a development step filled
         and the payoff still open. Both are read from the readings&apos; shares, as in the story river.
       </p>
-      <WithRiver chronicleId={chronicleId} name="pacing">
+      <Loaded<River> path={riverOf(chronicleId)} name="pacing">
         {(river) => <PacingView beats={beats} river={river} />}
-      </WithRiver>
+      </Loaded>
     </>
   );
 }
@@ -106,29 +111,48 @@ function EvidenceSection({ chronicleId, beats }: SectionProps) {
         carries the plot; one that fits every reading proves little; one that supports none of them sets the
         scene or misleads.
       </p>
-      <WithRiver chronicleId={chronicleId} name="evidence">
+      <Loaded<River> path={riverOf(chronicleId)} name="evidence">
         {(river) => <EvidenceView beats={beats} river={river} />}
-      </WithRiver>
+      </Loaded>
     </>
   );
 }
 
-/** The views drawn from the river: each shows itself once the river has loaded. */
-function WithRiver({
-  chronicleId,
+function CluesSection({ chronicleId, beats }: SectionProps) {
+  return (
+    <>
+      <p>
+        The Three Clue Rule: for any conclusion the players should reach, give them at least three clues. Here
+        the clues are the beats that filled a reading&apos;s steps, and the ledger shows which of them each
+        player knew before the reading paid off.
+      </p>
+      <Loaded<River> path={riverOf(chronicleId)} name="readings">
+        {(river) => (
+          <Loaded<KnowledgeMap> path={knowledgeMapOf(chronicleId)} name="knowledge map">
+            {(knowledgeMap) => <ClueView beats={beats} river={river} knowledgeMap={knowledgeMap} />}
+          </Loaded>
+        )}
+      </Loaded>
+    </>
+  );
+}
+
+/** Shows its children once the data at `path` has loaded. */
+function Loaded<T>({
+  path,
   name,
   children,
 }: {
-  chronicleId: number;
+  path: string;
   name: string;
-  children: (river: River) => ReactNode;
+  children: (data: T) => ReactNode;
 }) {
-  const river = useApi<River>(`/api/chronicles/${chronicleId}/river`);
-  if (river.status === "loading") {
+  const state = useApi<T>(path);
+  if (state.status === "loading") {
     return <p>Loading…</p>;
   }
-  if (river.status === "error") {
+  if (state.status === "error") {
     return <p role="alert">Could not load the {name}.</p>;
   }
-  return children(river.data);
+  return children(state.data);
 }

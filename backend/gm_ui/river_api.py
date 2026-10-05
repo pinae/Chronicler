@@ -22,6 +22,7 @@ class ThreadOut(Schema):
     binding: list[BindingEntry]
     open_steps: list[str]  # required steps its strongest reading has not filled when last held
     waiting_since: int | None  # the t of that reading's first fill
+    payoff_steps: list[str]  # the steps of its schema's payoff phase
 
 
 class ShareOut(Schema):
@@ -92,6 +93,7 @@ def thread_out(thread: Thread, names: Mapping[int, str], schema_names: Mapping[s
         ],
         open_steps=list(thread.open_steps),
         waiting_since=thread.waiting_since,
+        payoff_steps=list(thread.payoff_steps),
     )
 
 

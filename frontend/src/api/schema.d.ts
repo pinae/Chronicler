@@ -536,6 +536,8 @@ export interface components {
       open_steps: string[];
       /** Waiting Since */
       waiting_since: number | null;
+      /** Payoff Steps */
+      payoff_steps: string[];
     };
   };
   responses: never;

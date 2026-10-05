@@ -1,5 +1,6 @@
 import type { RiverColumn, RiverThread } from "../api/types";
 import { rowCenter } from "./riverLayout";
+import { stepsFilledByBeat } from "./threadSteps";
 
 export type StepPoint = { t: number; y: number; steps: string[] };
 export type Arc = { from: StepPoint; to: StepPoint; path: string };
@@ -20,15 +21,11 @@ export function threadArcs(
   edge: number,
   lastT: number,
 ): ThreadArcs {
-  const byT = new Map<number, string[]>();
-  for (const event of column.events) {
-    if (event.thread === thread.id && event.kind === "filled" && event.step && event.t > 0) {
-      byT.set(event.t, [...(byT.get(event.t) ?? []), event.step]);
-    }
-  }
-  const points = [...byT.entries()]
-    .sort(([first], [second]) => first - second)
-    .map(([t, steps]) => ({ t, y: rowCenter(t, rowHeight), steps }));
+  const points = stepsFilledByBeat(column, thread).map(([t, steps]) => ({
+    t,
+    y: rowCenter(t, rowHeight),
+    steps,
+  }));
   const arcs = points.slice(1).map((to, index) => {
     const from = points[index] as StepPoint;
     return { from, to, path: arcPath(from.y, to.y, edge) };

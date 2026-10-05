@@ -36,7 +36,9 @@ section says what changes with a model.
   loud.
 
 The **Story map** tab (`story-map.md`) shows much of this tour at a glance: one river of readings
-per audience beside the beats, with the game master's secrets hatched. The scenarios below use the
+per audience beside the beats, with the game master's secrets hatched; its other views show who
+learned what when (`knowledge-map.md`), the pacing (`pacing.md`), the evidence (`evidence.md`) and
+the clues each player had (`clues.md`). The scenarios below use the
 other screens, which show the details.
 
 ## Before you start

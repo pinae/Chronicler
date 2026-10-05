@@ -36,6 +36,7 @@ class Thread:
     # its first fill (None: no beat supports it yet).
     open_steps: tuple[str, ...] = ()
     waiting_since: int | None = None
+    payoff_steps: tuple[str, ...] = ()  # the steps of the payoff phase
 
 
 @dataclass(frozen=True)
@@ -132,7 +133,8 @@ def thread_of(
     definitions: Mapping[str, SchemaDefinition],
 ) -> Thread:
     filled = {fill.step_id for fill in strongest.fills}
-    required = [step.step_id for step in definitions[strongest.schema].steps if step.required]
+    steps = definitions[strongest.schema].steps
+    required = [step.step_id for step in steps if step.required]
     return Thread(
         id=core,
         schema=every_reading[core].schema,
@@ -140,6 +142,7 @@ def thread_of(
         members=frozenset(reading for reading, its_core in core_of.items() if its_core == core),
         open_steps=tuple(step for step in required if step not in filled),
         waiting_since=min((fill.filled_at_t for fill in strongest.fills), default=None),
+        payoff_steps=tuple(step.step_id for step in steps if step.phase == "payoff"),
     )
 
 

@@ -10,6 +10,7 @@ function thread(schema: string, ...ids: (number | null)[]) {
     binding: ids.map((id, index) => ({ role: "CVI"[index] ?? "X", entity_id: id, entity_name: null })),
     open_steps: [],
     waiting_since: null,
+    payoff_steps: ["discovery"],
   };
 }
 

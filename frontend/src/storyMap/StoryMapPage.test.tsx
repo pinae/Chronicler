@@ -38,6 +38,7 @@ const JUDGE = {
   binding: binding(["C", "Judge Adam"], ["V", "Frau Marthe"], ["I", null]),
   open_steps: ["discovery"],
   waiting_since: 2,
+  payoff_steps: ["discovery"],
 };
 const RUPRECHT = {
   id: 12,
@@ -46,6 +47,7 @@ const RUPRECHT = {
   binding: binding(["C", "Ruprecht"], ["V", "Frau Marthe"], ["I", null]),
   open_steps: ["crime", "discovery"],
   waiting_since: null,
+  payoff_steps: ["discovery"],
 };
 
 const JUDGE_LABEL = "Hidden crime: C = Judge Adam, V = Frau Marthe, I = ?";
@@ -130,6 +132,7 @@ function showStoryMap(path = "/chronicles/3/map", knowledgeMap: unknown = KNOWLE
         <Route path="/chronicles/:chronicleId/map/knowledge" element={<StoryMapPage view="knowledge" />} />
         <Route path="/chronicles/:chronicleId/map/pacing" element={<StoryMapPage view="pacing" />} />
         <Route path="/chronicles/:chronicleId/map/evidence" element={<StoryMapPage view="evidence" />} />
+        <Route path="/chronicles/:chronicleId/map/clues" element={<StoryMapPage view="clues" />} />
       </Routes>
     </MemoryRouter>,
   );
@@ -390,5 +393,17 @@ describe("StoryMapPage", () => {
 
     const matrix = await screen.findByRole("table", { name: "Evidence seen by All beats" });
     expect(within(matrix).getByRole("row", { name: /Adam breaks the jug\. crime/ })).toBeInTheDocument();
+  });
+
+  it("switches to the clue ledger of the strongest reading", async () => {
+    showStoryMap();
+    const views = await screen.findByRole("navigation", { name: "Story map views" });
+
+    await userEvent.click(within(views).getByRole("link", { name: "Clues" }));
+
+    const ledger = await screen.findByRole("table", { name: `Clues to ${JUDGE_LABEL}` });
+    expect(
+      within(ledger).getByRole("row", { name: /Adam breaks the jug\. crime not learned/ }),
+    ).toBeInTheDocument();
   });
 });

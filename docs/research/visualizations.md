@@ -3,7 +3,12 @@
 What would help a game master (or writer) see what the engine sees, and how a story is built and
 moves? This note starts from the questions a game master asks during a session, looks at what
 visualization research and roleplaying practice offer for each, and proposes views. The proposals
-are ordered by what they cost and what they answer; the first ones are built in WP-067 to WP-069.
+are ordered by what they cost and what they answer.
+
+**Status (2026-10-05):** proposals 1 to 6 are built as the views of the story map (WP-067 to
+WP-072): *Story river* with thread arcs and open threads, *Knowledge map*, *Pacing* (surprise and
+tension; suspense waits for calibrated model readouts), *Evidence* and *Clues*. Proposals 7
+(storyline) and 8 (reading genealogy) are open.
 
 ## The questions
 
