@@ -129,6 +129,7 @@ function showStoryMap(path = "/chronicles/3/map", knowledgeMap: unknown = KNOWLE
         <Route path="/chronicles/:chronicleId/map" element={<StoryMapPage />} />
         <Route path="/chronicles/:chronicleId/map/knowledge" element={<StoryMapPage view="knowledge" />} />
         <Route path="/chronicles/:chronicleId/map/pacing" element={<StoryMapPage view="pacing" />} />
+        <Route path="/chronicles/:chronicleId/map/evidence" element={<StoryMapPage view="evidence" />} />
       </Routes>
     </MemoryRouter>,
   );
@@ -379,5 +380,15 @@ describe("StoryMapPage", () => {
     await userEvent.click(screen.getByRole("button", { name: "Show as chart" }));
 
     expect(screen.getByRole("img", { name: "Pacing: All beats" })).toBeInTheDocument();
+  });
+
+  it("switches to the evidence matrix", async () => {
+    showStoryMap();
+    const views = await screen.findByRole("navigation", { name: "Story map views" });
+
+    await userEvent.click(within(views).getByRole("link", { name: "Evidence" }));
+
+    const matrix = await screen.findByRole("table", { name: "Evidence seen by All beats" });
+    expect(within(matrix).getByRole("row", { name: /Adam breaks the jug\. crime/ })).toBeInTheDocument();
   });
 });

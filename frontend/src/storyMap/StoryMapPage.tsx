@@ -1,8 +1,10 @@
+import type { ReactNode } from "react";
 import { useParams } from "react-router";
 
 import type { BeatSummary, ChronicleDetail, KnowledgeMap, River } from "../api/types";
 import { useApi } from "../api/useApi";
 import { ChronicleFrame } from "../shell/ChronicleFrame";
+import { EvidenceView } from "./EvidenceView";
 import { KnowledgeView } from "./KnowledgeView";
 import { PacingView } from "./PacingView";
 import { RiverView } from "./RiverView";
@@ -30,21 +32,27 @@ function StoryMapScreen({ chronicle, view }: { chronicle: ChronicleDetail; view:
       <StoryMapViews chronicleId={chronicle.id} current={view} />
       {beats.status === "loading" && <p>Loading…</p>}
       {beats.status === "error" && <p role="alert">Could not load the story map.</p>}
-      {beats.status === "ready" && view === "river" && (
-        <RiverSection chronicleId={chronicle.id} beats={beats.data} />
-      )}
-      {beats.status === "ready" && view === "knowledge" && (
-        <KnowledgeSection chronicleId={chronicle.id} beats={beats.data} />
-      )}
-      {beats.status === "ready" && view === "pacing" && (
-        <PacingSection chronicleId={chronicle.id} beats={beats.data} />
-      )}
+      {beats.status === "ready" && <ViewSection view={view} chronicleId={chronicle.id} beats={beats.data} />}
     </ChronicleFrame>
   );
 }
 
-function RiverSection({ chronicleId, beats }: { chronicleId: number; beats: BeatSummary[] }) {
-  const river = useApi<River>(`/api/chronicles/${chronicleId}/river`);
+type SectionProps = { chronicleId: number; beats: BeatSummary[] };
+
+function ViewSection({ view, ...props }: SectionProps & { view: StoryMapViewName }) {
+  switch (view) {
+    case "river":
+      return <RiverSection {...props} />;
+    case "knowledge":
+      return <KnowledgeSection {...props} />;
+    case "pacing":
+      return <PacingSection {...props} />;
+    case "evidence":
+      return <EvidenceSection {...props} />;
+  }
+}
+
+function RiverSection({ chronicleId, beats }: SectionProps) {
   return (
     <>
       <p>
@@ -52,14 +60,14 @@ function RiverSection({ chronicleId, beats }: { chronicleId: number; beats: Beat
         engine&apos;s belief that reading holds at that beat. One column for all beats (the game master&apos;s
         view), one for each player.
       </p>
-      {river.status === "loading" && <p>Loading…</p>}
-      {river.status === "error" && <p role="alert">Could not load the story river.</p>}
-      {river.status === "ready" && <RiverView beats={beats} river={river.data} />}
+      <WithRiver chronicleId={chronicleId} name="story river">
+        {(river) => <RiverView beats={beats} river={river} />}
+      </WithRiver>
     </>
   );
 }
 
-function KnowledgeSection({ chronicleId, beats }: { chronicleId: number; beats: BeatSummary[] }) {
+function KnowledgeSection({ chronicleId, beats }: SectionProps) {
   const knowledgeMap = useApi<KnowledgeMap>(`/api/chronicles/${chronicleId}/knowledge_map`);
   return (
     <>
@@ -74,8 +82,7 @@ function KnowledgeSection({ chronicleId, beats }: { chronicleId: number; beats: 
   );
 }
 
-function PacingSection({ chronicleId, beats }: { chronicleId: number; beats: BeatSummary[] }) {
-  const river = useApi<River>(`/api/chronicles/${chronicleId}/river`);
+function PacingSection({ chronicleId, beats }: SectionProps) {
   return (
     <>
       <p>
@@ -83,9 +90,45 @@ function PacingSection({ chronicleId, beats }: { chronicleId: number; beats: Bea
         beat; tension is how much of it rests on stories that are building up, with a development step filled
         and the payoff still open. Both are read from the readings&apos; shares, as in the story river.
       </p>
-      {river.status === "loading" && <p>Loading…</p>}
-      {river.status === "error" && <p role="alert">Could not load the pacing.</p>}
-      {river.status === "ready" && <PacingView beats={beats} river={river.data} />}
+      <WithRiver chronicleId={chronicleId} name="pacing">
+        {(river) => <PacingView beats={beats} river={river} />}
+      </WithRiver>
     </>
   );
+}
+
+function EvidenceSection({ chronicleId, beats }: SectionProps) {
+  return (
+    <>
+      <p>
+        Every beat against the competing readings, as in Heuer&apos;s analysis of competing hypotheses: a cell
+        names the steps a beat filled for a reading, or its refutation. A beat that tells the readings apart
+        carries the plot; one that fits every reading proves little; one that supports none of them sets the
+        scene or misleads.
+      </p>
+      <WithRiver chronicleId={chronicleId} name="evidence">
+        {(river) => <EvidenceView beats={beats} river={river} />}
+      </WithRiver>
+    </>
+  );
+}
+
+/** The views drawn from the river: each shows itself once the river has loaded. */
+function WithRiver({
+  chronicleId,
+  name,
+  children,
+}: {
+  chronicleId: number;
+  name: string;
+  children: (river: River) => ReactNode;
+}) {
+  const river = useApi<River>(`/api/chronicles/${chronicleId}/river`);
+  if (river.status === "loading") {
+    return <p>Loading…</p>;
+  }
+  if (river.status === "error") {
+    return <p role="alert">Could not load the {name}.</p>;
+  }
+  return children(river.data);
 }

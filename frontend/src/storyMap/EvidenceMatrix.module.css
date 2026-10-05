@@ -1,0 +1,26 @@
+.reading {
+  border-top: 4px solid var(--reading-color);
+}
+
+.row[data-evidence="tells them apart"] td:last-child {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.row[data-evidence="supports none"] td {
+  color: var(--ink-faint);
+}
+
+.scroll {
+  overflow-x: auto;
+}
+
+.beat {
+  min-width: 16rem;
+}
+
+.refuted {
+  font-style: italic;
+  font-weight: 600;
+  color: var(--accent);
+}

@@ -31,7 +31,8 @@ How to read it:
 (**Hidden crime**, **Other readings**, **Only the game master holds it** and the marks), the list of
 beats and four rivers headed **All beats**, **Anna**, **Ben** and **Clara**. **Story map** is marked
 in the chronicle's navigation, and **Story river** in the story map's views; the other views,
-**Knowledge map** and **Pacing**, are described in `knowledge-map.md` and `pacing.md`.
+**Knowledge map**, **Pacing** and **Evidence**, are described in `knowledge-map.md`, `pacing.md`
+and `evidence.md`.
 
 ## See what only the game master knows
 1. On the story map of **The Broken Jug (an adventure)**, look at the **All beats** column.
