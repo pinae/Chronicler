@@ -499,6 +499,10 @@ export interface components {
       shares: components["schemas"]["ShareOut"][];
       /** Other */
       other: number;
+      /** Surprise */
+      surprise: number;
+      /** Tension */
+      tension: number;
     };
     /** RiverOut */
     RiverOut: {

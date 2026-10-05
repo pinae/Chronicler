@@ -5,11 +5,14 @@ master holds, and what happened to each thread when.
 A thread is a reading together with the readings refined from it, named by its core: the reading it
 started as. A reading's share at t is exp(weight) over the sum for all readings held at t, reading the
 lattice weight as a log-score of plausibility.
+
+The pacing of every beat (§6): its surprise, how much the readings' shares moved, and its tension, the
+share of the readings building towards a payoff they have not reached.
 """
 
 import math
 from collections.abc import Iterable, Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from chronicle.models import Chronicle, Player
 from matching.engine import COMPLETE, LIVE, REFUTED
@@ -48,6 +51,8 @@ class Moment:
     shares: Mapping[int, ThreadShare]  # thread id -> its share at t
     other: float  # the share of the readings outside the threads
     held: bool  # whether the audience holds any reading at t
+    surprise: float = 0.0
+    tension: float = 0.0
 
 
 @dataclass(frozen=True)
@@ -96,15 +101,24 @@ def audience_river(
     """`held_by_players` (the game master's column only): what the players hold at each t."""
     every_reading = {hypothesis.id: hypothesis for hypothesis in lattices[-1].hypotheses}
     core_of = cores(every_reading.values())
-    shares_by_t = [thread_shares(held(lattice), core_of) for lattice in lattices]
+    held_by_t = [held(lattice) for lattice in lattices]
+    reading_shares_by_t = [reading_shares(readings) for readings in held_by_t]
+    shares_by_t = [
+        thread_shares(readings, shares, core_of)
+        for readings, shares in zip(held_by_t, reading_shares_by_t, strict=True)
+    ]
     chosen = strongest_threads(shares_by_t, every_reading)
-    definitions = schema_definitions({every_reading[core].schema for core in chosen})
+    definitions = schema_definitions({reading.schema for reading in every_reading.values()})
     threads = tuple(
         thread_of(core, every_reading, core_of, last_strongest(core, shares_by_t), definitions)
         for core in chosen
     )
     moments = tuple(
-        moment(t, shares_by_t[t], threads, held_by_players[t] if held_by_players else None)
+        replace(
+            moment(t, shares_by_t[t], threads, held_by_players[t] if held_by_players else None),
+            surprise=surprise(reading_shares_by_t[t - 1], reading_shares_by_t[t]) if t > 0 else 0.0,
+            tension=tension(held_by_t[t], reading_shares_by_t[t], definitions),
+        )
         for t in range(len(lattices))
     )
     return AudienceRiver(name, player, threads, moments, events_of(threads, every_reading))
@@ -155,23 +169,52 @@ class FamilyShare:
     strongest: LatticeHypothesis
 
 
-def thread_shares(
-    readings: Sequence[LatticeHypothesis], core_of: Mapping[int, int]
-) -> dict[int, FamilyShare]:
-    """Per core: the summed share of its readings held at t, and the strongest of them."""
+def reading_shares(readings: Sequence[LatticeHypothesis]) -> dict[int, float]:
+    """Each reading's plausibility against all readings held at t."""
     plausibility = {reading.id: math.exp(reading.weight) for reading in readings}
     total = sum(plausibility.values())
+    return {reading: value / total for reading, value in plausibility.items()}
+
+
+def thread_shares(
+    readings: Sequence[LatticeHypothesis], shares: Mapping[int, float], core_of: Mapping[int, int]
+) -> dict[int, FamilyShare]:
+    """Per core: the summed share of its readings held at t, and the strongest of them."""
     families: dict[int, FamilyShare] = {}
     for reading in readings:
         core = core_of[reading.id]
-        share = plausibility[reading.id] / total
         known = families.get(core)
         if known is None:
-            families[core] = FamilyShare(share, reading)
+            families[core] = FamilyShare(shares[reading.id], reading)
         else:
             stronger = reading if reading.weight > known.strongest.weight else known.strongest
-            families[core] = FamilyShare(known.share + share, stronger)
+            families[core] = FamilyShare(known.share + shares[reading.id], stronger)
     return families
+
+
+def surprise(before: Mapping[int, float], after: Mapping[int, float]) -> float:
+    """How much belief moved: half the summed change of every reading's share, from 0 (nothing moved)
+    to 1 (all of it). The first readings an audience holds surprise nobody."""
+    if not before:
+        return 0.0
+    readings = before.keys() | after.keys()
+    return sum(abs(after.get(reading, 0.0) - before.get(reading, 0.0)) for reading in readings) / 2
+
+
+def tension(
+    readings: Sequence[LatticeHypothesis],
+    shares: Mapping[int, float],
+    definitions: Mapping[str, SchemaDefinition],
+) -> float:
+    """The share of the readings that are building up: a development step filled, no payoff yet."""
+    return sum(
+        shares[reading.id] for reading in readings if building_up(reading, definitions[reading.schema])
+    )
+
+
+def building_up(reading: LatticeHypothesis, definition: SchemaDefinition) -> bool:
+    phases = {definition.step(fill.step_id).phase for fill in reading.fills}
+    return "development" in phases and "payoff" not in phases
 
 
 def strongest_threads(

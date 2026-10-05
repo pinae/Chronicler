@@ -18,10 +18,10 @@ const COLUMN: RiverColumn = {
   name: "All beats",
   threads: [thread(7, "betrayal"), thread(9, "hidden_crime")],
   moments: [
-    { t: 0, shares: [], other: 0 },
-    { t: 1, shares: [share(7, 1)], other: 0 },
-    { t: 2, shares: [share(7, 0.75), share(9, 0.25, true)], other: 0 },
-    { t: 3, shares: [share(9, 0.5, true)], other: 0.5 },
+    { t: 0, shares: [], other: 0, surprise: 0, tension: 0 },
+    { t: 1, shares: [share(7, 1)], other: 0, surprise: 0, tension: 0 },
+    { t: 2, shares: [share(7, 0.75), share(9, 0.25, true)], other: 0, surprise: 0, tension: 0 },
+    { t: 3, shares: [share(9, 0.5, true)], other: 0.5, surprise: 0, tension: 0 },
   ],
   events: [
     { t: 2, thread: 9, kind: "filled", step: "crime" },

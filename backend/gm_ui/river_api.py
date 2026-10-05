@@ -35,6 +35,8 @@ class MomentOut(Schema):
     t: int
     shares: list[ShareOut]
     other: float
+    surprise: float  # how much the readings' shares moved since the beat before, 0..1
+    tension: float  # the share of the readings with development but no payoff yet, 0..1
 
 
 class EventOut(Schema):
@@ -101,6 +103,8 @@ def moment_out(moment: Moment) -> MomentOut:
             for thread, share in moment.shares.items()
         ],
         other=moment.other,
+        surprise=moment.surprise,
+        tension=moment.tension,
     )
 
 

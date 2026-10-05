@@ -58,6 +58,10 @@ def test_every_beat_has_a_moment_with_the_threads_shares(client, steward):
     last = game_master["moments"][-1]
     assert sum(share["share"] for share in last["shares"]) + last["other"] == pytest.approx(1.0)
     assert set(last["shares"][0]) == {"thread", "share", "status", "secret"}
+    assert (last["surprise"], last["tension"]) == (
+        pytest.approx(0.0, abs=0.05),
+        0.0,
+    )  # the steward's reveal is over
 
 
 def test_events_name_their_thread_kind_and_step(client, steward):

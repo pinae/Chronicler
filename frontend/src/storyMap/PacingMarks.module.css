@@ -1,0 +1,10 @@
+.tension {
+  fill: var(--brass);
+  fill-opacity: 0.35;
+  stroke: var(--ink-faint);
+  stroke-width: 1.5;
+}
+
+.surprise {
+  fill: var(--accent);
+}

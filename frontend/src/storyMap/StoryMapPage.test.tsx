@@ -58,10 +58,22 @@ const RIVER = {
       name: "All beats",
       threads: [JUDGE],
       moments: [
-        { t: 0, shares: [], other: 0 },
-        { t: 1, shares: [], other: 0 },
-        { t: 2, shares: [{ thread: 11, share: 0.75, status: "live", secret: true }], other: 0.25 },
-        { t: 3, shares: [{ thread: 11, share: 1, status: "live", secret: false }], other: 0 },
+        { t: 0, shares: [], other: 0, surprise: 0, tension: 0 },
+        { t: 1, shares: [], other: 0, surprise: 0, tension: 0 },
+        {
+          t: 2,
+          shares: [{ thread: 11, share: 0.75, status: "live", secret: true }],
+          other: 0.25,
+          surprise: 0,
+          tension: 0,
+        },
+        {
+          t: 3,
+          shares: [{ thread: 11, share: 1, status: "live", secret: false }],
+          other: 0,
+          surprise: 0.25,
+          tension: 1,
+        },
       ],
       events: [
         { t: 2, thread: 11, kind: "filled", step: "crime" },
@@ -73,10 +85,16 @@ const RIVER = {
       name: "Anna",
       threads: [RUPRECHT],
       moments: [
-        { t: 0, shares: [], other: 0 },
-        { t: 1, shares: [], other: 0 },
-        { t: 2, shares: [], other: 0 },
-        { t: 3, shares: [{ thread: 12, share: 1, status: "live", secret: false }], other: 0 },
+        { t: 0, shares: [], other: 0, surprise: 0, tension: 0 },
+        { t: 1, shares: [], other: 0, surprise: 0, tension: 0 },
+        { t: 2, shares: [], other: 0, surprise: 0, tension: 0 },
+        {
+          t: 3,
+          shares: [{ thread: 12, share: 1, status: "live", secret: false }],
+          other: 0,
+          surprise: 0,
+          tension: 0,
+        },
       ],
       events: [{ t: 3, thread: 12, kind: "voiced", step: null }],
     },
@@ -110,9 +128,14 @@ function showStoryMap(path = "/chronicles/3/map", knowledgeMap: unknown = KNOWLE
       <Routes>
         <Route path="/chronicles/:chronicleId/map" element={<StoryMapPage />} />
         <Route path="/chronicles/:chronicleId/map/knowledge" element={<StoryMapPage view="knowledge" />} />
+        <Route path="/chronicles/:chronicleId/map/pacing" element={<StoryMapPage view="pacing" />} />
       </Routes>
     </MemoryRouter>,
   );
+}
+
+function showPacing() {
+  showStoryMap("/chronicles/3/map/pacing");
 }
 
 function showKnowledgeMap(knowledgeMap: unknown = KNOWLEDGE_MAP) {
@@ -302,5 +325,59 @@ describe("StoryMapPage", () => {
     expect(
       await screen.findByText("Nobody plays at this table, so there is no knowledge to map."),
     ).toBeInTheDocument();
+  });
+
+  it("switches to the pacing of the story", async () => {
+    showStoryMap();
+    const views = await screen.findByRole("navigation", { name: "Story map views" });
+
+    await userEvent.click(within(views).getByRole("link", { name: "Pacing" }));
+
+    expect(await screen.findByRole("img", { name: "Pacing: All beats" })).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "Pacing: Anna" })).toBeInTheDocument();
+  });
+
+  it("shows every beat's surprise and tension for each audience", async () => {
+    showPacing();
+
+    const gameMaster = await screen.findByRole("img", { name: "Pacing: All beats" });
+
+    // Each row's tooltip
+    expect(within(gameMaster).getByText("t = 3, All beats: surprise 25%, tension 100%")).toBeInTheDocument();
+    expect(within(gameMaster).getByText("t = 2, All beats: surprise 0%, tension 0%")).toBeInTheDocument();
+  });
+
+  it("explains surprise and tension in a legend", async () => {
+    showPacing();
+
+    const legend = await screen.findByRole("list", { name: "Legend" });
+    const entries = within(legend)
+      .getAllByRole("listitem")
+      .map((item) => item.textContent);
+    expect(entries).toEqual([
+      "Tension: belief in stories building towards a payoff",
+      "Surprise: how much belief moved at this beat",
+    ]);
+  });
+
+  it("shows the pacing as a table", async () => {
+    showPacing();
+
+    await userEvent.click(await screen.findByRole("button", { name: "Show as table" }));
+
+    const table = screen.getByRole("table", { name: "Pacing" });
+    const rows = within(table)
+      .getAllByRole("row")
+      .map((row) => [...row.querySelectorAll("th, td")].map((cell) => cell.textContent));
+    expect(rows).toEqual([
+      ["t", "All beats: surprise", "All beats: tension", "Anna: surprise", "Anna: tension"],
+      ["1", "0%", "0%", "0%", "0%"],
+      ["2", "0%", "0%", "0%", "0%"],
+      ["3", "25%", "100%", "0%", "0%"],
+    ]);
+
+    await userEvent.click(screen.getByRole("button", { name: "Show as chart" }));
+
+    expect(screen.getByRole("img", { name: "Pacing: All beats" })).toBeInTheDocument();
   });
 });

@@ -1,0 +1,17 @@
+.chart {
+  display: block;
+}
+
+.half {
+  stroke: var(--rule);
+  stroke-dasharray: 3 3;
+}
+
+.row {
+  fill: var(--ink);
+  fill-opacity: 0;
+}
+
+.row:hover {
+  fill-opacity: 0.08;
+}

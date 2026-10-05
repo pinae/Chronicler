@@ -4,6 +4,7 @@ import type { BeatSummary, ChronicleDetail, KnowledgeMap, River } from "../api/t
 import { useApi } from "../api/useApi";
 import { ChronicleFrame } from "../shell/ChronicleFrame";
 import { KnowledgeView } from "./KnowledgeView";
+import { PacingView } from "./PacingView";
 import { RiverView } from "./RiverView";
 import { StoryMapViews, type StoryMapViewName } from "./StoryMapViews";
 
@@ -34,6 +35,9 @@ function StoryMapScreen({ chronicle, view }: { chronicle: ChronicleDetail; view:
       )}
       {beats.status === "ready" && view === "knowledge" && (
         <KnowledgeSection chronicleId={chronicle.id} beats={beats.data} />
+      )}
+      {beats.status === "ready" && view === "pacing" && (
+        <PacingSection chronicleId={chronicle.id} beats={beats.data} />
       )}
     </ChronicleFrame>
   );
@@ -66,6 +70,22 @@ function KnowledgeSection({ chronicleId, beats }: { chronicleId: number; beats: 
       {knowledgeMap.status === "loading" && <p>Loading…</p>}
       {knowledgeMap.status === "error" && <p role="alert">Could not load the knowledge map.</p>}
       {knowledgeMap.status === "ready" && <KnowledgeView beats={beats} knowledgeMap={knowledgeMap.data} />}
+    </>
+  );
+}
+
+function PacingSection({ chronicleId, beats }: { chronicleId: number; beats: BeatSummary[] }) {
+  const river = useApi<River>(`/api/chronicles/${chronicleId}/river`);
+  return (
+    <>
+      <p>
+        How each beat moved each audience. Surprise is how much of the engine&apos;s belief moved at that
+        beat; tension is how much of it rests on stories that are building up, with a development step filled
+        and the payoff still open. Both are read from the readings&apos; shares, as in the story river.
+      </p>
+      {river.status === "loading" && <p>Loading…</p>}
+      {river.status === "error" && <p role="alert">Could not load the pacing.</p>}
+      {river.status === "ready" && <PacingView beats={beats} river={river.data} />}
     </>
   );
 }

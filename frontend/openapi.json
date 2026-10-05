@@ -1221,9 +1221,17 @@
           "other": {
             "title": "Other",
             "type": "number"
+          },
+          "surprise": {
+            "title": "Surprise",
+            "type": "number"
+          },
+          "tension": {
+            "title": "Tension",
+            "type": "number"
           }
         },
-        "required": ["t", "shares", "other"],
+        "required": ["t", "shares", "other", "surprise", "tension"],
         "title": "MomentOut",
         "type": "object"
       },

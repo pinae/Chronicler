@@ -1,11 +1,12 @@
-"""The story river's data (WP-067): threads, their shares at every beat, secrets and events."""
+"""The story river's data (WP-067): threads, their shares at every beat, secrets and events; the
+pacing of every beat (WP-071)."""
 
 import math
 
 import pytest
 
 from evaluation.replay import replay_story
-from gm_ui.river import MAX_THREADS, Event, river_of
+from gm_ui.river import MAX_THREADS, Event, river_of, surprise
 
 pytestmark = pytest.mark.django_db
 
@@ -156,3 +157,42 @@ def test_a_theory_nothing_supports_waits_for_every_step_since_no_beat(broken_jug
     ruprecht_did_it = thread(entity_ids, column(rivers, "Anna"), "hidden_crime", C="ruprecht", V="marthe")
 
     assert (ruprecht_did_it.open_steps, ruprecht_did_it.waiting_since) == (("crime", "discovery"), None)
+
+
+def test_surprise_is_half_the_summed_change_of_the_readings_shares():
+    assert surprise({1: 0.5, 2: 0.5}, {1: 0.2, 2: 0.3, 3: 0.5}) == pytest.approx(0.5)
+    assert surprise({1: 0.5, 2: 0.5}, {1: 0.5, 2: 0.5}) == 0.0
+    assert surprise({1: 1.0}, {2: 1.0}) == pytest.approx(1.0)
+
+
+def test_the_first_readings_surprise_nobody():
+    assert surprise({}, {1: 0.4, 2: 0.6}) == 0.0
+
+
+def test_a_crime_covered_up_but_not_yet_discovered_holds_the_game_master_in_tension(broken_jug):
+    _, rivers = broken_jug
+
+    tension = {moment.t: moment.tension for moment in column(rivers, "All beats").moments}
+
+    assert {tension[t] for t in range(16)} == {0.0}  # only the crime itself, a setup, is known
+    assert min(tension[t] for t in range(16, 26)) > 0.4  # the judge covers it up from t=16
+    assert max(tension[t] for t in range(26, 33)) < 0.2  # Eve names him at t=26
+
+
+def test_the_confession_surprises_every_player_and_releases_their_tension(broken_jug):
+    _, rivers = broken_jug
+
+    for name in ("Anna", "Ben", "Clara"):
+        before, confession = column(rivers, name).moments[25:27]
+        assert before.tension > 0.8, name
+        assert confession.tension < 0.1, name
+        assert confession.surprise > 0.3, name
+
+
+def test_pacing_stays_between_nothing_and_everything(macbeth):
+    _, rivers = macbeth
+
+    for river in rivers:
+        for moment in river.moments:
+            assert 0.0 <= moment.surprise <= 1.0, (river.name, moment.t)
+            assert 0.0 <= moment.tension <= 1.0, (river.name, moment.t)
