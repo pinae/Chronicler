@@ -1,0 +1,31 @@
+# Prophecy loophole: a seer foretells what someone is ("safe from any man born of woman"), the
+# person relies on it, and learns what someone else is: the loophole through which the prophecy
+# comes true in an unexpected way (Macduff; the oracle's answer to Croesus). The fulfilled prophecy
+# of a promised thing is `prophecy`.
+slug: prophecy_loophole
+name: Prophecy loophole
+roles: {S: character, H: character, E: character}
+prior: -4.0
+payoff_steps: [loophole]
+constraints:
+  - {type: distinct, roles: [S, H]}
+  - {type: distinct, roles: [H, E]}
+  - {type: before, steps: [foretelling, loophole]}
+steps:
+  - step_id: foretelling
+    phase: setup
+    trigger: true
+    patterns:
+      - {pred: says, args: {who: $S, what: {pred: is, args: {who: $H}}}}
+    weight: 0.5
+  - step_id: reliance
+    phase: development
+    required: false
+    patterns:
+      - {pred: believes, args: {who: $H, what: {pred: is, args: {who: $H}}}}
+    weight: 0.5
+  - step_id: loophole
+    phase: payoff
+    patterns:
+      - {pred: learns, args: {who: $H, what: {pred: is, args: {who: $E}}}}
+    weight: 3.0

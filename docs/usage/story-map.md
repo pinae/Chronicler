@@ -60,7 +60,8 @@ it at this beat (**This beat: cover_up filled**).
 
 **Result:** in every column, the bands that could be the same story (the same schema, and the same
 characters wherever both cast a role) stay bright; the others fade. In **Anna**'s column, her own
-theory **C = Ruprecht** fades, while Walter's suspicion of the judge stays bright.
+theory **C = Ruprecht**, the twists she could still expect (such as **Exposed lie: L = Judge Adam**)
+and the other readings fade, while Walter's suspicion of the judge stays bright.
 
 ## See a thread's steps
 1. On the story map of **The Broken Jug (an adventure)**, click the middle of the **All beats**

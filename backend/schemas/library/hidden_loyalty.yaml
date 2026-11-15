@@ -1,0 +1,41 @@
+# Hidden loyalty, the mirror of an exposed lie: a character distrusts someone or takes them for an
+# enemy, and learns that this person secretly helped, protected, saved or allied with someone
+# (Snape). Trust grows instead of breaking.
+slug: hidden_loyalty
+name: Hidden loyalty
+roles: {H: character, P: character, W: character}
+prior: -4.0
+payoff_steps: [revelation]
+constraints:
+  - {type: distinct, roles: [H, W]}
+  - {type: distinct, roles: [H, P]}
+  - {type: before, steps: [suspicion, revelation]}
+  - {type: not_knows, role: W, step: service, until: revelation}
+steps:
+  - step_id: suspicion
+    phase: setup
+    trigger: true
+    patterns:
+      - {pred: distrusts, args: {who: $W, whom: $H}}
+      - {pred: believes, args: {who: $W, what: {pred: opposes, args: {who: $H}}}}
+      - {pred: believes, args: {who: $W, what: {pred: harms, args: {who: $H}}}}
+    weight: 0.5
+  - step_id: service
+    phase: development
+    required: false
+    repeatable: true
+    patterns:
+      - {pred: protects, args: {who: $H, whom: $P}}
+      - {pred: helps, args: {who: $H, whom: $P}}
+      - {pred: saves, args: {who: $H, whom: $P}}
+      - {pred: allies, args: {who: $H, whom: $P}}
+    weight: 0.5
+  - step_id: revelation
+    phase: payoff
+    patterns:
+      - {pred: learns, args: {who: $W, what: $service}}
+      - {pred: learns, args: {who: $W, what: {pred: protects, args: {who: $H, whom: $P}}}}
+      - {pred: learns, args: {who: $W, what: {pred: helps, args: {who: $H, whom: $P}}}}
+      - {pred: learns, args: {who: $W, what: {pred: saves, args: {who: $H, whom: $P}}}}
+      - {pred: learns, args: {who: $W, what: {pred: allies, args: {who: $H, whom: $P}}}}
+    weight: 3.0

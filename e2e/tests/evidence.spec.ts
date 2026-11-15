@@ -71,9 +71,12 @@ test("Open the evidence matrix", async ({ page }) => {
     "t",
     "Beat",
     `${JUDGE_HARMED_MARTHE} (90%)`,
-    `${JUDGE_HARMED_EVE} (10%)`,
+    `${JUDGE_HARMED_EVE} (9%)`,
     `${RUPRECHT} (0%)`,
     `${LEBRECHT} (0%)`,
+    "Exposed lie: L = Judge Adam, D = ? (0%)",
+    "Unreliable narrator: N = Judge Adam (0%)",
+    "Revised belief: B = Ruprecht, X = Lebrecht (0%)",
     "Evidence",
   ]);
 });
@@ -114,8 +117,8 @@ test("Look back to an earlier beat", async ({ page }) => {
   await expect(matrix.getByRole("row")).toHaveCount(21);
   const headers = await matrix.getByRole("columnheader").allTextContents();
   expect(headers.slice(2, 4)).toEqual([
-    `${JUDGE_HARMED_MARTHE} (68%)`,
-    `${JUDGE_HARMED_EVE} (25%)`,
+    `${JUDGE_HARMED_MARTHE} (64%)`,
+    `${JUDGE_HARMED_EVE} (24%)`,
   ]);
 });
 

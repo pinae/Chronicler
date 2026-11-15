@@ -186,11 +186,17 @@ test("The game master knows from the first scene", async ({ page }) => {
   ).toContainText("crime (t=2)");
 });
 
-test("The players start with nothing", async ({ page }) => {
+test("The players start with nothing but doubts", async ({ page }) => {
   await openLattice(page, BROKEN_JUG);
   await view(page, "Anna", "15");
 
-  await expect(page.getByText("No hypotheses at this point")).toBeVisible();
+  await expect(row(page, "Exposed lie", "L = Judge Adam, D = ?")).toContainText(
+    "-3.75",
+  );
+  await expect(
+    row(page, "Exposed lie", "L = Frau Marthe, D = ?"),
+  ).toContainText("-3.75");
+  await expect(schemaTable(page, "Hidden crime")).toHaveCount(0);
 
   await page.getByLabel("Up to beat").fill("16");
 

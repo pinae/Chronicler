@@ -14,7 +14,7 @@ measures, both from nothing at the column's left edge to all of the engine's bel
 
 Both are read from the readings' shares, as in the story river (`story-map.md`); with a language
 model the reader's beliefs could refine them. Pointing at a row shows a tooltip such as
-**t = 26, Anna: surprise 59%, tension 7%**. The design and its sources (Ely, Frankel and Kamenica's
+**t = 26, Anna: surprise 61%, tension 6%**. The design and its sources (Ely, Frankel and Kamenica's
 suspense and surprise) are in `docs/research/visualizations.md` (§6).
 
 ## Before you start
@@ -39,8 +39,10 @@ Eve names the judge; beat 26 has a long surprise bar in every column.
 2. Click **Show as table**.
 
 **Result:** the table **Pacing** has, per beat, a surprise and a tension column for every audience.
-In the row of beat 25, the tension of every player is above 80% (**Ben: tension** is **100%**); in
-the row of beat 26, it is below 10%, and every player's surprise is above 30%.
+In the row of beat 25, the tension of every player is above 60% (**Ben: tension** is **82%**); in
+the row of beat 26, it is below 10%, and every player's surprise is above 30%. The rest of the
+belief before the confession rests on twists the players could still expect, such as the judge
+lying.
 
 ## See a twist reach one player
 1. Open **Macbeth (a session)**, click **Story map**, then **Pacing**, then **Show as table**.

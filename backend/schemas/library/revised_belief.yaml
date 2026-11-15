@@ -1,0 +1,37 @@
+# Revised belief: a character's picture of someone (what they are, where they are, what they want)
+# is replaced by a better one when the character learns the truth. Covers the reveals that the
+# world or the time order was not what it seemed (The Others, Planet of the Apes, Arrival): the
+# belief is then about the believer's own state or place.
+slug: revised_belief
+name: Revised belief
+roles: {B: character, X: character}
+prior: -4.0
+payoff_steps: [revelation]
+constraints:
+  - {type: before, steps: [belief, revelation]}
+  - {type: not_knows, role: B, step: fact, until: revelation}
+steps:
+  - step_id: belief
+    phase: setup
+    trigger: true
+    patterns:
+      - {pred: believes, args: {who: $B, what: {pred: is, args: {who: $X}}}}
+      - {pred: believes, args: {who: $B, what: {pred: is_at, args: {who: $X}}}}
+      - {pred: believes, args: {who: $B, what: {pred: wants, args: {who: $X}}}}
+    weight: 0.5
+  - step_id: fact
+    phase: development
+    required: false
+    patterns:
+      - {pred: is, args: {who: $X}}
+      - {pred: is_at, args: {who: $X}}
+      - {pred: wants, args: {who: $X}}
+    weight: 0.5
+  - step_id: revelation
+    phase: payoff
+    patterns:
+      - {pred: learns, args: {who: $B, what: {pred: is, args: {who: $X}}}}
+      - {pred: learns, args: {who: $B, what: {pred: is_at, args: {who: $X}}}}
+      - {pred: learns, args: {who: $B, what: {pred: wants, args: {who: $X}}}}
+      - {pred: learns, args: {who: $B, what: $fact}}
+    weight: 3.0

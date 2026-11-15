@@ -1,0 +1,33 @@
+# Exposed lie: a character makes a claim, perhaps to someone who trusts them, and the listener (or
+# anyone) stops believing that very claim or learns that the liar hid something. Without negation
+# (concept §4.1) the exposure is read from these explicit beats, not from a beat that contradicts
+# the claim.
+slug: exposed_lie
+name: Exposed lie
+roles: {L: character, D: character}
+prior: -4.0
+payoff_steps: [exposure]
+constraints:
+  - {type: distinct, roles: [L, D]}
+  - {type: before, steps: [claim, exposure]}
+steps:
+  - step_id: claim
+    phase: setup
+    trigger: true
+    repeatable: true
+    patterns:
+      - {pred: says, args: {who: $L, to: $D}}
+      - {pred: says, args: {who: $L}}
+    weight: 0.25
+  - step_id: trust
+    phase: development
+    required: false
+    patterns:
+      - {pred: trusts, args: {who: $D, whom: $L}}
+    weight: 0.5
+  - step_id: exposure
+    phase: payoff
+    patterns:
+      - {pred: distrusts, args: {who: $D, whom: $L, what: $claim}}
+      - {pred: learns, args: {who: $D, what: {pred: hides, args: {who: $L}}}}
+    weight: 3.0

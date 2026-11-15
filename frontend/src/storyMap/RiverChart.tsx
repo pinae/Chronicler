@@ -102,9 +102,17 @@ export function RiverChart({ column, width, rowHeight, highlighted, onHighlight,
             </g>
           );
         })}
-        {marks.map((mark) => (
-          <GlyphMark key={`${mark.threadId}-${mark.t}-${mark.kind}`} kind={mark.kind} x={mark.x} y={mark.y} />
-        ))}
+        {/* Marks lie on their band: pointing at one points at the band, whose tooltip names the event. */}
+        <g pointerEvents="none">
+          {marks.map((mark) => (
+            <GlyphMark
+              key={`${mark.threadId}-${mark.t}-${mark.kind}`}
+              kind={mark.kind}
+              x={mark.x}
+              y={mark.y}
+            />
+          ))}
+        </g>
       </svg>
       {pointed && <BandTooltip column={column} pointed={pointed} marks={marks} />}
     </div>

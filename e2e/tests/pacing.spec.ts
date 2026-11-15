@@ -75,11 +75,11 @@ test("Feel the confession", async ({ page }) => {
   const before = await pacingRow(table, 25);
   const confession = await pacingRow(table, 26);
   for (const player of PLAYERS) {
-    expect(before[`${player}: tension`]).toBeGreaterThan(0.8);
+    expect(before[`${player}: tension`]).toBeGreaterThan(0.6);
     expect(confession[`${player}: tension`]).toBeLessThan(0.1);
     expect(confession[`${player}: surprise`]).toBeGreaterThan(0.3);
   }
-  expect(before["Ben: tension"]).toBe(1);
+  expect(before["Ben: tension"]).toBe(0.82);
 });
 
 test("See a twist reach one player", async ({ page }) => {

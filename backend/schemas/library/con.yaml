@@ -1,0 +1,40 @@
+# Con: a mark trusts a schemer, the schemer is secretly allied with an accomplice, the mark hands
+# something over, and someone learns of the alliance: the reveal that the whole story was a plan
+# (The Sting).
+slug: con
+name: Con
+roles: {K: character, M: character, A: character}
+prior: -4.0
+payoff_steps: [exposure]
+constraints:
+  - {type: distinct, roles: [K, M]}
+  - {type: distinct, roles: [K, A]}
+  - {type: distinct, roles: [M, A]}
+  - {type: not_knows, role: M, step: alliance, until: exposure}
+steps:
+  - step_id: approach
+    phase: setup
+    trigger: true
+    patterns:
+      - {pred: trusts, args: {who: $M, whom: $K}}
+      - {pred: promises, args: {who: $K, whom: $M}}
+    weight: 0.5
+  - step_id: alliance
+    phase: development
+    required: false
+    patterns:
+      - {pred: allies, args: {who: $K, whom: $A}}
+    weight: 0.5
+  - step_id: take
+    phase: development
+    patterns:
+      - {pred: gives, args: {who: $M, to: $K}}
+      - {pred: takes, args: {who: $K, from: $M}}
+      - {pred: steals, args: {who: $K, from: $M}}
+    weight: 1.0
+  - step_id: exposure
+    phase: payoff
+    patterns:
+      - {pred: learns, args: {what: $alliance}}
+      - {pred: learns, args: {what: {pred: allies, args: {who: $K, whom: $A}}}}
+    weight: 3.0

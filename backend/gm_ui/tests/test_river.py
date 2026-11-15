@@ -195,7 +195,8 @@ def test_the_confession_surprises_every_player_and_releases_their_tension(broken
 
     for name in ("Anna", "Ben", "Clara"):
         before, confession = column(rivers, name).moments[25:27]
-        assert before.tension > 0.8, name
+        # Most of the belief, not all: the players also weigh twists such as the judge lying (WP-074).
+        assert before.tension > 0.6, name
         assert confession.tension < 0.1, name
         assert confession.surprise > 0.3, name
 

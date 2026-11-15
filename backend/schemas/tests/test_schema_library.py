@@ -121,7 +121,14 @@ def test_every_schema_file_in_the_library_parses(settings):
     assert [definition.slug for definition in read_library()] == [
         "betrayal",
         "blame",
+        "con",
+        "exposed_lie",
+        "false_attribution",
         "hidden_crime",
+        "hidden_loyalty",
         "prophecy",
+        "prophecy_loophole",
+        "revised_belief",
+        "unreliable_narrator",
         "usurpation",
     ]

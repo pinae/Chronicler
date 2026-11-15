@@ -114,7 +114,8 @@ test("Compare the players", async ({ page }) => {
   await pointAtRow(page, "All beats", 20);
 
   const anna = river(page, "Anna");
-  await expect(anna.locator('path[data-dimmed="true"]')).toHaveCount(1);
+  // Her theory about Ruprecht, four twists and the other readings.
+  await expect(anna.locator('path[data-dimmed="true"]')).toHaveCount(6);
   await expect(
     anna.locator("path[data-testid^=band]:not([data-dimmed])"),
   ).toHaveCount(2);

@@ -47,7 +47,7 @@ other screens, which show the details.
 2. In `backend/`, run `uv run python manage.py migrate`.
 3. Run `uv run python manage.py load_schemas`.
 
-**Result:** `Loaded 5 schemas: betrayal, blame, hidden_crime, prophecy, usurpation`.
+**Result:** `Loaded 12 schemas: betrayal, blame, con, exposed_lie, false_attribution, hidden_crime, hidden_loyalty, prophecy, prophecy_loophole, revised_belief, unreliable_narrator, usurpation`.
 
 4. Run `uv run python manage.py replay macbeth --reader uniform --per-player`.
 5. Run `uv run python manage.py replay broken-jug --reader uniform --per-player`.
@@ -183,19 +183,21 @@ clerk; Clara plays Ruprecht, the accused. The game master plays everyone else, t
 **Why:** the game master's notes are beats like any other. The game master's lattice holds the
 truth from the start; the investigator is still open, because nobody has found out yet.
 
-### The players start with nothing
+### The players start with nothing but doubts
 1. On the lattice of **The Broken Jug (an adventure)**, choose **Anna** in **Seen by**.
 2. Set **Up to beat** to `15`.
 
-**Result:** the page says **No hypotheses at this point**.
+**Result:** there is no **Hidden crime** table. **Exposed lie** has the rows **L = Judge Adam, D = ?**
+and **L = Frau Marthe, D = ?**, each with weight **-3.75**.
 
 3. Set **Up to beat** to `16`.
 
 **Result:** **Hidden crime** has one row, **C = Ruprecht, V = Frau Marthe, I = ? (voiced)**, with
 weight **-2.00** and no filled steps.
 
-**Why:** Anna never saw the game master's notes. Her theory that Ruprecht did it is only a claim
-she believed; no beat supports it.
+**Why:** Anna never saw the game master's notes. Until beat 16 all she has heard are the judge's and
+Frau Marthe's claims, and any claim could be a lie: the twist schemas read that, but start weak.
+Her theory that Ruprecht did it is only a claim she believed; no beat supports it.
 
 ### A suspicion said aside stays with the player who said it
 1. On the lattice of **The Broken Jug (an adventure)**, choose **Ben** in **Seen by**.

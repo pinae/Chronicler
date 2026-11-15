@@ -1,0 +1,45 @@
+# False attribution: a witness believes someone did a deed (a gift, help, a harm) and learns that
+# someone else did it (Pip's benefactor is Magwitch, not Miss Havisham; Quirrell, not Snape).
+slug: false_attribution
+name: False attribution
+roles: {A: character, F: character, W: character}
+prior: -4.0
+payoff_steps: [correction]
+constraints:
+  - {type: distinct, roles: [A, F]}
+  - {type: before, steps: [misattribution, correction]}
+  - {type: not_knows, role: W, step: deed, until: correction}
+steps:
+  - step_id: misattribution
+    phase: setup
+    trigger: true
+    patterns:
+      - {pred: believes, args: {who: $W, what: {pred: gives, args: {who: $F}}}}
+      - {pred: believes, args: {who: $W, what: {pred: helps, args: {who: $F}}}}
+      - {pred: believes, args: {who: $W, what: {pred: saves, args: {who: $F}}}}
+      - {pred: believes, args: {who: $W, what: {pred: harms, args: {who: $F}}}}
+      - {pred: believes, args: {who: $W, what: {pred: kills, args: {who: $F}}}}
+      - {pred: believes, args: {who: $W, what: {pred: steals, args: {who: $F}}}}
+    weight: 0.5
+  - step_id: deed
+    phase: development
+    required: false
+    patterns:
+      - {pred: gives, args: {who: $A}}
+      - {pred: helps, args: {who: $A}}
+      - {pred: saves, args: {who: $A}}
+      - {pred: harms, args: {who: $A}}
+      - {pred: kills, args: {who: $A}}
+      - {pred: steals, args: {who: $A}}
+    weight: 0.5
+  - step_id: correction
+    phase: payoff
+    patterns:
+      - {pred: learns, args: {who: $W, what: $deed}}
+      - {pred: learns, args: {who: $W, what: {pred: gives, args: {who: $A}}}}
+      - {pred: learns, args: {who: $W, what: {pred: helps, args: {who: $A}}}}
+      - {pred: learns, args: {who: $W, what: {pred: saves, args: {who: $A}}}}
+      - {pred: learns, args: {who: $W, what: {pred: harms, args: {who: $A}}}}
+      - {pred: learns, args: {who: $W, what: {pred: kills, args: {who: $A}}}}
+      - {pred: learns, args: {who: $W, what: {pred: steals, args: {who: $A}}}}
+    weight: 3.0

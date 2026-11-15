@@ -27,9 +27,14 @@ design and its sources are in `docs/research/visualizations.md` (§4).
 **Result:** **Evidence** is marked in the story map's views. **Seen by** is **All beats** and **Up to
 beat** is **32**. The table **Evidence seen by All beats** has the columns
 **Hidden crime: C = Judge Adam, V = Frau Marthe, I = ? (90%)**,
-**Hidden crime: C = Judge Adam, V = Eve, I = ? (10%)**,
+**Hidden crime: C = Judge Adam, V = Eve, I = ? (9%)**,
 **Hidden crime: C = Ruprecht, V = Frau Marthe, I = ? (0%)**,
-**Hidden crime: C = Lebrecht, V = Frau Marthe, I = ? (0%)** and **Evidence**.
+**Hidden crime: C = Lebrecht, V = Frau Marthe, I = ? (0%)**,
+**Exposed lie: L = Judge Adam, D = ? (0%)**,
+**Unreliable narrator: N = Judge Adam (0%)**,
+**Revised belief: B = Ruprecht, X = Lebrecht (0%)** and **Evidence**. The last three are twists the
+story could still have taken (see the schema library's *Twists*); nothing beyond a claim or a
+belief supports them.
 
 ## Find the beats that carry the plot
 1. On the evidence matrix of **The Broken Jug (an adventure)**, look at the rows of beats 14, 19
@@ -47,8 +52,8 @@ beat** is **32**. The table **Evidence seen by All beats** has the columns
 1. On the same matrix, set **Up to beat** to `20`.
 
 **Result:** the table lists beats 1 to 20 only, and the judge's readings head it with their shares
-at beat 20: **Hidden crime: C = Judge Adam, V = Frau Marthe, I = ? (68%)** and
-**Hidden crime: C = Judge Adam, V = Eve, I = ? (25%)**.
+at beat 20: **Hidden crime: C = Judge Adam, V = Frau Marthe, I = ? (64%)** and
+**Hidden crime: C = Judge Adam, V = Eve, I = ? (24%)**.
 
 ## Weigh a player's evidence
 1. Open **Macbeth (a session)**, click **Story map**, then **Evidence**, and choose **Dora** in

@@ -1,0 +1,27 @@
+# Unreliable narrator: a narrator tells the audience their story, and the audience learns only
+# later of something the narrator did before telling it (The Murder of Roger Ackroyd). Unlike a
+# lie between characters, the one deceived is the audience, so every pattern asks what the players
+# know: a deed fills the reading only once the audience knows it, and it must predate the telling.
+slug: unreliable_narrator
+name: Unreliable narrator
+roles: {N: character}
+prior: -4.0
+payoff_steps: [deed]
+constraints:
+  - {type: before, steps: [deed, account]}
+steps:
+  - step_id: account
+    phase: setup
+    trigger: true
+    repeatable: true
+    patterns:
+      - {pred: says, args: {who: $N}, scope: {players_know: true}}
+    weight: 0.25
+  - step_id: deed
+    phase: payoff
+    patterns:
+      - {pred: kills, args: {who: $N}, scope: {players_know: true}}
+      - {pred: harms, args: {who: $N}, scope: {players_know: true}}
+      - {pred: steals, args: {who: $N}, scope: {players_know: true}}
+      - {pred: hides, args: {who: $N}, scope: {players_know: true}}
+    weight: 3.0

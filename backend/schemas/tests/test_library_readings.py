@@ -1,49 +1,18 @@
 """Each schema of the library reads the plot it is named for, on a few plain beats."""
 
 import pytest
-import yaml
 
-from matching.beats import PlainBeat
-from matching.engine import COMPLETE, LIVE, IncrementalMatcher, World
-from schemas.definitions import parse_schema
-from schemas.library import LIBRARY_DIR
+from matching.engine import COMPLETE, LIVE, World
+from schemas.tests import readings
+from schemas.tests.readings import beat, entity, proposition, reading
 
 KING, THANE, LORD, WITCH, CROWN = 1, 2, 3, 4, 5
 CHARACTERS = {KING: "character", THANE: "character", LORD: "character", WITCH: "character"}
 WORLD = World(entity_kinds={**CHARACTERS, CROWN: "object"})
 
 
-def library_schema(slug):
-    path = LIBRARY_DIR / f"{slug}.yaml"
-    return parse_schema(yaml.safe_load(path.read_text()), source=path.name)
-
-
-def entity(entity_id):
-    return {"entity": entity_id}
-
-
-def proposition(pred, **args):
-    return {"prop": {"pred": pred, "args": args}}
-
-
-def beat(t, pred, **args):
-    return PlainBeat(t=t, pred=pred, args=args)
-
-
 def run(slug, *beats):
-    matcher = IncrementalMatcher([library_schema(slug)])
-    for each in beats:
-        matcher.step(each, WORLD)
-    return matcher
-
-
-def reading(matcher, **binding):
-    [hypothesis] = [
-        hypothesis
-        for hypothesis in matcher.hypotheses
-        if all(hypothesis.binding[role] == entity_id for role, entity_id in binding.items())
-    ]
-    return hypothesis
+    return readings.run(slug, *beats, world=WORLD)
 
 
 def test_a_betrayer_who_kills_the_victim_has_done_the_harm():
