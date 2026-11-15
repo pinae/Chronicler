@@ -96,8 +96,9 @@ moment fill the column like a 100 % stacked bar, and flow smoothly from beat to 
 - **Thread identity.** A reading that gets more specific (the engine *refines* "someone killed
   Duncan" into "Macbeth killed Duncan, Macduff will find out") keeps its band: a band is a
   reading together with its refinements, labelled with its strongest member.
-- **At most seven bands per column**, the seven that are strongest at some beat; the rest form one
-  grey "other" band. Bands keep the order of their first appearance, so they do not jump.
+- **At most seven bands per column**, the seven whose best reading has the most evidence (the
+  highest weight) at some beat, not the largest share: a reading alone early on holds all of the
+  belief, however little supports it (WP-073). The rest form one grey "other" band. Bands keep the order of their first appearance, so they do not jump.
 - **Secret** (game master's column): hatched where no player holds the same reading. The hatching
   ends at the beat at which the first player learns enough to hold it; dramatic irony becomes a
   visible region.

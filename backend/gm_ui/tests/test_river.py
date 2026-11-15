@@ -6,7 +6,8 @@ import math
 import pytest
 
 from evaluation.replay import replay_story
-from gm_ui.river import MAX_THREADS, Event, river_of, surprise
+from gm_ui.river import MAX_THREADS, Event, FamilyShare, river_of, strongest_threads, surprise
+from matching.lattice import LatticeHypothesis
 
 pytestmark = pytest.mark.django_db
 
@@ -206,3 +207,30 @@ def test_pacing_stays_between_nothing_and_everything(macbeth):
         for moment in river.moments:
             assert 0.0 <= moment.surprise <= 1.0, (river.name, moment.t)
             assert 0.0 <= moment.tension <= 1.0, (river.name, moment.t)
+
+
+def reading_of(core, weight, created_at_t):
+    return LatticeHypothesis(
+        id=core,
+        schema="betrayal",
+        binding={},
+        status="live",
+        weight=weight,
+        created_at_t=created_at_t,
+        fills=(),
+    )
+
+
+def test_a_weak_reading_alone_early_leaves_the_threads_to_better_supported_readings():
+    lonely = reading_of(core=1, weight=-3.5, created_at_t=1)
+    supported = [reading_of(core=core, weight=-1.0, created_at_t=2) for core in range(2, 2 + MAX_THREADS)]
+    every_reading = {reading.id: reading for reading in [lonely, *supported]}
+    alone_at_first = {lonely.id: FamilyShare(share=1.0, strongest=lonely)}
+    sharing_later = {
+        reading.id: FamilyShare(share=math.exp(reading.weight), strongest=reading)
+        for reading in every_reading.values()
+    }
+
+    chosen = strongest_threads([alone_at_first, sharing_later], every_reading)
+
+    assert chosen == [reading.id for reading in supported]

@@ -223,11 +223,13 @@ def building_up(reading: LatticeHypothesis, definition: SchemaDefinition) -> boo
 def strongest_threads(
     shares_by_t: Sequence[Mapping[int, FamilyShare]], every_reading: Mapping[int, LatticeHypothesis]
 ) -> list[int]:
-    """The cores whose peak share is among the MAX_THREADS largest, in the order they appeared."""
+    """The MAX_THREADS cores whose strongest reading reaches the highest weight, in the order they
+    appeared. Ranked by evidence, not by share: a reading alone early on holds all of the belief,
+    however little supports it."""
     peaks: dict[int, float] = {}
     for shares in shares_by_t:
         for core, family in shares.items():
-            peaks[core] = max(peaks.get(core, 0.0), family.share)
+            peaks[core] = max(peaks.get(core, -math.inf), family.strongest.weight)
     strongest = sorted(peaks, key=lambda core: (-peaks[core], every_reading[core].created_at_t, core))
     return sorted(strongest[:MAX_THREADS], key=lambda core: (every_reading[core].created_at_t, core))
 
