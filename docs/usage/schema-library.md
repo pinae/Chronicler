@@ -10,7 +10,7 @@ and loading again.
 ## Load the library
 1. In `backend/`, run `uv run python manage.py load_schemas`.
 
-**Result:** the command prints `Loaded 12 schemas: betrayal, blame, con, exposed_lie, false_attribution, hidden_crime, hidden_loyalty, prophecy, prophecy_loophole, revised_belief, unreliable_narrator, usurpation`
+**Result:** the command prints `Loaded 14 schemas: betrayal, blame, con, exposed_lie, false_attribution, hidden_crime, hidden_kinship, hidden_loyalty, identity_reveal, prophecy, prophecy_loophole, revised_belief, unreliable_narrator, usurpation`
 (one name per file in the library). Running it again changes nothing: schemas are updated in place,
 not duplicated.
 
@@ -41,6 +41,11 @@ start weak (prior −4) and gain weight only when the twist pays off.
 | `hidden_loyalty` | H(idden ally), P(rotected), W(ho misjudged H) | W distrusts H, but H secretly helps or protects P (Snape) | W's distrust | W learns of H's help |
 | `prophecy_loophole` | S(eer), H(eld safe), E(xception) | S foretells what H is; H relies on it, and learns what E is (Macduff) | the foretelling | H learns what E is |
 | `con` | K (schemer), M(ark), A(ccomplice) | M trusts K and hands something over; K was allied with A (*The Sting*) | M's trust in K | someone learns of K's alliance with A |
+| `identity_reveal` | B (the person behind), A (the persona), W(itness), X (a token) | the person known as A is really B (Keyser Söze, twins, Odysseus as a beggar) | B poses as A | W learns of it, or recognises A by B's token |
+| `hidden_kinship` | K, R (the kin), W(itness) | K and R are kin; they clash without knowing it (Oedipus and Laius) | the kinship fact, or learning of it | W learns of the kinship |
+
+The last two state their facts with the predicates `poses_as(who, whom)` and `kin(who, whom, as?)`
+(ADR-013). They start less weak (prior −2.5): the beats they start from are rare.
 
 A lie is read from explicit beats of distrust or concealment: a beat that contradicts a claim
 (negation) is not matched yet.
@@ -78,7 +83,7 @@ Optional pattern keys: `tags_any`, `tags_all`, `scope: {players_know: true}` and
 
 Run `uv run python manage.py load_schemas`.
 
-**Result:** `Loaded 13 schemas: betrayal, blame, con, exposed_lie, false_attribution, hidden_crime, hidden_loyalty, prophecy, prophecy_loophole, revised_belief, rivalry, unreliable_narrator, usurpation`.
+**Result:** `Loaded 15 schemas: betrayal, blame, con, exposed_lie, false_attribution, hidden_crime, hidden_kinship, hidden_loyalty, identity_reveal, prophecy, prophecy_loophole, revised_belief, rivalry, unreliable_narrator, usurpation`.
 
 ## Constraints
 A schema may list constraints that every match must satisfy; a hypothesis that violates one is

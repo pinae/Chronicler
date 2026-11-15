@@ -39,7 +39,21 @@ def write_vocabulary(tmp_path, text):
 
 
 def test_starter_vocabulary_contains_the_predicates_from_the_concept(vocabulary):
-    assert set(vocabulary.predicate_names) == STARTER_PREDICATES
+    assert set(vocabulary.predicate_names) >= STARTER_PREDICATES
+
+
+def test_the_vocabulary_states_who_poses_as_whom_and_who_is_kin_to_whom(vocabulary):
+    poses_as, kin = vocabulary.predicate("poses_as"), vocabulary.predicate("kin")
+
+    assert {name: role.kinds for name, role in poses_as.roles.items()} == {
+        "who": {ValueKind.ENTITY},
+        "whom": {ValueKind.ENTITY},
+    }
+    assert {name: (role.kinds, role.optional) for name, role in kin.roles.items()} == {
+        "who": ({ValueKind.ENTITY}, False),
+        "whom": ({ValueKind.ENTITY}, False),
+        "as": ({ValueKind.LITERAL}, True),
+    }
 
 
 def test_starter_vocabulary_stays_under_forty_predicates(vocabulary):

@@ -23,6 +23,8 @@ PREDICATE_TEMPLATES = {
     "has": "{who} has {what}",
     "is_at": "{who} is at {where}",
     "is": "{who} is {trait}",
+    "poses_as": "{who} poses as {whom}",
+    "kin": "{who} is kin to {whom}",
     "wants": "{who} wants {what}",
     "fears": "{who} fears {what}",
     "seeks": "{who} seeks {what}",

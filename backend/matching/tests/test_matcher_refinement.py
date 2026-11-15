@@ -102,6 +102,17 @@ def test_a_refinement_is_not_seeded_a_second_time():
     assert child.refines is someone_betrays_mira
 
 
+def test_a_beat_that_could_refine_two_readings_refines_the_more_specific_one():
+    someone_betrays_mira = hypothesis(None, MIRA, created_at_t=1)
+    aldric_betrays_mira = hypothesis(ALDRIC, MIRA, fills=[Fill("trust", 2)], created_at_t=2)
+    matcher = IncrementalMatcher([betrayal()], [someone_betrays_mira, aldric_betrays_mira])
+
+    [child] = matcher.step(steals(4, ALDRIC, KEY, MIRA), WORLD).new
+
+    assert child.refines is aldric_betrays_mira
+    assert child.fills == [Fill("trust", 2), Fill("harm", 4)]
+
+
 @pytest.mark.django_db
 def test_stored_child_refers_to_its_parent(chronicle, entity_factory, beat_factory):
     load_library()

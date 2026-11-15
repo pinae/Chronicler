@@ -1,0 +1,38 @@
+# Hidden kinship: two characters are kin, they clash without knowing it, and someone learns of the
+# kinship (Oedipus and Laius). Learning of a kinship nobody stated before ("I am your father")
+# seeds and completes a reading at once; it is rare enough to be a trigger.
+slug: hidden_kinship
+name: Hidden kinship
+roles: {K: character, R: character, W: character}
+prior: -2.5
+payoff_steps: [revelation]
+constraints:
+  - {type: distinct, roles: [K, R]}
+  - {type: not_knows, role: W, step: kinship, until: revelation}
+steps:
+  - step_id: kinship
+    phase: setup
+    trigger: true
+    required: false
+    patterns:
+      - {pred: kin, args: {who: $K, whom: $R}}
+    weight: 1.0
+  - step_id: clash
+    phase: development
+    required: false
+    repeatable: true
+    patterns:
+      - {pred: opposes, args: {who: $K, whom: $R}}
+      - {pred: opposes, args: {who: $R, whom: $K}}
+      - {pred: harms, args: {who: $K, whom: $R}}
+      - {pred: harms, args: {who: $R, whom: $K}}
+      - {pred: kills, args: {who: $K, whom: $R}}
+      - {pred: kills, args: {who: $R, whom: $K}}
+    weight: 0.5
+  - step_id: revelation
+    phase: payoff
+    trigger: true
+    patterns:
+      - {pred: learns, args: {who: $W, what: $kinship}}
+      - {pred: learns, args: {who: $W, what: {pred: kin, args: {who: $K, whom: $R}}}}
+    weight: 3.0

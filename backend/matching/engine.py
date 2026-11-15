@@ -128,6 +128,17 @@ def open_binding(schema: SchemaDefinition) -> dict[str, int | None]:
     return {role: None for role in schema.roles}
 
 
+def most_specific_first(hypotheses: Sequence[HypothesisState]) -> list[HypothesisState]:
+    """Most bound roles first, then most fills; ties keep their order (oldest first). A beat that
+    could refine several readings refines the one it adds least to, which carries their evidence."""
+
+    def specificity(hypothesis: HypothesisState) -> tuple[int, int]:
+        bound_roles = sum(entity is not None for entity in hypothesis.binding.values())
+        return bound_roles, len(hypothesis.fills)
+
+    return sorted(hypotheses, key=specificity, reverse=True)
+
+
 def compatible(first: Mapping[str, int | None], second: Mapping[str, int | None]) -> bool:
     """No role is bound to different entities in the two bindings."""
     return all(first[role] is None or second.get(role) in (None, first[role]) for role in first)
@@ -290,7 +301,7 @@ class IncrementalMatcher:
         self, beat: PlainBeat, world: World, filled: Sequence[HypothesisState], now: int
     ) -> list[HypothesisState]:
         children: list[HypothesisState] = []
-        for parent in self.live():
+        for parent in most_specific_first(self.live()):
             if parent in filled:
                 continue
             for step, binding in self.matches(parent, beat, world):

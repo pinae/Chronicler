@@ -1,4 +1,5 @@
-"""The twist schemas (WP-074): each reads a beat that makes the audience reinterpret what came before."""
+"""The twist schemas (WP-074, WP-075): each reads a beat that makes the audience reinterpret the
+story before it."""
 
 import pytest
 
@@ -10,14 +11,18 @@ from schemas.tests.readings import beat, entity, library_schema, proposition, re
 (
     ELIZABETH, DARCY, WICKHAM, GRACE, TAYLOR, REBECCA, MAXIM, NARRATOR, SHEPPARD, ACKROYD, POIROT,
     PIP, HAVISHAM, MAGWITCH, HARRY, SNAPE, QUIRRELL, MACBETH, WITCHES, MACDUFF, LONNEGAN, GONDORFF,
-    HOOKER,
-) = range(1, 24)  # fmt: skip
-ALIEN_PLANET, EARTH, HOME = 31, 32, 33
-READER = 41
+    HOOKER, SOZE, VERBAL, KUJAN, FALLON, BORDEN, ANGIER, ODYSSEUS, BEGGAR, EURYCLEIA, OEDIPUS, LAIUS,
+    VADER, LUKE,
+) = range(1, 37)  # fmt: skip
+ALIEN_PLANET, EARTH, HOME = 51, 52, 53
+SCAR = 61
+READER = 71
 
-CHARACTERS = {character: "character" for character in range(1, 24)}
+CHARACTERS = {character: "character" for character in range(1, 37)}
 PLACES = {ALIEN_PLANET: "place", EARTH: "place", HOME: "place"}
-WORLD = World(entity_kinds={**CHARACTERS, **PLACES}, players=frozenset({READER}), facts=KnownFacts())
+WORLD = World(
+    entity_kinds={**CHARACTERS, **PLACES, SCAR: "object"}, players=frozenset({READER}), facts=KnownFacts()
+)
 
 
 def run(slug, *beats):
@@ -339,3 +344,78 @@ def test_a_con_needs_the_mark_to_hand_something_over():
     matcher = lonnegans_con(beat(3, "learns", who=entity(LONNEGAN), what={"beat": 2}))
 
     assert COMPLETE not in statuses(matcher)
+
+
+# identity_reveal
+
+
+def test_learning_of_a_disguise_reveals_an_identity():
+    matcher = run(
+        "identity_reveal",
+        beat(1, "poses_as", who=entity(SOZE), whom=entity(VERBAL)),
+        beat(2, "learns", who=entity(KUJAN), what={"beat": 1}),
+    )
+
+    revealed = reading(matcher, B=SOZE, A=VERBAL, W=KUJAN)
+    assert revealed.fills_by_step() == {"disguise": [1], "token": [], "revelation": [2]}
+    assert revealed.status == COMPLETE
+
+
+def test_learning_that_one_person_was_two_reveals_an_identity():
+    fallon_was_borden = proposition("poses_as", who=entity(FALLON), whom=entity(BORDEN))
+    matcher = run(
+        "identity_reveal",
+        beat(1, "poses_as", who=entity(FALLON), whom=entity(BORDEN)),
+        beat(2, "learns", who=entity(ANGIER), what=fallon_was_borden),
+    )
+
+    assert reading(matcher, B=FALLON, A=BORDEN, W=ANGIER).status == COMPLETE
+
+
+def test_recognising_a_persona_by_a_token_of_the_person_behind_it_reveals_an_identity():
+    the_beggar_has_the_scar = proposition("has", who=entity(BEGGAR), what=entity(SCAR))
+    matcher = run(
+        "identity_reveal",
+        beat(1, "poses_as", who=entity(ODYSSEUS), whom=entity(BEGGAR)),
+        beat(2, "has", who=entity(ODYSSEUS), what=entity(SCAR)),
+        beat(3, "learns", who=entity(EURYCLEIA), what=the_beggar_has_the_scar),
+    )
+
+    recognised = reading(matcher, B=ODYSSEUS, A=BEGGAR, W=EURYCLEIA, X=SCAR)
+    assert recognised.fills_by_step() == {"disguise": [1], "token": [2], "revelation": [3]}
+    assert recognised.status == COMPLETE
+
+
+def test_the_persona_learning_of_itself_reveals_nothing():
+    matcher = run(
+        "identity_reveal",
+        beat(1, "poses_as", who=entity(SOZE), whom=entity(VERBAL)),
+        beat(2, "learns", who=entity(VERBAL), what={"beat": 1}),
+    )
+
+    assert COMPLETE not in statuses(matcher)
+
+
+# hidden_kinship
+
+
+def test_learning_of_a_kinship_reinterprets_the_clash_before_it():
+    matcher = run(
+        "hidden_kinship",
+        beat(1, "kin", who=entity(LAIUS), whom=entity(OEDIPUS), **{"as": "father"}),
+        beat(2, "kills", who=entity(OEDIPUS), whom=entity(LAIUS)),
+        beat(3, "learns", who=entity(OEDIPUS), what={"beat": 1}),
+    )
+
+    revealed = reading(matcher, K=LAIUS, R=OEDIPUS, W=OEDIPUS)
+    assert revealed.fills_by_step() == {"kinship": [1], "clash": [2], "revelation": [3]}
+    assert revealed.status == COMPLETE
+
+
+def test_learning_of_a_kinship_nobody_stated_before_is_revealed_at_once():
+    i_am_your_father = proposition("kin", who=entity(VADER), whom=entity(LUKE), **{"as": "father"})
+    matcher = run("hidden_kinship", beat(1, "learns", who=entity(LUKE), what=i_am_your_father))
+
+    revealed = reading(matcher, K=VADER, R=LUKE, W=LUKE)
+    assert revealed.fills_by_step() == {"kinship": [], "clash": [], "revelation": [1]}
+    assert revealed.status == COMPLETE

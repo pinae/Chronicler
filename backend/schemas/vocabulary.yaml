@@ -105,6 +105,15 @@ predicates:
     who: [entity]
     trait: [literal]
 
+  # identity (ADR-013): facts that link two entities, whose reveal is a twist
+  poses_as:          # the person `who` appears as, or hides behind, `whom` (a disguise, an alias, a twin)
+    who: [entity]
+    whom: [entity]
+  kin:               # `who` is related to `whom`; `as` names how ("father")
+    who: [entity]
+    whom: [entity]
+    as?: [literal]
+
   # intention
   wants:
     who: [entity]

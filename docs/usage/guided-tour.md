@@ -47,7 +47,7 @@ other screens, which show the details.
 2. In `backend/`, run `uv run python manage.py migrate`.
 3. Run `uv run python manage.py load_schemas`.
 
-**Result:** `Loaded 12 schemas: betrayal, blame, con, exposed_lie, false_attribution, hidden_crime, hidden_loyalty, prophecy, prophecy_loophole, revised_belief, unreliable_narrator, usurpation`.
+**Result:** `Loaded 14 schemas: betrayal, blame, con, exposed_lie, false_attribution, hidden_crime, hidden_kinship, hidden_loyalty, identity_reveal, prophecy, prophecy_loophole, revised_belief, unreliable_narrator, usurpation`.
 
 4. Run `uv run python manage.py replay macbeth --reader uniform --per-player`.
 5. Run `uv run python manage.py replay broken-jug --reader uniform --per-player`.

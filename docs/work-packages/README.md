@@ -90,3 +90,4 @@ Each package's status is kept in its own file, not here.
 | [WP-072](WP-072-evidence-matrix-and-clue-ledger.md) | Evidence matrix and clue ledger | M8 | 068 |
 | [WP-073](WP-073-river-threads-by-evidence.md) | River threads by evidence | M8 | 067 |
 | [WP-074](WP-074-twist-schemas.md) | Twist schemas | M3 | 011, 012, 014, 060, 073 |
+| [WP-075](WP-075-identity-and-kinship-reveals.md) | Identity and kinship reveals | M3 | 005, 074 |

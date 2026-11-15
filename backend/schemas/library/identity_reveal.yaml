@@ -1,0 +1,33 @@
+# Identity reveal: the person known as A is really B (Keyser Söze as Verbal Kint, Fallon as his twin
+# Borden, Odysseus as a beggar). Someone other than the persona learns of the disguise, or
+# recognises the persona by a token the person behind it has (Odysseus' scar).
+slug: identity_reveal
+name: Identity reveal
+roles: {B: character, A: character, W: character, X: object}
+prior: -2.5
+payoff_steps: [revelation]
+constraints:
+  - {type: distinct, roles: [B, A]}
+  - {type: distinct, roles: [A, W]}
+  - {type: before, steps: [disguise, revelation]}
+  - {type: not_knows, role: W, step: disguise, until: revelation}
+steps:
+  - step_id: disguise
+    phase: setup
+    trigger: true
+    patterns:
+      - {pred: poses_as, args: {who: $B, whom: $A}}
+    weight: 1.0
+  - step_id: token
+    phase: development
+    required: false
+    patterns:
+      - {pred: has, args: {who: $B, what: $X}}
+    weight: 0.5
+  - step_id: revelation
+    phase: payoff
+    patterns:
+      - {pred: learns, args: {who: $W, what: $disguise}}
+      - {pred: learns, args: {who: $W, what: {pred: poses_as, args: {who: $B, whom: $A}}}}
+      - {pred: learns, args: {who: $W, what: {pred: has, args: {who: $A, what: $X}}}}
+    weight: 3.0
